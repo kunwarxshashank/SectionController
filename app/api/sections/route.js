@@ -2,38 +2,20 @@ import { connectDB } from "@/lib/mongodb.js"
 import { findAllSections } from "@/lib/models/sections"
 
 export async function GET() {
-    try {
-      await connectDB()
-      const sections = await findAllSections()
-      return Response.json(sections.map((section) => ({
-          sectionId: section.sectionId,
-          sectionName: section.sectionName,
-          schedule: section.schedule.map((schedule) => ({
-            trainId: schedule.trainId,
-            trainName: schedule.trainName,
-            trainType: schedule.trainType,
-            currentSpeed: schedule.departureTime,
-            scheduled_arrival: schedule.scheduled_arrival,
-            scheduled_departure: schedule.scheduled_departure,
-            actual_arrival: schedule.actual_arrival,
-            actual_departure: schedule.actual_departure,
-            platform: schedule.platform,
-            base_priority: schedule.base_priority,
-            passenger_count: schedule.passenger_count,
-            is_emergency: schedule.is_emergency,
-            has_critical_cargo: schedule.has_critical_cargo,
-            timestamp: schedule.timestamp,
-            current_delay: {
-              delay: schedule.current_delay.delay,
-              delay_type: schedule.current_delay.delay_type,
-              delay_reason: schedule.current_delay.delay_reason,
-              delay_status: schedule.current_delay.delay_status,
-            }
-          }))
-        }))
-      )
-    } catch (error) {
-      console.error("[v0] Error fetching sections:", error)
-      return Response.json({ error: "Failed to fetch sections" }, { status: 500 })
-    }
+  try {
+    await connectDB()
+
+    // Fetch all sections as raw MongoDB documents
+    const sections = await findAllSections()
+
+    // Return raw data exactly as it is in DB
+    return Response.json(sections)
+
+  } catch (error) {
+    console.error("Error fetching sections:", error)
+    return Response.json(
+      { error: "Failed to fetch sections" },
+      { status: 500 }
+    )
   }
+}

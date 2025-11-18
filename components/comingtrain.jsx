@@ -1,92 +1,32 @@
 "use client"
 
-import { useState, useEffect, useMemo } from "react"
+import { useMemo, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Clock } from "lucide-react"
 import { useAuth } from "@/components/auth-provider"
+import { useSectionRealtime } from "@/hooks/use-section-realtime"
+import { normalizeSectionSchedule } from "@/lib/utils/section-trains"
 
 export default function UpcomingTrainsPanel() {
     const { user } = useAuth()
     const sectionId = user?.username?.toLowerCase()
 
-    const [trains, setTrains] = useState([])
-    const [loading, setLoading] = useState(true)
-    const [error, setError] = useState("")
     const [searchTerm, setSearchTerm] = useState("")
     const [typeFilter, setTypeFilter] = useState("all")
     const [priorityFilter, setPriorityFilter] = useState("all")
+    const {
+        data: realtimeSection,
+        error: realtimeError,
+        isLoading,
+    } = useSectionRealtime(sectionId, { enabled: Boolean(sectionId) })
 
-    useEffect(() => {
-        let interval
-        if (sectionId) {
-            fetchTrains(sectionId)
-            interval = setInterval(() => fetchTrains(sectionId), 30000)
-        } else {
-            setLoading(false)
-            setError("No section assigned to this admin.")
-        }
-
-        return () => {
-            if (interval) clearInterval(interval)
-        }
-    }, [sectionId])
-
-    const fetchTrains = async (id) => {
-        setLoading(true)
-        setError("")
-
-        try {
-            const response = await fetch(`/api/sections/${id}`)
-            if (!response.ok) {
-                throw new Error("Failed to fetch section schedule")
-            }
-
-            const data = await response.json()
-            const normalized = (data.schedule || []).map((train) => ({
-                id: train.trainId,
-                name: train.trainName,
-                type: train.trainType,
-                scheduledArrival: train.scheduled_arrival,
-                scheduledDeparture: train.scheduled_departure,
-                platform: train.platform,
-                priority: train.base_priority,
-                passengerCount: train.passenger_count,
-                delayStatus: train.current_delay?.delay_status,
-                delayMinutes: train.current_delay?.delay ?? 0,
-                delayReason: train.current_delay?.delay_reason,
-                isEmergency: train.is_emergency,
-                hasCriticalCargo: train.has_critical_cargo,
-                scheduledMinutes: parseTimeToMinutes(train.scheduled_arrival),
-            }))
-
-            setTrains(normalized)
-        } catch (err) {
-            console.error("Error fetching trains:", err)
-            setError(err.message || "Network error")
-            setTrains([])
-        } finally {
-            setLoading(false)
-        }
-    }
-
-    const parseTimeToMinutes = (timeStr) => {
-        if (!timeStr || timeStr === "—") return Number.POSITIVE_INFINITY
-        const [hours, minutes] = timeStr.split(":").map(Number)
-        if (Number.isNaN(hours) || Number.isNaN(minutes)) return Number.POSITIVE_INFINITY
-        return hours * 60 + minutes
-    }
+    const trains = useMemo(() => normalizeSectionSchedule(realtimeSection?.schedule || []), [realtimeSection])
 
     const getISTMinutes = () => {
         const now = new Date()
         const ist = new Date(now.toLocaleString("en-US", { timeZone: "Asia/Kolkata" }))
         return ist.getHours() * 60 + ist.getMinutes()
-    }
-
-    const classifyPriority = (value) => {
-        if (value >= 8) return "high"
-        if (value >= 5) return "medium"
-        return "low"
     }
 
     const filteredTrains = useMemo(() => {
@@ -95,7 +35,6 @@ export default function UpcomingTrainsPanel() {
             .map((train) => ({
                 ...train,
                 etaDifference: train.scheduledMinutes - nowMinutes,
-                priorityLevel: classifyPriority(train.priority || 0),
             }))
             .filter((train) => {
                 if (searchTerm && !train.name.toLowerCase().includes(searchTerm.toLowerCase()) && !train.id.toLowerCase().includes(searchTerm.toLowerCase())) {
@@ -119,6 +58,8 @@ export default function UpcomingTrainsPanel() {
         }
         return `${Math.abs(Math.round(train.etaDifference))} min ago`
     }
+
+    const errorMessage = realtimeError || (!sectionId ? "No section assigned to this admin." : "")
 
     return (
         <Card className="h-full rounded-none border-0">
@@ -164,11 +105,11 @@ export default function UpcomingTrainsPanel() {
             </CardHeader>
 
             <CardContent className="space-y-3 max-h-[calc(100vh-220px)] overflow-y-auto">
-                {error && (
-                    <div className="text-[oklch(0.6_0.23_25)] text-xs text-center">{error}</div>
+                {errorMessage && (
+                    <div className="text-[oklch(0.6_0.23_25)] text-xs text-center">{errorMessage}</div>
                 )}
 
-                {loading ? (
+                {isLoading ? (
                     <div className="text-center py-6 text-sm text-muted-foreground">Loading trains...</div>
                 ) : filteredTrains.length === 0 ? (
                     <div className="text-center py-6 text-sm text-muted-foreground opacity-70">
@@ -210,7 +151,7 @@ export default function UpcomingTrainsPanel() {
                                 </h4>
                                 <p className="text-xs font-semibold text-[color:var(--irctc-blue)] leading-tight">{train.name}</p>
                                 <p className="text-[10px] text-muted-foreground">
-                                    Platform {train.platform || "--"} • Priority {train.priority || "--"} • Passengers {train.passengerCount || 0}
+                                    Platform {train.platform || "--"} • Priority {train.priorityScore ?? "--"} • Passengers {train.passengerCount || 0}
                                 </p>
                             </div>
 

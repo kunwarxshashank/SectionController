@@ -24,6 +24,7 @@ export async function POST(request) {
       adminId: admin._id,
       email: admin.email,
       role: admin.role,
+      username: admin.username,
     })
 
     const response = NextResponse.json({

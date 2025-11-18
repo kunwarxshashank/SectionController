@@ -1,9 +1,22 @@
 "use client"
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Phone, Radio, MessageSquare, Clock, AlertTriangle, Search, Filter, Mic, MicOff, PhoneCall, PhoneOff, Bell, BellOff, Train, User, MapPin, Calendar, TrendingUp, CheckCircle, XCircle, Pause, Play, Settings, ArrowRight, ArrowLeft, Target, Truck, Wrench, Navigation } from 'lucide-react';
+import { useAuth } from '@/components/auth-provider';
+import { useSectionRealtime } from '@/hooks/use-section-realtime';
+import { normalizeSectionSchedule } from '@/lib/utils/section-trains';
 
 
-const BroadCast = () => {
+ const BroadCast = () => {
+  const { user } = useAuth();
+  const sectionId = user?.username?.toLowerCase();
+
+  const {
+    data: realtimeSection,
+    error: sectionError,
+    isLoading: sectionLoading,
+  } = useSectionRealtime(sectionId, { enabled: Boolean(sectionId) });
+
+  const trains = useMemo(() => normalizeSectionSchedule(realtimeSection?.schedule || []), [realtimeSection]);
   const [activeTab, setActiveTab] = useState('communications');
   const [trainFilter, setTrainFilter] = useState('all');
   const [isRecording, setIsRecording] = useState(false);
@@ -12,15 +25,8 @@ const BroadCast = () => {
   const [filterPriority, setFilterPriority] = useState('all');
   const [selectedStation, setSelectedStation] = useState("BPLJN");
 
-  // Train Categories Data
-  const [trains] = useState([
-    { number: '12953', name: 'August Kranti Rajdhani', category: 'superfast', priority: 'high', status: 'on-time', location: 'Approaching Itarsi', delay: 0 },
-    { number: '12155', name: 'Bhopal Shatabdi', category: 'superfast', priority: 'high', status: 'delayed', location: 'Held at Hoshangabad', delay: 20 },
-    { number: '18237', name: 'Chhattisgarh Express', category: 'express', priority: 'medium', status: 'on-time', location: 'Vidisha Outer', delay: 5 },
-    { number: '59388', name: 'Itarsi-Bhopal MEMU', category: 'suburban', priority: 'low', status: 'on-time', location: 'Sant Hirdaram Nagar', delay: 0 },
-    { number: 'F-2401', name: 'Coal Rake ITR-BPL', category: 'freight', priority: 'low', status: 'held', location: 'Itarsi Yard Loop-3', delay: 45 },
-    { number: 'MT-334', name: 'Engine Link Movement', category: 'special', priority: 'medium', status: 'on-time', location: 'Pipariya', delay: 0 }
-  ]);
+  const trainsLoading = sectionLoading && trains.length === 0;
+  const sectionStatusMessage = sectionError || (!sectionId ? 'No section assigned to this admin.' : '');
 
   // Stations Data (fetched from /api/section)
   const [stations, setStations] = useState([]);
@@ -37,20 +43,17 @@ const BroadCast = () => {
 
         // Normalize API response into shape used in the UI
         const normalized = (Array.isArray(data) ? data : []).map((station, index) => {
-          const username = station.username || '';
+          const username = station.sectionName || '';
+          const sectionName = station.sectionName || '';
           // Try to derive a short code from the username or name, fallback to index
           const derivedCode =
-            username.split('-').pop()?.toUpperCase() ||
-            station.name?.split(' - ').pop()?.toUpperCase() ||
+            sectionName.split('-').pop()?.toUpperCase() ||
+            sectionName?.split(' - ').pop()?.toUpperCase() ||
             `STN-${index + 1}`;
 
           return {
             code: derivedCode,
-            name: station.name || 'Unknown Station',
-            // Defaults for fields not provided by API
-            type: 'major',
-            hasYard: false,
-            hotline: `ext-${username || String(index + 2401)}`,
+            name: sectionName,
           };
         });
 
@@ -205,12 +208,15 @@ const BroadCast = () => {
     setCommunications(prev => [newComm, ...prev]);
   };
 
-  const filteredTrains = trains.filter(train => {
-    const matchesFilter = trainFilter === 'all' || train.category === trainFilter;
-    const matchesSearch = train.number.includes(searchTerm) || 
-                         train.name.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesFilter && matchesSearch;
-  });
+  const filteredTrains = useMemo(() => {
+    return trains.filter(train => {
+      const matchesFilter = trainFilter === 'all' || train.category === trainFilter;
+      const matchesSearch =
+        train.number?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        train.name?.toLowerCase().includes(searchTerm.toLowerCase());
+      return matchesFilter && matchesSearch;
+    });
+  }, [trains, trainFilter, searchTerm]);
 
   return (
     <div className="w-full h-screen bg-gray-50 flex flex-col">
@@ -293,6 +299,8 @@ const BroadCast = () => {
         </nav>
       </div>
 
+
+
       <div className="flex-1 flex overflow-hidden">
         {/* Train Segregation Panel */}
         {activeTab === 'trains' && (
@@ -335,6 +343,9 @@ const BroadCast = () => {
                 <div>
                   <h2 className="text-xl font-bold text-gray-800">Live Train Status</h2>
                   <p className="text-gray-600">Real-time monitoring of Itarsi-Bhopal corridor</p>
+                  {sectionStatusMessage && (
+                    <p className="text-sm text-red-600 mt-2">{sectionStatusMessage}</p>
+                  )}
                 </div>
 
                 <input
@@ -347,68 +358,75 @@ const BroadCast = () => {
               </div>
 
 
-              <div className="grid gap-4">
-                {filteredTrains.map(train => (
-                  <div key={train.number} className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center space-x-3">
-                        <div className={`p-2 rounded-lg border ${getCategoryColor(train.category)}`}>
-                          {getCategoryIcon(train.category)}
+              {trainsLoading ? (
+                <div className="text-gray-500 text-sm">Loading live trains…</div>
+              ) : filteredTrains.length === 0 ? (
+                <div className="text-gray-500 text-sm">No trains match this filter.</div>
+              ) : (
+                <div className="grid gap-4">
+                  {filteredTrains.map(train => (
+                    <div key={train.number} className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center space-x-3">
+                          <div className={`p-2 rounded-lg border ${getCategoryColor(train.category)}`}>
+                            {getCategoryIcon(train.category)}
+                          </div>
+                          <div>
+                            <div className="font-bold text-lg">{train.number}</div>
+                            <div className="text-gray-700 font-medium">{train.name}</div>
+                          </div>
                         </div>
-                        <div>
-                          <div className="font-bold text-lg">{train.number}</div>
-                          <div className="text-gray-700 font-medium">{train.name}</div>
+                        <div className="flex items-center space-x-2">
+                          <span className={`px-2 py-1 rounded-full text-xs font-medium border ${getPriorityColor(train.priority)}`}>
+                            {train.priority.toUpperCase()} PRIORITY
+                          </span>
+                          <span className={`font-semibold ${getStatusColor(train.status)}`}>
+                            {train.status.replace('-', ' ').toUpperCase()}
+                            {train.delay > 0 && ` (+${train.delay}m)`}
+                          </span>
                         </div>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium border ${getPriorityColor(train.priority)}`}>
-                          {train.priority.toUpperCase()} PRIORITY
-                        </span>
-                        <span className={`font-semibold ${getStatusColor(train.status)}`}>
-                          {train.status.replace('-', ' ').toUpperCase()}
-                          {train.delay > 0 && ` (+${train.delay}m)`}
-                        </span>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-2 text-sm text-gray-600">
-                        <MapPin className="w-4 h-4" />
-                        <span>Current: {train.location}</span>
                       </div>
                       
-                      <div className="flex items-center space-x-2">
-                        <button
-                          onClick={() => handleTrainCall(train)}
-                          disabled={activeCall !== null}
-                          className={`px-3 py-1 rounded flex items-center space-x-1 ${
-                            activeCall ? 'bg-gray-100 text-gray-400 cursor-not-allowed' :
-                            'bg-blue-100 hover:bg-blue-200 text-blue-800'
-                          }`}
-                        >
-                          <Radio className="w-4 h-4" />
-                          <span>Radio</span>
-                        </button>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-2 text-sm text-gray-600">
+                          <MapPin className="w-4 h-4" />
+                          <span>Current: {train.location}</span>
+                        </div>
                         
-                        <select
-                          onChange={(e) => e.target.value && sendQuickMessage(train, e.target.value)}
-                          className="px-2 py-1 border border-gray-300 rounded text-sm"
-                          defaultValue=""
-                        >
-                          <option value="" disabled>Quick Message</option>
-                          <option value="Hold at next station">Hold at next station</option>
-                          <option value="Proceed with caution">Proceed with caution</option>
-                          <option value="Report arrival time">Report arrival time</option>
-                          <option value="Move to loop line">Move to loop line</option>
-                        </select>
+                        <div className="flex items-center space-x-2">
+                          <button
+                            onClick={() => handleTrainCall(train)}
+                            disabled={activeCall !== null}
+                            className={`px-3 py-1 rounded flex items-center space-x-1 ${
+                              activeCall ? 'bg-gray-100 text-gray-400 cursor-not-allowed' :
+                              'bg-blue-100 hover:bg-blue-200 text-blue-800'
+                            }`}
+                          >
+                            <Radio className="w-4 h-4" />
+                            <span>Radio</span>
+                          </button>
+                          
+                          <select
+                            onChange={(e) => e.target.value && sendQuickMessage(train, e.target.value)}
+                            className="px-2 py-1 border border-gray-300 rounded text-sm"
+                            defaultValue=""
+                          >
+                            <option value="" disabled>Quick Message</option>
+                            <option value="Hold at next station">Hold at next station</option>
+                            <option value="Proceed with caution">Proceed with caution</option>
+                            <option value="Report arrival time">Report arrival time</option>
+                            <option value="Move to loop line">Move to loop line</option>
+                          </select>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         )}
+
 
         {/* Station Directory */}
         {activeTab === 'stations' && (

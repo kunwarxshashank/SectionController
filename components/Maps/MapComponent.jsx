@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from "react"
 import dynamic from "next/dynamic"
 import axios from "axios"
-// import { useSocket } from "@/hooks/use-socket" // Commented out since it might not be available
 
 // Dynamically import Leaflet components to avoid SSR issues
 const MapContainer = dynamic(() => import("react-leaflet").then((mod) => mod.MapContainer), { ssr: false })
@@ -151,9 +150,8 @@ export default function EnhancedMapComponent() {
   const [showRealRailways, setShowRealRailways] = useState(false)
   const mapRef = useRef(null)
 
-  // Mock socket connection - replace with actual useSocket when available
   const isConnected = false
-  // const { isConnected, on, off, emit } = useSocket("section-a1")
+
 
   // Fetch real railway data from OpenStreetMap
   useEffect(() => {
@@ -194,9 +192,9 @@ export default function EnhancedMapComponent() {
     fetchRailways()
   }, [showRealRailways])
 
-  // Real-time updates simulation
+
   useEffect(() => {
-    if (isConnected) return // Don't simulate if real-time updates are available
+ 
 
     const interval = setInterval(() => {
       setTrains((prevTrains) =>
