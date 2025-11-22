@@ -1,9 +1,12 @@
 "use client"
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { Phone, Radio, MessageSquare, Clock, AlertTriangle, Search, Filter, Mic, MicOff, PhoneCall, PhoneOff, Bell, BellOff, Train, User, MapPin, Calendar, TrendingUp, CheckCircle, XCircle, Pause, Play, Settings, ArrowRight, ArrowLeft, Target, Truck, Wrench, Navigation } from 'lucide-react';
+import { Phone, Clock, Radio, MessageSquare, Search, Filter, Mic, MicOff, PhoneCall, PhoneOff, Bell, BellOff, Train, User, MapPin, Calendar, TrendingUp, CheckCircle, XCircle, Pause, Play, Settings, ArrowRight, ArrowLeft, Target, Truck, Wrench, Navigation } from 'lucide-react';
 import { useAuth } from '@/components/auth-provider';
 import { useSectionRealtime } from '@/hooks/use-section-realtime';
 import { normalizeSectionSchedule } from '@/lib/utils/section-trains';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import PageHeader from '@/components/page-header';
 
 
  const BroadCast = () => {
@@ -219,64 +222,52 @@ import { normalizeSectionSchedule } from '@/lib/utils/section-trains';
   }, [trains, trainFilter, searchTerm]);
 
   return (
-    <div className="w-full h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-[oklch(0.99_0.01_95)] via-[oklch(0.985_0.015_95)] to-[oklch(0.98_0.02_95)] flex flex-col">
       {/* Header */}
-      <div className="bg-blue-900 text-white p-4 shadow-lg">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <Train className="w-8 h-8" />
-            <div>
-              <h1 className="text-xl font-bold">Itarsi-Bhopal Section Control Center</h1>
-              <p className="text-blue-200 text-sm">WCR Division • High-Density Corridor Command</p>
-            </div>
-          </div>
-          <div className="flex items-center space-x-4">
-            <div className="text-right">
-              <div className="text-lg font-mono">{new Date().toLocaleTimeString('en-IN', { hour12: false })}</div>
-              <div className="text-blue-200 text-sm">{new Date().toLocaleDateString('en-IN')}</div>
-            </div>
-            <div className="flex items-center space-x-2">
-              <div className="px-2 py-1 bg-green-600 rounded text-sm">● LIVE</div>
-              <Bell className="w-6 h-6 cursor-pointer" />
-            </div>
-          </div>
-        </div>
-      </div>
+      <PageHeader 
+        pageName="Broadcast & Communications Center" 
+        icon={Phone}
+        showStats={true}
+      />
 
       {/* Active Call Banner */}
       {activeCall && (
-        <div className="bg-green-600 text-white p-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="w-3 h-3 bg-white rounded-full animate-pulse"></div>
-              <span className="font-semibold">Active Call: {activeCall.contact}</span>
-              <span className="text-green-200">Started: {activeCall.startTime}</span>
+        <div className="bg-gradient-to-r from-[oklch(0.7_0.2_150)] to-[oklch(0.7_0.2_150)]/90 text-white p-4 shadow-lg border-b-2 border-[oklch(0.7_0.2_150)]/30">
+          <div className="max-w-7xl mx-auto flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-3 h-3 bg-white rounded-full animate-pulse shadow-lg shadow-white/50"></div>
+              <span className="font-bold text-lg">Active Call: {activeCall.contact}</span>
+              <Badge variant="outline" className="bg-white/20 text-white border-white/30 text-xs">
+                Started: {activeCall.startTime}
+              </Badge>
             </div>
-            <div className="flex items-center space-x-2">
-              <button
+            <div className="flex items-center gap-2">
+              <Button
                 onClick={() => setIsRecording(!isRecording)}
-                className={`px-3 py-1 rounded flex items-center space-x-1 ${
-                  isRecording ? 'bg-red-500' : 'bg-green-700'
+                className={`flex items-center gap-2 ${
+                  isRecording 
+                    ? 'bg-[oklch(0.6_0.23_25)] hover:bg-[oklch(0.6_0.23_25)]/90 text-white' 
+                    : 'bg-white/20 hover:bg-white/30 text-white border border-white/30'
                 }`}
               >
                 {isRecording ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
                 <span>{isRecording ? 'Recording...' : 'Start Recording'}</span>
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={() => setActiveCall(null)}
-                className="bg-red-600 hover:bg-red-700 px-3 py-1 rounded flex items-center space-x-1"
+                className="bg-[oklch(0.6_0.23_25)] hover:bg-[oklch(0.6_0.23_25)]/90 text-white border-0"
               >
                 <PhoneOff className="w-4 h-4" />
                 <span>End Call</span>
-              </button>
+              </Button>
             </div>
           </div>
         </div>
       )}
 
       {/* Navigation Tabs */}
-      <div className="bg-white border-b border-gray-200">
-        <nav className="flex space-x-8 px-6">
+      <div className="bg-gradient-to-r from-card/95 to-card/90 border-b-2 border-[color:var(--irctc-blue)]/20 shadow-sm">
+        <nav className="flex gap-1 px-6">
           {[
             { id: 'communications', name: 'Communications', icon: Phone },
             { id: 'trains', name: 'Train Segregation', icon: Train },
@@ -286,14 +277,17 @@ import { normalizeSectionSchedule } from '@/lib/utils/section-trains';
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center space-x-2 py-4 px-2 border-b-2 font-medium text-sm ${
+              className={`relative flex items-center gap-2 px-5 py-3 rounded-t-xl transition-all duration-300 font-semibold text-sm ${
                 activeTab === tab.id 
-                  ? 'border-blue-500 text-blue-600' 
-                  : 'border-transparent text-gray-500 hover:text-gray-700'
+                  ? 'bg-gradient-to-b from-[color:var(--irctc-blue)]/10 to-transparent text-[color:var(--irctc-blue)] border-b-2 border-[color:var(--irctc-blue)]' 
+                  : 'text-muted-foreground hover:text-foreground hover:bg-white/50'
               }`}
             >
               <tab.icon className="w-4 h-4" />
               <span>{tab.name}</span>
+              {activeTab === tab.id && (
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-[oklch(0.71_0.2_50)] via-[color:var(--irctc-blue)] to-[oklch(0.7_0.2_150)] rounded-full" />
+              )}
             </button>
           ))}
         </nav>
@@ -301,11 +295,11 @@ import { normalizeSectionSchedule } from '@/lib/utils/section-trains';
 
 
 
-      <div className="flex-1 flex overflow-hidden">
+      <div className="flex-1 flex overflow-hidden bg-gradient-to-br from-[oklch(0.99_0.01_95)] to-[oklch(0.97_0.015_95)]">
         {/* Train Segregation Panel */}
         {activeTab === 'trains' && (
           <div className="w-full flex">
-            <div className="w-80 bg-white border-r border-gray-200 p-4">
+            <div className="w-80 bg-gradient-to-b from-card/95 to-card/90 border-r-2 border-[color:var(--irctc-blue)]/20 p-4 shadow-inner">
               <h3 className="font-semibold text-gray-800 mb-4">Train Categories</h3>
               <div className="space-y-2 mb-4">
                 {[
@@ -319,10 +313,10 @@ import { normalizeSectionSchedule } from '@/lib/utils/section-trains';
                   <button
                     key={category.id}
                     onClick={() => setTrainFilter(category.id)}
-                    className={`w-full text-left p-3 rounded-lg border transition-colors ${
+                    className={`w-full text-left p-3 rounded-xl border-2 transition-all duration-200 ${
                       trainFilter === category.id 
-                        ? 'bg-blue-50 border-blue-200 text-blue-800' 
-                        : 'bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100'
+                        ? 'bg-gradient-to-r from-[color:var(--irctc-blue)]/10 to-[color:var(--irctc-blue)]/5 border-[color:var(--irctc-blue)]/30 text-[color:var(--irctc-blue)] font-semibold shadow-sm' 
+                        : 'bg-gradient-to-r from-card/80 to-card/60 border-[color:var(--irctc-blue)]/20 text-foreground hover:bg-card hover:border-[color:var(--irctc-blue)]/40 hover:shadow-sm'
                     }`}
                   >
                     <div className="flex justify-between items-center">
@@ -338,7 +332,7 @@ import { normalizeSectionSchedule } from '@/lib/utils/section-trains';
 
             </div>
 
-            <div className="flex-1 p-6">
+            <div className="flex-1 p-6 bg-gradient-to-br from-background to-muted/30">
               <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                 <div>
                   <h2 className="text-xl font-bold text-gray-800">Live Train Status</h2>
@@ -365,7 +359,7 @@ import { normalizeSectionSchedule } from '@/lib/utils/section-trains';
               ) : (
                 <div className="grid gap-4">
                   {filteredTrains.map(train => (
-                    <div key={train.number} className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+                    <div key={train.number} className="bg-gradient-to-br from-card to-card/95 rounded-xl shadow-md border-2 border-[color:var(--irctc-blue)]/20 p-4 hover:shadow-lg transition-shadow">
                       <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center space-x-3">
                           <div className={`p-2 rounded-lg border ${getCategoryColor(train.category)}`}>
@@ -397,9 +391,9 @@ import { normalizeSectionSchedule } from '@/lib/utils/section-trains';
                           <button
                             onClick={() => handleTrainCall(train)}
                             disabled={activeCall !== null}
-                            className={`px-3 py-1 rounded flex items-center space-x-1 ${
-                              activeCall ? 'bg-gray-100 text-gray-400 cursor-not-allowed' :
-                              'bg-blue-100 hover:bg-blue-200 text-blue-800'
+                            className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-all duration-200 ${
+                              activeCall ? 'bg-muted/50 text-muted-foreground cursor-not-allowed' :
+                              'bg-gradient-to-r from-[color:var(--irctc-blue)]/10 to-[color:var(--irctc-blue)]/5 hover:from-[color:var(--irctc-blue)]/20 hover:to-[color:var(--irctc-blue)]/10 border border-[color:var(--irctc-blue)]/30 text-[color:var(--irctc-blue)] font-semibold hover:shadow-sm'
                             }`}
                           >
                             <Radio className="w-4 h-4" />
@@ -431,18 +425,18 @@ import { normalizeSectionSchedule } from '@/lib/utils/section-trains';
         {/* Station Directory */}
         {activeTab === 'stations' && (
           <div className="w-full flex">
-            <div className="w-80 bg-white border-r border-gray-200 p-4">
+            <div className="w-80 bg-gradient-to-b from-card/95 to-card/90 border-r-2 border-[color:var(--irctc-blue)]/20 p-4 shadow-inner">
               <h3 className="font-semibold text-gray-800 mb-4">Section Stations</h3>
               <div className="space-y-2">
                 {stations.map(station => (
                   <button
                     key={station.code}
                     onClick={() => setSelectedStation(station)}
-                    className={`w-full text-left p-3 rounded-lg border transition-colors ${
-                      selectedStation?.code === station.code 
-                        ? 'bg-blue-50 border-blue-200 text-blue-800' 
-                        : 'bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100'
-                    }`}
+                      className={`w-full text-left p-3 rounded-xl border-2 transition-all duration-200 ${
+                        selectedStation?.code === station.code 
+                          ? 'bg-gradient-to-r from-[color:var(--irctc-blue)]/10 to-[color:var(--irctc-blue)]/5 border-[color:var(--irctc-blue)]/30 text-[color:var(--irctc-blue)] font-semibold shadow-sm' 
+                          : 'bg-gradient-to-r from-card/80 to-card/60 border-[color:var(--irctc-blue)]/20 text-foreground hover:bg-card hover:border-[color:var(--irctc-blue)]/40 hover:shadow-sm'
+                      }`}
                   >
                     <div className="flex justify-between items-center">
                       <div>
@@ -485,7 +479,7 @@ import { normalizeSectionSchedule } from '@/lib/utils/section-trains';
 
             </div>
 
-            <div className="flex-1 p-6">
+            <div className="flex-1 p-6 bg-gradient-to-br from-background to-muted/30">
               {selectedStation ? (
                 <div>
                   <div className="mb-6">
@@ -494,15 +488,15 @@ import { normalizeSectionSchedule } from '@/lib/utils/section-trains';
                   </div>
                   
                   <div className="grid grid-cols-2 gap-6">
-                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+                    <div className="bg-gradient-to-br from-card to-card/95 rounded-xl shadow-md border-2 border-[color:var(--irctc-blue)]/20 p-4">
                       <h3 className="font-semibold text-gray-800 mb-4">Communication</h3>
                       <div className="space-y-3">
                         <button
                           onClick={() => handleStationCall(selectedStation)}
                           disabled={activeCall !== null}
-                          className={`w-full p-3 rounded-lg flex items-center space-x-3 ${
-                            activeCall ? 'bg-gray-100 text-gray-400 cursor-not-allowed' :
-                            'bg-green-50 hover:bg-green-100 border border-green-200 text-green-800'
+                          className={`w-full p-3 rounded-xl flex items-center gap-3 transition-all duration-200 ${
+                            activeCall ? 'bg-muted/50 text-muted-foreground cursor-not-allowed border-2 border-border' :
+                            'bg-gradient-to-r from-[oklch(0.7_0.2_150)]/10 to-[oklch(0.7_0.2_150)]/5 hover:from-[oklch(0.7_0.2_150)]/20 hover:to-[oklch(0.7_0.2_150)]/10 border-2 border-[oklch(0.7_0.2_150)]/30 text-[oklch(0.7_0.2_150)] font-semibold hover:shadow-md'
                           }`}
                         >
                           <Phone className="w-5 h-5" />
@@ -526,7 +520,7 @@ import { normalizeSectionSchedule } from '@/lib/utils/section-trains';
                       </div>
                     </div>
                     
-                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+                    <div className="bg-gradient-to-br from-card to-card/95 rounded-xl shadow-md border-2 border-[color:var(--irctc-blue)]/20 p-4">
                       <h3 className="font-semibold text-gray-800 mb-4">Quick Actions</h3>
                       <div className="space-y-2">
                         <button className="w-full p-2 text-left bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded text-blue-800">
@@ -579,7 +573,7 @@ import { normalizeSectionSchedule } from '@/lib/utils/section-trains';
         {/* Communications Tab */}
         {activeTab === 'communications' && (
           <div className="w-full flex">
-            <div className="w-80 bg-white border-r border-gray-200 p-4">
+            <div className="w-80 bg-gradient-to-b from-card/95 to-card/90 border-r-2 border-[color:var(--irctc-blue)]/20 p-4 shadow-inner">
               <h3 className="font-semibold text-gray-800 mb-4">Communication Filters</h3>
               
               <div className="space-y-4">
@@ -647,7 +641,7 @@ import { normalizeSectionSchedule } from '@/lib/utils/section-trains';
               </div>
             </div>
 
-            <div className="flex-1 p-6">
+            <div className="flex-1 p-6 bg-gradient-to-br from-background to-muted/30">
               <div className="mb-6">
                 <h2 className="text-2xl font-bold text-gray-800">Communication Logs</h2>
                 <p className="text-gray-600">Real-time communication tracking with AI summaries</p>
@@ -655,7 +649,7 @@ import { normalizeSectionSchedule } from '@/lib/utils/section-trains';
               
               <div className="space-y-4">
                 {communications.map((comm) => (
-                  <div key={comm.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+                  <div key={comm.id} className="bg-gradient-to-br from-card to-card/95 rounded-xl shadow-md border-2 border-[color:var(--irctc-blue)]/20 p-4 hover:shadow-lg transition-shadow">
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex items-center space-x-3">
                         <div className="p-2 bg-blue-100 rounded-lg">

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Train, AlertTriangle, CheckCircle, Radio, Settings, Power, Activity } from 'lucide-react';
+import { Badge } from "@/components/ui/badge";
 
 const Platform = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -74,16 +75,24 @@ const Platform = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white text-gray-900 p-4">
-
-
+    <div className="w-full">
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Main Track Display */}
-        <div className="lg:col-span-3 bg-gray-100 border-2 border-gray-800 rounded-lg p-6">
-          <h2 className="text-gray-800 text-lg font-bold mb-4">TRACK CONTROL SYSTEM</h2>
+        <div className="lg:col-span-3 bg-gradient-to-br from-card to-card/95 border-2 border-[color:var(--irctc-blue)]/20 rounded-xl p-6 shadow-lg">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-[color:var(--irctc-blue)] text-xl font-bold flex items-center gap-2">
+              <div className="p-1.5 rounded-lg bg-[color:var(--irctc-blue)]/10">
+                <Activity className="h-5 w-5" />
+              </div>
+              TRACK CONTROL SYSTEM
+            </h2>
+            <Badge variant="outline" className="bg-[oklch(0.7_0.2_150)]/10 text-[oklch(0.7_0.2_150)] border-[oklch(0.7_0.2_150)]/30 text-xs">
+              LIVE
+            </Badge>
+          </div>
           
           {/* Track Layout */}
-          <div className="relative h-96 bg-white rounded border-2 border-gray-800">
+          <div className="relative h-96 bg-gradient-to-br from-background to-muted/30 rounded-xl border-2 border-[color:var(--irctc-blue)]/30 shadow-inner">
             {/* Complex Track Layout */}
             <svg className="absolute inset-0 w-full h-full" viewBox="0 0 1000 400">
               {/* Main Line 1 - Horizontal */}
@@ -218,9 +227,9 @@ const Platform = () => {
         {/* Control Panels */}
         <div className="space-y-6">
           {/* System Status */}
-          <div className="bg-gray-100 border-2 border-gray-800 rounded-lg p-4">
-            <h3 className="text-gray-800 font-bold mb-3 flex items-center">
-              <Activity className="w-5 h-5 mr-2" />
+          <div className="bg-gradient-to-br from-card to-card/95 border-2 border-[color:var(--irctc-blue)]/20 rounded-xl p-4 shadow-md">
+            <h3 className="text-[color:var(--irctc-blue)] font-bold mb-3 flex items-center gap-2">
+              <Activity className="w-5 h-5" />
               SYSTEM STATUS
             </h3>
             <div className="space-y-2">
@@ -250,23 +259,26 @@ const Platform = () => {
 
 
           {/* Station Status */}
-          <div className="bg-gray-100 border-2 border-gray-800 rounded-lg p-4">
-            <h3 className="text-gray-800 font-bold mb-3">STATIONS</h3>
+          <div className="bg-gradient-to-br from-card to-card/95 border-2 border-[color:var(--irctc-blue)]/20 rounded-xl p-4 shadow-md">
+            <h3 className="text-[color:var(--irctc-blue)] font-bold mb-3 flex items-center gap-2">
+              <Activity className="h-4 w-4" />
+              STATIONS
+            </h3>
             <div className="space-y-2">
               {stations.map((station) => (
-                <div key={station.id} className="bg-white border border-gray-400 rounded p-2 shadow">
+                <div key={station.id} className="bg-gradient-to-r from-card to-card/95 border-2 border-[color:var(--irctc-blue)]/20 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow">
                   <div className="flex items-center justify-between">
                     <div>
-                      <div className="text-xs font-bold text-gray-800">{station.id}</div>
-                      <div className="text-xs text-gray-600">{station.platform}</div>
+                      <div className="text-xs font-bold text-[color:var(--irctc-blue)]">{station.id}</div>
+                      <div className="text-xs text-muted-foreground">{station.platform}</div>
                     </div>
-                    <div className={`px-2 py-1 rounded text-xs font-bold ${
+                    <Badge variant="outline" className={`text-xs font-bold ${
                       station.status === 'online' 
-                        ? 'bg-green-600 text-white' 
-                        : 'bg-yellow-600 text-black'
+                        ? 'bg-[oklch(0.7_0.2_150)]/20 text-[oklch(0.7_0.2_150)] border-[oklch(0.7_0.2_150)]/30' 
+                        : 'bg-[oklch(0.82_0.16_90)]/20 text-[oklch(0.82_0.16_90)] border-[oklch(0.82_0.16_90)]/30'
                     }`}>
                       {station.status.toUpperCase()}
-                    </div>
+                    </Badge>
                   </div>
                 </div>
               ))}
@@ -276,16 +288,22 @@ const Platform = () => {
       </div>
 
       {/* Status Bar */}
-      <div className="mt-6 bg-gray-100 border-2 border-gray-800 rounded-lg p-3">
+      <div className="mt-6 bg-gradient-to-r from-[color:var(--irctc-blue)]/10 to-transparent border-2 border-[color:var(--irctc-blue)]/20 rounded-xl p-4 shadow-md">
         <div className="flex items-center justify-between text-sm">
-          <div className="flex items-center space-x-4">
-            <span className="text-gray-800 font-bold">System: OPERATIONAL</span>
-            <span className="text-green-600 font-bold">Trains: {Object.values(trainPositions).filter(t => t.status === 'running').length} Active</span>
-            <span className="text-yellow-600 font-bold">Signals: {Object.values(signals).filter(s => s === 'yellow').length} Caution</span>
+          <div className="flex items-center gap-6">
+            <Badge variant="outline" className="bg-[oklch(0.7_0.2_150)]/20 text-[oklch(0.7_0.2_150)] border-[oklch(0.7_0.2_150)]/30 font-bold">
+              System: OPERATIONAL
+            </Badge>
+            <Badge variant="outline" className="bg-[color:var(--irctc-blue)]/10 text-[color:var(--irctc-blue)] border-[color:var(--irctc-blue)]/30 font-bold">
+              Trains: {Object.values(trainPositions).filter(t => t.status === 'running').length} Active
+            </Badge>
+            <Badge variant="outline" className="bg-[oklch(0.82_0.16_90)]/20 text-[oklch(0.82_0.16_90)] border-[oklch(0.82_0.16_90)]/30 font-bold">
+              Signals: {Object.values(signals).filter(s => s === 'yellow').length} Caution
+            </Badge>
           </div>
-          <div className="flex items-center space-x-2">
-            <Settings className="w-4 h-4 text-gray-600" />
-            <span className="text-gray-600">v2.1.0</span>
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <Settings className="w-4 h-4" />
+            <span className="text-xs">v2.1.0</span>
           </div>
         </div>
       </div>

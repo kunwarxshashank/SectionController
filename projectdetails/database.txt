@@ -1,0 +1,50 @@
+✅ Single-Server Replica Set Setup (MongoDB)
+STEP 1 — Stop MongoDB
+sudo systemctl stop mongod
+
+STEP 2 — Edit mongod.conf
+
+Open:
+
+sudo nano /etc/mongod.conf
+
+
+Add this section (if not present):
+
+replication:
+  replSetName: "rs0"
+
+
+Also make sure your bindIp includes localhost:
+
+net:
+  bindIp: 127.0.0.1
+
+
+(If your app connects remotely, use 0.0.0.0 instead)
+
+Save & exit.
+
+STEP 3 — Start MongoDB
+sudo systemctl start mongod
+
+STEP 4 — Initialize Replica Set
+
+Open the shell:
+
+mongosh
+
+
+Run:
+
+rs.initiate()
+
+STEP 5 — Verify status
+rs.status()
+
+
+You should see:
+
+"members" : [
+   { "stateStr" : "PRIMARY", ... }
+]

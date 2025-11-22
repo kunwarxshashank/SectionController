@@ -22,7 +22,7 @@ const fetcher = (...args) => {
 
 async function broadcastSectionUpdate(io, sectionId) {
   try {
-    const response = await fetcher(`${API_BASE_URL}/api/sections/${sectionId}`);
+    const response = await fetcher(`${API_BASE_URL}/api/sections/bpl`);
     if (!response.ok) {
       throw new Error(`Failed to fetch section ${sectionId}: ${response.status}`);
     }

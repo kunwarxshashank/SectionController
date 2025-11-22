@@ -15,7 +15,7 @@ export async function GET(request) {
     const search = searchParams.get("search")
 
     const client = await clientPromise
-    const db = client.db("train-tracking")
+    const db = client.db("trainsection")
 
     // Build query
     const query = {}

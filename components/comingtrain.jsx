@@ -62,11 +62,18 @@ export default function UpcomingTrainsPanel() {
     const errorMessage = realtimeError || (!sectionId ? "No section assigned to this admin." : "")
 
     return (
-        <Card className="h-full rounded-none border-0">
-            <CardHeader className="pb-3">
-                <CardTitle className="flex items-center gap-2">
-                    <Clock className="h-5 w-5" />
-                    Active Trains
+        <Card className="h-full rounded-none border-0 bg-transparent shadow-none">
+            <CardHeader className="pb-3 bg-gradient-to-r from-[color:var(--irctc-blue)]/10 to-transparent border-b border-[color:var(--irctc-blue)]/20">
+                <CardTitle className="flex items-center gap-2 text-[color:var(--irctc-blue)]">
+                    <div className="p-1.5 rounded-lg bg-[color:var(--irctc-blue)]/10">
+                        <Clock className="h-5 w-5" />
+                    </div>
+                    <span className="font-bold">Active Trains</span>
+                    {filteredTrains.length > 0 && (
+                        <Badge variant="outline" className="ml-auto bg-[oklch(0.7_0.2_150)]/10 text-[oklch(0.7_0.2_150)] border-[oklch(0.7_0.2_150)]/30 text-xs">
+                            {filteredTrains.length}
+                        </Badge>
+                    )}
                 </CardTitle>
                 <div className="mt-3 flex flex-wrap gap-2 text-xs">
                     <input
@@ -74,12 +81,12 @@ export default function UpcomingTrainsPanel() {
                         placeholder="Search train..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="flex-1 min-w-[140px] rounded-md border px-2 py-1"
+                        className="flex-1 min-w-[140px] rounded-lg border border-[color:var(--irctc-blue)]/20 bg-background/50 px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-[color:var(--irctc-blue)]/30 focus:border-[color:var(--irctc-blue)]/50"
                     />
                     <select
                         value={typeFilter}
                         onChange={(e) => setTypeFilter(e.target.value)}
-                        className="rounded-md border px-2 py-1"
+                        className="rounded-lg border border-[color:var(--irctc-blue)]/20 bg-background/50 px-2 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-[color:var(--irctc-blue)]/30"
                     >
                         <option value="all">All Types</option>
                         <option value="superfast">Superfast</option>
@@ -91,7 +98,7 @@ export default function UpcomingTrainsPanel() {
                     <select
                         value={priorityFilter}
                         onChange={(e) => setPriorityFilter(e.target.value)}
-                        className="rounded-md border px-2 py-1"
+                        className="rounded-lg border border-[color:var(--irctc-blue)]/20 bg-background/50 px-2 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-[color:var(--irctc-blue)]/30"
                     >
                         <option value="all">All Priorities</option>
                         <option value="high">High</option>
@@ -99,42 +106,45 @@ export default function UpcomingTrainsPanel() {
                         <option value="low">Low</option>
                     </select>
                 </div>
-                {filteredTrains.length > 0 && (
-                    <p className="text-sm text-muted-foreground mt-2">{filteredTrains.length} trains tracked</p>
-                )}
             </CardHeader>
 
-            <CardContent className="space-y-3 max-h-[calc(100vh-220px)] overflow-y-auto">
+            <CardContent className="space-y-3 max-h-[calc(100vh-220px)] overflow-y-auto p-4">
                 {errorMessage && (
-                    <div className="text-[oklch(0.6_0.23_25)] text-xs text-center">{errorMessage}</div>
+                    <div className="text-[oklch(0.6_0.23_25)] text-xs text-center bg-[oklch(0.6_0.23_25)]/10 p-2 rounded-lg border border-[oklch(0.6_0.23_25)]/20">{errorMessage}</div>
                 )}
 
                 {isLoading ? (
-                    <div className="text-center py-6 text-sm text-muted-foreground">Loading trains...</div>
+                    <div className="text-center py-8">
+                        <div className="inline-block h-8 w-8 border-4 border-[color:var(--irctc-blue)]/20 border-t-[color:var(--irctc-blue)] rounded-full animate-spin mb-2"></div>
+                        <p className="text-sm text-muted-foreground">Loading trains...</p>
+                    </div>
                 ) : filteredTrains.length === 0 ? (
-                    <div className="text-center py-6 text-sm text-muted-foreground opacity-70">
-                        No active trains
+                    <div className="text-center py-8">
+                        <Clock className="h-12 w-12 mx-auto mb-3 text-muted-foreground opacity-50" />
+                        <p className="text-sm text-muted-foreground font-medium">No active trains</p>
+                        <p className="text-xs text-muted-foreground mt-1">Waiting for train data...</p>
                     </div>
                 ) : (
                     filteredTrains.map((train) => (
                         <div
                             key={train.id}
-                            className="p-3 bg-card rounded-md border border-border space-y-1.5"
+                            className="p-3.5 bg-gradient-to-br from-card to-card/95 rounded-xl border-2 border-[color:var(--irctc-blue)]/20 shadow-md hover:shadow-lg hover:border-[color:var(--irctc-blue)]/40 transition-all duration-200 space-y-2"
                         >
                             {/* Top badges */}
                             <div className="flex justify-between items-center">
                                 <Badge
                                     variant="outline"
-                                    className="bg-[oklch(0.71_0.2_50)/0.1] text-[oklch(0.71_0.2_50)] text-[10px] px-1.5 py-0.5 capitalize"
+                                    className="bg-gradient-to-r from-[oklch(0.71_0.2_50)]/15 to-[oklch(0.71_0.2_50)]/10 text-[oklch(0.71_0.2_50)] text-[10px] px-2 py-0.5 capitalize font-semibold border-[oklch(0.71_0.2_50)]/30"
                                 >
                                     {train.type}
                                 </Badge>
                                 <Badge
                                     variant="outline"
-                                    className={`text-[10px] px-1.5 py-0.5 ${train.delayStatus === "delayed" || train.delayMinutes > 0
-                                            ? "bg-[oklch(0.82_0.16_90)/0.2] text-[oklch(0.82_0.16_90)]"
-                                            : "bg-[oklch(0.7_0.2_150)/0.15] text-[oklch(0.7_0.2_150)]"
-                                        }`}
+                                    className={`text-[10px] px-2 py-0.5 font-semibold ${
+                                        train.delayStatus === "delayed" || train.delayMinutes > 0
+                                            ? "bg-gradient-to-r from-[oklch(0.82_0.16_90)]/20 to-[oklch(0.82_0.16_90)]/10 text-[oklch(0.82_0.16_90)] border-[oklch(0.82_0.16_90)]/30"
+                                            : "bg-gradient-to-r from-[oklch(0.7_0.2_150)]/20 to-[oklch(0.7_0.2_150)]/10 text-[oklch(0.7_0.2_150)] border-[oklch(0.7_0.2_150)]/30"
+                                    }`}
                                 >
                                     {train.delayStatus === "delayed" || train.delayMinutes > 0
                                         ? `+${train.delayMinutes}m`
@@ -145,36 +155,42 @@ export default function UpcomingTrainsPanel() {
                             </div>
 
                             {/* Train info */}
-                            <div>
-                                <h4 className="font-semibold text-[color:var(--irctc-blue)] text-sm leading-tight">
+                            <div className="space-y-1">
+                                <h4 className="font-bold text-[color:var(--irctc-blue)] text-sm leading-tight">
                                     {train.id}
                                 </h4>
-                                <p className="text-xs font-semibold text-[color:var(--irctc-blue)] leading-tight">{train.name}</p>
-                                <p className="text-[10px] text-muted-foreground">
-                                    Platform {train.platform || "--"} • Priority {train.priorityScore ?? "--"} • Passengers {train.passengerCount || 0}
-                                </p>
+                                <p className="text-xs font-semibold text-foreground leading-tight">{train.name}</p>
+                                <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
+                                    <span className="px-1.5 py-0.5 bg-[color:var(--irctc-blue)]/10 rounded text-[color:var(--irctc-blue)] font-medium">
+                                        P{train.platform || "--"}
+                                    </span>
+                                    <span>•</span>
+                                    <span>Priority {train.priorityScore ?? "--"}</span>
+                                    <span>•</span>
+                                    <span>{train.passengerCount || 0} pax</span>
+                                </div>
                             </div>
 
                             {/* ETA */}
-                            <div className="flex items-center justify-between text-xs text-muted-foreground font-semibold">
-                                <div className="flex items-center gap-1">
+                            <div className="flex items-center justify-between text-xs bg-gradient-to-r from-[color:var(--irctc-blue)]/5 to-transparent p-2 rounded-lg border border-[color:var(--irctc-blue)]/10">
+                                <div className="flex items-center gap-1.5 text-muted-foreground">
                                     <Clock className="h-3.5 w-3.5" />
-                                    <span>Sched: {train.scheduledArrival || "--"}</span>
+                                    <span className="font-medium">Sched: {train.scheduledArrival || "--"}</span>
                                 </div>
                                 <span className="font-bold text-[color:var(--irctc-blue)]">{etaLabel(train)}</span>
                             </div>
 
                             {train.delayReason && (
-                                <p className="text-[10px] text-muted-foreground">
-                                    {train.delayReason}
-                                </p>
+                                <div className="text-[10px] text-muted-foreground bg-muted/50 p-1.5 rounded border border-border/50">
+                                    <span className="font-semibold">Delay:</span> {train.delayReason}
+                                </div>
                             )}
 
                             {(train.isEmergency || train.hasCriticalCargo) && (
-                                <div className="text-[10px] font-semibold text-[oklch(0.6_0.23_25)]">
-                                    {train.isEmergency && "Emergency clearance required"}
+                                <div className="text-[10px] font-semibold text-[oklch(0.6_0.23_25)] bg-[oklch(0.6_0.23_25)]/10 p-1.5 rounded border border-[oklch(0.6_0.23_25)]/20">
+                                    {train.isEmergency && "🚨 Emergency clearance required"}
                                     {train.isEmergency && train.hasCriticalCargo && " • "}
-                                    {train.hasCriticalCargo && "Critical cargo onboard"}
+                                    {train.hasCriticalCargo && "📦 Critical cargo onboard"}
                                 </div>
                             )}
                         </div>

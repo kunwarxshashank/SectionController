@@ -132,83 +132,91 @@ export default function KPIDashboard() {
 
       {/* KPI Cards */}
       <div className="grid grid-cols-4 gap-6">
-        <Card>
-          <CardContent className="p-4">
+        <Card className="bg-gradient-to-br from-card to-card/95 border-2 border-[color:var(--irctc-blue)]/20 shadow-lg hover:shadow-xl transition-shadow">
+          <CardContent className="p-5">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-m text-muted-black w-5">Throughput</p>
-                <p className={`text-2xl font-bold ${getKPIColor(current.throughput, "throughput")}`}>
+              <div className="space-y-1">
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Throughput</p>
+                <p className={`text-3xl font-bold ${getKPIColor(current.throughput, "throughput")}`}>
                   {current.throughput}
                 </p>
-                <p className="text-sm text-zinc-600">trains/hour</p>
+                <p className="text-xs text-muted-foreground">trains/hour</p>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-col items-end gap-2">
                 {getTrendIcon(
                   current.throughput,
                   historical.map((h) => h.throughput),
                 )}
-                <Activity className="h-8 w-8 text-chart-1 opacity-20" />
+                <div className="p-2 rounded-lg bg-[color:var(--irctc-blue)]/10">
+                  <Activity className="h-6 w-6 text-[color:var(--irctc-blue)]" />
+                </div>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardContent className="p-4">
+        <Card className="bg-gradient-to-br from-card to-card/95 border-2 border-[oklch(0.82_0.16_90)]/20 shadow-lg hover:shadow-xl transition-shadow">
+          <CardContent className="p-5">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-m text-muted-black w-5">Avg Delay</p>
-                <p className={`text-2xl font-bold ${getKPIColor(current.avgDelay, "avgDelay")}`}>{current.avgDelay}</p>
-                <p className="text-sm text-zinc-600">minutes</p>
+              <div className="space-y-1">
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Avg Delay</p>
+                <p className={`text-3xl font-bold ${getKPIColor(current.avgDelay, "avgDelay")}`}>{current.avgDelay}</p>
+                <p className="text-xs text-muted-foreground">minutes</p>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-col items-end gap-2">
                 {getTrendIcon(
                   current.avgDelay,
                   historical.map((h) => h.avgDelay),
                 )}
-                <Clock className="h-8 w-8 text-chart-2 opacity-20" />
+                <div className="p-2 rounded-lg bg-[oklch(0.82_0.16_90)]/10">
+                  <Clock className="h-6 w-6 text-[oklch(0.82_0.16_90)]" />
+                </div>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardContent className="p-4">
+        <Card className="bg-gradient-to-br from-card to-card/95 border-2 border-[oklch(0.7_0.2_150)]/20 shadow-lg hover:shadow-xl transition-shadow">
+          <CardContent className="p-5">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-m text-muted-black w-5">Utilization</p>
-                <p className={`text-2xl font-bold ${getKPIColor(current.utilization, "utilization")}`}>
+              <div className="space-y-1">
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Utilization</p>
+                <p className={`text-3xl font-bold ${getKPIColor(current.utilization, "utilization")}`}>
                   {current.utilization}%
                 </p>
-                <p className="text-sm text-zinc-600">platform usage</p>
+                <p className="text-xs text-muted-foreground">platform usage</p>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-col items-end gap-2">
                 {getTrendIcon(
                   current.utilization,
                   historical.map((h) => h.utilization),
                 )}
-                <Users className="h-8 w-8 text-chart-3 opacity-20" />
+                <div className="p-2 rounded-lg bg-[oklch(0.7_0.2_150)]/10">
+                  <Users className="h-6 w-6 text-[oklch(0.7_0.2_150)]" />
+                </div>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardContent className="p-4">
+        <Card className="bg-gradient-to-br from-card to-card/95 border-2 border-[oklch(0.71_0.2_50)]/20 shadow-lg hover:shadow-xl transition-shadow">
+          <CardContent className="p-5">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-m text-muted-black w-5">Punctuality</p>
-                <p className={`text-2xl font-bold ${getKPIColor(current.punctuality, "punctuality")}`}>
+              <div className="space-y-1">
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Punctuality</p>
+                <p className={`text-3xl font-bold ${getKPIColor(current.punctuality, "punctuality")}`}>
                   {current.punctuality}%
                 </p>
-                <p className="text-sm text-zinc-600">on-time arrivals</p>
+                <p className="text-xs text-muted-foreground">on-time arrivals</p>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-col items-end gap-2">
                 {getTrendIcon(
                   current.punctuality,
                   historical.map((h) => h.punctuality),
                 )}
-                <Target className="h-8 w-8 text-chart-4 opacity-20" />
+                <div className="p-2 rounded-lg bg-[oklch(0.71_0.2_50)]/10">
+                  <Target className="h-6 w-6 text-[oklch(0.71_0.2_50)]" />
+                </div>
               </div>
             </div>
           </CardContent>
@@ -217,10 +225,10 @@ export default function KPIDashboard() {
 
       {/* Charts Section */}
       <div className="grid grid-cols-2 gap-6">
-        <Card>
-          <CardHeader className="pb-3">
+        <Card className="bg-gradient-to-br from-card to-card/95 border-2 border-[color:var(--irctc-blue)]/20 shadow-lg">
+          <CardHeader className="pb-3 bg-gradient-to-r from-[color:var(--irctc-blue)]/5 to-transparent border-b border-border/50">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-lg">Performance Trends</CardTitle>
+              <CardTitle className="text-lg font-bold text-[color:var(--irctc-blue)]">Performance Trends</CardTitle>
               <div className="flex gap-2">
                 {["24h", "7d", "30d"].map((range) => (
                   <Button
@@ -228,7 +236,7 @@ export default function KPIDashboard() {
                     variant={timeRange === range ? "default" : "outline"}
                     size="sm"
                     onClick={() => setTimeRange(range)}
-                    className="text-xs"
+                    className={`text-xs ${timeRange === range ? "bg-[color:var(--irctc-blue)] text-white" : ""}`}
                   >
                     {range}
                   </Button>
@@ -236,61 +244,91 @@ export default function KPIDashboard() {
               </div>
             </div>
           </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={200}>
+          <CardContent className="pt-4">
+            <ResponsiveContainer width="100%" height={250}>
               <LineChart data={chartData}>
-                <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
-                <XAxis dataKey="time" fontSize={12} />
-                <YAxis fontSize={12} />
+                <CartesianGrid strokeDasharray="3 3" className="opacity-20" stroke="currentColor" />
+                <XAxis 
+                  dataKey="time" 
+                  fontSize={11} 
+                  tick={{ fill: "hsl(var(--muted-foreground))" }}
+                  stroke="hsl(var(--border))"
+                />
+                <YAxis 
+                  fontSize={11} 
+                  tick={{ fill: "hsl(var(--muted-foreground))" }}
+                  stroke="hsl(var(--border))"
+                />
                 <Tooltip
                   contentStyle={{
                     backgroundColor: "hsl(var(--card))",
-                    border: "1px solid hsl(var(--border))",
-                    borderRadius: "6px",
+                    border: "2px solid hsl(var(--border))",
+                    borderRadius: "8px",
+                    boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
                   }}
                 />
                 <Line
                   type="monotone"
                   dataKey="throughput"
-                  stroke="hsl(var(--chart-1))"
-                  strokeWidth={2}
+                  stroke="oklch(27.004% 0.06738 262.727)"
+                  strokeWidth={3}
                   name="Throughput"
-                  dot={{ fill: "red", stroke: "red" }}
+                  dot={{ fill: "oklch(27.004% 0.06738 262.727)", r: 4, strokeWidth: 2 }}
+                  activeDot={{ r: 6 }}
                 />
-
                 <Line
                   type="monotone"
                   dataKey="punctuality"
-                  stroke="hsl(var(--chart-4))"
-                  strokeWidth={2}
+                  stroke="oklch(0.71 0.2 50)"
+                  strokeWidth={3}
                   name="Punctuality %"
-                  dot={{ fill: "red", stroke: "red" }}
+                  dot={{ fill: "oklch(0.71 0.2 50)", r: 4, strokeWidth: 2 }}
+                  activeDot={{ r: 6 }}
                 />
-
               </LineChart>
             </ResponsiveContainer>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-lg">Delay & Utilization</CardTitle>
+        <Card className="bg-gradient-to-br from-card to-card/95 border-2 border-[color:var(--irctc-blue)]/20 shadow-lg">
+          <CardHeader className="pb-3 bg-gradient-to-r from-[color:var(--irctc-blue)]/5 to-transparent border-b border-border/50">
+            <CardTitle className="text-lg font-bold text-[color:var(--irctc-blue)]">Delay & Utilization</CardTitle>
           </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={200}>
+          <CardContent className="pt-4">
+            <ResponsiveContainer width="100%" height={250}>
               <BarChart data={chartData}>
-                <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
-                <XAxis dataKey="time" fontSize={12} />
-                <YAxis fontSize={12} />
+                <CartesianGrid strokeDasharray="3 3" className="opacity-20" stroke="currentColor" />
+                <XAxis 
+                  dataKey="time" 
+                  fontSize={11} 
+                  tick={{ fill: "hsl(var(--muted-foreground))" }}
+                  stroke="hsl(var(--border))"
+                />
+                <YAxis 
+                  fontSize={11} 
+                  tick={{ fill: "hsl(var(--muted-foreground))" }}
+                  stroke="hsl(var(--border))"
+                />
                 <Tooltip
                   contentStyle={{
                     backgroundColor: "hsl(var(--card))",
-                    border: "1px solid hsl(var(--border))",
-                    borderRadius: "6px",
+                    border: "2px solid hsl(var(--border))",
+                    borderRadius: "8px",
+                    boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
                   }}
                 />
-                <Bar dataKey="avgDelay" fill="hsl(var(--chart-2))" name="Avg Delay (min)" />
-                <Bar dataKey="utilization" fill="hsl(var(--chart-3))" name="Utilization %" />
+                <Bar 
+                  dataKey="avgDelay" 
+                  fill="oklch(0.82 0.16 90)" 
+                  name="Avg Delay (min)"
+                  radius={[4, 4, 0, 0]}
+                />
+                <Bar 
+                  dataKey="utilization" 
+                  fill="oklch(0.7 0.2 150)" 
+                  name="Utilization %"
+                  radius={[4, 4, 0, 0]}
+                />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>

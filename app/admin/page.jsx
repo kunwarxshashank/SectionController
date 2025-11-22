@@ -1,112 +1,91 @@
 "use client"
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Button } from "@/components/ui/button"
-import { ArrowLeft, Train, PhoneCall, LogsIcon, TrainFront, CalendarClock, Codesandbox} from "lucide-react"
+import { Train, PhoneCall, LogsIcon, TrainFront, CalendarClock, Codesandbox, Shield } from "lucide-react"
 import { useRouter } from "next/navigation"
 import TrainManagement from "@/components/admin/train-management"
 import EventSimulation from "@/components/admin/event-simulation"
 import Sandbox from "@/components/admin/simulation-sandbox"
 import AuditLogs from "@/components/admin/audit-logs"
+import PageHeader from "@/components/page-header"
 
 export default function AdminPage() {
   const router = useRouter()
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-br from-[oklch(0.99_0.01_95)] via-[oklch(0.985_0.015_95)] to-[oklch(0.98_0.02_95)]">
       {/* Header */}
-      <div className="bg-gradient-to-r from-[color:var(--irctc-blue)] via-[color:var(--irctc-blue)]/95 to-[oklch(0.16_0.03_260)] shadow-md py-4">
-        <div className="max-w-7xl mx-auto flex items-center justify-between px-6 text-primary-foreground">
-          <div className="flex items-center gap-3">
-            <div className="h-9 w-9 rounded-full border border-white/20 bg-background/10 flex items-center justify-center">
-              <Train className="h-5 w-5" />
-            </div>
-            <div>
-              <h1 className="text-xl font-semibold tracking-wide">
-                Admin Control Console
-              </h1>
-              <p className="text-xs text-white/80">Train operations configuration &amp; simulations</p>
-            </div>
-          </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => router.push("/")}
-            className="flex items-center gap-2 bg-white/10 text-primary-foreground border-white/30 hover:bg-white/20"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Back to Dashboard
-          </Button>
-        </div>
-      </div>
+      <PageHeader 
+        pageName="Admin Control Console" 
+        icon={Shield}
+        showStats={true}
+      />
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-6 py-10">
-        <div className="bg-card/95 shadow-xl rounded-xl p-6 border border-border">
-          <Tabs defaultValue="trains" className="space-y-8">
+      <div className="max-w-7xl mx-auto px-6 py-8">
+        <div className="bg-gradient-to-br from-card to-card/95 shadow-xl rounded-xl p-6 border-2 border-[color:var(--irctc-blue)]/20">
+          <Tabs defaultValue="trains" className="space-y-6">
             {/* Tab Navigation */}
-            <TabsList className="grid w-full grid-cols-5 rounded-lg border bg-muted/60">
+            <TabsList className="grid w-full grid-cols-5 rounded-lg border-2 border-[color:var(--irctc-blue)]/20 bg-gradient-to-r from-muted/80 to-muted/60 p-1">
               <TabsTrigger
                 value="trains"
-                className="data-[state=active]:bg-[var(--irctc-blue)] data-[state=active]:text-white"
+                className="data-[state=active]:bg-[color:var(--irctc-blue)] data-[state=active]:text-white data-[state=active]:shadow-md rounded-md transition-all"
               >
-                <TrainFront/>
+                <TrainFront className="h-4 w-4 mr-2"/>
                 Train Management
               </TabsTrigger>
               <TabsTrigger
                 value="events"
-                className="data-[state=active]:bg-[var(--irctc-blue)] data-[state=active]:text-white"
+                className="data-[state=active]:bg-[color:var(--irctc-blue)] data-[state=active]:text-white data-[state=active]:shadow-md rounded-md transition-all"
               >
-                <CalendarClock/>
+                <CalendarClock className="h-4 w-4 mr-2"/>
                 Event Simulation
               </TabsTrigger>
               <TabsTrigger
                 value="sandbox"
-                className="data-[state=active]:bg-[var(--irctc-blue)] data-[state=active]:text-white"
+                className="data-[state=active]:bg-[color:var(--irctc-blue)] data-[state=active]:text-white data-[state=active]:shadow-md rounded-md transition-all"
               >
-                <Codesandbox/>
+                <Codesandbox className="h-4 w-4 mr-2"/>
                 Simulation Sandbox
               </TabsTrigger>
               <TabsTrigger
                 value="audit"
-                className="data-[state=active]:bg-[var(--irctc-blue)] data-[state=active]:text-white"
+                className="data-[state=active]:bg-[color:var(--irctc-blue)] data-[state=active]:text-white data-[state=active]:shadow-md rounded-md transition-all"
               >
-                <LogsIcon/>
+                <LogsIcon className="h-4 w-4 mr-2"/>
                 Audit Logs
               </TabsTrigger>
-
               <TabsTrigger
                 value="helpline"
-                className="data-[state=active]:bg-[var(--irctc-blue)] data-[state=active]:text-white"
+                className="data-[state=active]:bg-[color:var(--irctc-blue)] data-[state=active]:text-white data-[state=active]:shadow-md rounded-md transition-all"
               >
-                <PhoneCall/>
+                <PhoneCall className="h-4 w-4 mr-2"/>
                 HelpLine
               </TabsTrigger>
-
             </TabsList>
 
             {/* Tab Content */}
             <div className="mt-6">
               <TabsContent value="trains">
-                <div className="p-6 rounded-lg border bg-card/80">
+                <div className="p-6 rounded-xl border-2 border-[color:var(--irctc-blue)]/10 bg-gradient-to-br from-card/95 to-card/90">
                   <TrainManagement />
                 </div>
               </TabsContent>
 
               <TabsContent value="events">
-                <div className="p-6 rounded-lg border bg-card/80">
+                <div className="p-6 rounded-xl border-2 border-[color:var(--irctc-blue)]/10 bg-gradient-to-br from-card/95 to-card/90">
                   <EventSimulation />
                 </div>
               </TabsContent>
 
               <TabsContent value="sandbox">
-                <div className="p-6 rounded-lg border bg-card/80">
+                <div className="p-6 rounded-xl border-2 border-[color:var(--irctc-blue)]/10 bg-gradient-to-br from-card/95 to-card/90">
                   <Sandbox />
                 </div>
               </TabsContent>
 
               <TabsContent value="audit">
-                <div className="p-6 rounded-lg border bg-card/80">
+                <div className="p-6 rounded-xl border-2 border-[color:var(--irctc-blue)]/10 bg-gradient-to-br from-card/95 to-card/90">
                   <AuditLogs />
                 </div>
               </TabsContent>
