@@ -1,0 +1,29 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "to manage the entire backend of SIH project",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rohitttttttttt/Section_controller_backend.git"
+  },
+  "author": "Rohit Mishra",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rohitttttttttt/Section_controller_backend/issues"
+  },
+  "homepage": "https://github.com/rohitttttttttt/Section_controller_backend#readme",
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.20.0",
+    "nodemon": "^3.1.11",
+    "socket.io": "^4.8.1"
+  }
+}
