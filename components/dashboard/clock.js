@@ -28,7 +28,7 @@ export default function IstClock() {
         display: "inline-block",
         padding: "3px 10px",
         borderRadius: "8px",
-        background: "#fff",
+        background: "rgba(0, 0, 0, 0.1)",
         boxShadow: "0 6px 16px rgba(0,0,0,0.1)",
         fontFamily: "system-ui, -apple-system, Segoe UI, Roboto, sans-serif",
         textAlign: "center",

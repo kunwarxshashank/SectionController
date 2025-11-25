@@ -6,6 +6,7 @@ import AIRecommendationsPanel from "./ai-recommendations-panel"
 import UpcomingTrainsPanel from "@/components/comingtrain"
 import SignalStatusPanel from "@/components/signal-status"
 import Platform from "@/components/dashboard/platform"
+import TrackControl from "@/components/dashboard/TrackControl"
 import KPIDashboard from "./kpi-dashboard"
 import MapWrapper from "@/components/Maps/MapWrapper"
 import PageHeader from "./page-header"
@@ -15,8 +16,8 @@ export default function DashboardLayout() {
     <div className="min-h-screen bg-gradient-to-br from-[oklch(0.99_0.01_95)] via-[oklch(0.985_0.015_95)] to-[oklch(0.98_0.02_95)] flex flex-col">
 
       {/* Header */}
-      <PageHeader 
-        pageName="Network Control Center" 
+      <PageHeader
+        pageName="Network Control Center"
         icon={Train}
         showStats={true}
       />
@@ -37,14 +38,14 @@ export default function DashboardLayout() {
                 <div className="p-1.5 rounded-lg bg-[color:var(--irctc-blue)]/10">
                   <Activity className="h-5 w-5" />
                 </div>
-                <span className="font-bold">Live Train Map</span>
+                <span className="font-bold">Track Control System</span>
                 <Badge variant="outline" className="ml-auto bg-[oklch(0.7_0.2_150)]/10 text-[oklch(0.7_0.2_150)] border-[oklch(0.7_0.2_150)]/30 text-xs">
                   LIVE
                 </Badge>
               </CardTitle>
             </CardHeader>
             <CardContent className="h-[calc(100%-80px)] p-0">
-              <MapWrapper />
+              <TrackControl />
             </CardContent>
           </Card>
         </main>
@@ -55,9 +56,24 @@ export default function DashboardLayout() {
         </aside>
       </div>
 
-      {/* Platform Control Section */}
+      {/* Live Map Section */}
       <div className="border-t-2 border-[color:var(--irctc-blue)]/20 bg-gradient-to-br from-card/98 to-card/95 p-6 shadow-inner">
-        <Platform/>
+        <Card className="w-full bg-gradient-to-br from-card to-card/95 shadow-xl border-2 border-[color:var(--irctc-blue)]/20 rounded-xl overflow-hidden">
+          <CardHeader className="pb-3 bg-gradient-to-r from-[color:var(--irctc-blue)]/10 to-transparent border-b border-border/50">
+            <CardTitle className="flex items-center gap-2 text-[color:var(--irctc-blue)]">
+              <div className="p-1.5 rounded-lg bg-[color:var(--irctc-blue)]/10">
+                <Activity className="h-5 w-5" />
+              </div>
+              <span className="font-bold">Live Train Map</span>
+              <Badge variant="outline" className="ml-auto bg-[oklch(0.7_0.2_150)]/10 text-[oklch(0.7_0.2_150)] border-[oklch(0.7_0.2_150)]/30 text-xs">
+                LIVE
+              </Badge>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="h-[500px] p-0">
+            <MapWrapper />
+          </CardContent>
+        </Card>
       </div>
 
       {/* Bottom Panel - KPIs */}

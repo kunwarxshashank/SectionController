@@ -7,11 +7,11 @@ import { Clock, AlertTriangle, LogOut, Train, Activity } from "lucide-react"
 import IstClock from "@/components/dashboard/clock"
 import NavigationMenu from "./navigation-menu"
 
-export default function PageHeader({ 
-  pageName, 
+export default function PageHeader({
+  pageName,
   icon: Icon = Train,
   actionButtons,
-  showStats = true 
+  showStats = true
 }) {
   const { logout } = useAuth()
 
@@ -94,7 +94,7 @@ export default function PageHeader({
           </div>
         </div>
       </div>
-      
+
       {/* Navigation Menu */}
       <NavigationMenu />
     </header>
