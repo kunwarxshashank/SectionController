@@ -2,14 +2,14 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Phone, Clock, Radio, MessageSquare, Search, Filter, Mic, MicOff, PhoneCall, PhoneOff, Bell, BellOff, Train, User, MapPin, Calendar, TrendingUp, CheckCircle, XCircle, Pause, Play, Settings, ArrowRight, ArrowLeft, Target, Truck, Wrench, Navigation } from 'lucide-react';
 import { useAuth } from '@/components/auth-provider';
-import { useSectionRealtime } from '@/hooks/use-section-realtime';
+import { useSectionData } from '@/hooks/useSectionData';
 import { normalizeSectionSchedule } from '@/lib/utils/section-trains';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import PageHeader from '@/components/page-header';
 
 
- const BroadCast = () => {
+const BroadCast = () => {
   const { user } = useAuth();
   const sectionId = user?.username?.toLowerCase();
 
@@ -17,7 +17,7 @@ import PageHeader from '@/components/page-header';
     data: realtimeSection,
     error: sectionError,
     isLoading: sectionLoading,
-  } = useSectionRealtime(sectionId, { enabled: Boolean(sectionId) });
+  } = useSectionData(sectionId, { enabled: Boolean(sectionId) });
 
   const trains = useMemo(() => normalizeSectionSchedule(realtimeSection?.schedule || []), [realtimeSection]);
   const [activeTab, setActiveTab] = useState('communications');
@@ -69,7 +69,7 @@ import PageHeader from '@/components/page-header';
     fetchStations();
   }, []);
 
-  
+
 
   // Communications Data
   const [communications, setCommunications] = useState([
@@ -137,7 +137,7 @@ import PageHeader from '@/components/page-header';
   ]);
 
   const getCategoryIcon = (category) => {
-    switch(category) {
+    switch (category) {
       case 'superfast':
       case 'express': return <Train className="w-4 h-4" />;
       case 'suburban': return <Navigation className="w-4 h-4" />;
@@ -148,7 +148,7 @@ import PageHeader from '@/components/page-header';
   };
 
   const getCategoryColor = (category) => {
-    switch(category) {
+    switch (category) {
       case 'superfast': return 'bg-red-100 text-red-800 border-red-200';
       case 'express': return 'bg-blue-100 text-blue-800 border-blue-200';
       case 'suburban': return 'bg-green-100 text-green-800 border-green-200';
@@ -159,7 +159,7 @@ import PageHeader from '@/components/page-header';
   };
 
   const getPriorityColor = (priority) => {
-    switch(priority) {
+    switch (priority) {
       case 'high': return 'text-red-600 bg-red-50 border-red-200';
       case 'medium': return 'text-orange-600 bg-orange-50 border-orange-200';
       case 'low': return 'text-green-600 bg-green-50 border-green-200';
@@ -168,7 +168,7 @@ import PageHeader from '@/components/page-header';
   };
 
   const getStatusColor = (status) => {
-    switch(status) {
+    switch (status) {
       case 'on-time': return 'text-green-600';
       case 'delayed': return 'text-red-600';
       case 'held': return 'text-orange-600';
@@ -224,8 +224,8 @@ import PageHeader from '@/components/page-header';
   return (
     <div className="min-h-screen bg-gradient-to-br from-[oklch(0.99_0.01_95)] via-[oklch(0.985_0.015_95)] to-[oklch(0.98_0.02_95)] flex flex-col">
       {/* Header */}
-      <PageHeader 
-        pageName="Broadcast & Communications Center" 
+      <PageHeader
+        pageName="Broadcast & Communications Center"
         icon={Phone}
         showStats={true}
       />
@@ -244,11 +244,10 @@ import PageHeader from '@/components/page-header';
             <div className="flex items-center gap-2">
               <Button
                 onClick={() => setIsRecording(!isRecording)}
-                className={`flex items-center gap-2 ${
-                  isRecording 
-                    ? 'bg-[oklch(0.6_0.23_25)] hover:bg-[oklch(0.6_0.23_25)]/90 text-white' 
-                    : 'bg-white/20 hover:bg-white/30 text-white border border-white/30'
-                }`}
+                className={`flex items-center gap-2 ${isRecording
+                  ? 'bg-[oklch(0.6_0.23_25)] hover:bg-[oklch(0.6_0.23_25)]/90 text-white'
+                  : 'bg-white/20 hover:bg-white/30 text-white border border-white/30'
+                  }`}
               >
                 {isRecording ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
                 <span>{isRecording ? 'Recording...' : 'Start Recording'}</span>
@@ -277,11 +276,10 @@ import PageHeader from '@/components/page-header';
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`relative flex items-center gap-2 px-5 py-3 rounded-t-xl transition-all duration-300 font-semibold text-sm ${
-                activeTab === tab.id 
-                  ? 'bg-gradient-to-b from-[color:var(--irctc-blue)]/10 to-transparent text-[color:var(--irctc-blue)] border-b-2 border-[color:var(--irctc-blue)]' 
-                  : 'text-muted-foreground hover:text-foreground hover:bg-white/50'
-              }`}
+              className={`relative flex items-center gap-2 px-5 py-3 rounded-t-xl transition-all duration-300 font-semibold text-sm ${activeTab === tab.id
+                ? 'bg-gradient-to-b from-[color:var(--irctc-blue)]/10 to-transparent text-[color:var(--irctc-blue)] border-b-2 border-[color:var(--irctc-blue)]'
+                : 'text-muted-foreground hover:text-foreground hover:bg-white/50'
+                }`}
             >
               <tab.icon className="w-4 h-4" />
               <span>{tab.name}</span>
@@ -313,11 +311,10 @@ import PageHeader from '@/components/page-header';
                   <button
                     key={category.id}
                     onClick={() => setTrainFilter(category.id)}
-                    className={`w-full text-left p-3 rounded-xl border-2 transition-all duration-200 ${
-                      trainFilter === category.id 
-                        ? 'bg-gradient-to-r from-[color:var(--irctc-blue)]/10 to-[color:var(--irctc-blue)]/5 border-[color:var(--irctc-blue)]/30 text-[color:var(--irctc-blue)] font-semibold shadow-sm' 
-                        : 'bg-gradient-to-r from-card/80 to-card/60 border-[color:var(--irctc-blue)]/20 text-foreground hover:bg-card hover:border-[color:var(--irctc-blue)]/40 hover:shadow-sm'
-                    }`}
+                    className={`w-full text-left p-3 rounded-xl border-2 transition-all duration-200 ${trainFilter === category.id
+                      ? 'bg-gradient-to-r from-[color:var(--irctc-blue)]/10 to-[color:var(--irctc-blue)]/5 border-[color:var(--irctc-blue)]/30 text-[color:var(--irctc-blue)] font-semibold shadow-sm'
+                      : 'bg-gradient-to-r from-card/80 to-card/60 border-[color:var(--irctc-blue)]/20 text-foreground hover:bg-card hover:border-[color:var(--irctc-blue)]/40 hover:shadow-sm'
+                      }`}
                   >
                     <div className="flex justify-between items-center">
                       <span className="font-medium">{category.name}</span>
@@ -328,7 +325,7 @@ import PageHeader from '@/components/page-header';
                   </button>
                 ))}
               </div>
-              
+
 
             </div>
 
@@ -380,26 +377,25 @@ import PageHeader from '@/components/page-header';
                           </span>
                         </div>
                       </div>
-                      
+
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-2 text-sm text-gray-600">
                           <MapPin className="w-4 h-4" />
                           <span>Current: {train.location}</span>
                         </div>
-                        
+
                         <div className="flex items-center space-x-2">
                           <button
                             onClick={() => handleTrainCall(train)}
                             disabled={activeCall !== null}
-                            className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-all duration-200 ${
-                              activeCall ? 'bg-muted/50 text-muted-foreground cursor-not-allowed' :
+                            className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-all duration-200 ${activeCall ? 'bg-muted/50 text-muted-foreground cursor-not-allowed' :
                               'bg-gradient-to-r from-[color:var(--irctc-blue)]/10 to-[color:var(--irctc-blue)]/5 hover:from-[color:var(--irctc-blue)]/20 hover:to-[color:var(--irctc-blue)]/10 border border-[color:var(--irctc-blue)]/30 text-[color:var(--irctc-blue)] font-semibold hover:shadow-sm'
-                            }`}
+                              }`}
                           >
                             <Radio className="w-4 h-4" />
                             <span>Radio</span>
                           </button>
-                          
+
                           <select
                             onChange={(e) => e.target.value && sendQuickMessage(train, e.target.value)}
                             className="px-2 py-1 border border-gray-300 rounded text-sm"
@@ -432,10 +428,9 @@ import PageHeader from '@/components/page-header';
                   <button
                     key={station.code}
                     onClick={() => setSelectedStation(station)}
-                      className={`w-full text-left p-3 rounded-xl border-2 transition-all duration-200 ${
-                        selectedStation?.code === station.code 
-                          ? 'bg-gradient-to-r from-[color:var(--irctc-blue)]/10 to-[color:var(--irctc-blue)]/5 border-[color:var(--irctc-blue)]/30 text-[color:var(--irctc-blue)] font-semibold shadow-sm' 
-                          : 'bg-gradient-to-r from-card/80 to-card/60 border-[color:var(--irctc-blue)]/20 text-foreground hover:bg-card hover:border-[color:var(--irctc-blue)]/40 hover:shadow-sm'
+                    className={`w-full text-left p-3 rounded-xl border-2 transition-all duration-200 ${selectedStation?.code === station.code
+                      ? 'bg-gradient-to-r from-[color:var(--irctc-blue)]/10 to-[color:var(--irctc-blue)]/5 border-[color:var(--irctc-blue)]/30 text-[color:var(--irctc-blue)] font-semibold shadow-sm'
+                      : 'bg-gradient-to-r from-card/80 to-card/60 border-[color:var(--irctc-blue)]/20 text-foreground hover:bg-card hover:border-[color:var(--irctc-blue)]/40 hover:shadow-sm'
                       }`}
                   >
                     <div className="flex justify-between items-center">
@@ -444,11 +439,10 @@ import PageHeader from '@/components/page-header';
                         <div className="text-sm">{station.name}</div>
                       </div>
                       <div className="text-right">
-                        <div className={`text-xs px-2 py-1 rounded ${
-                          station.type === 'major' ? 'bg-red-100 text-red-800' :
+                        <div className={`text-xs px-2 py-1 rounded ${station.type === 'major' ? 'bg-red-100 text-red-800' :
                           station.type === 'intermediate' ? 'bg-yellow-100 text-yellow-800' :
-                          'bg-green-100 text-green-800'
-                        }`}>
+                            'bg-green-100 text-green-800'
+                          }`}>
                           {station.type}
                         </div>
                         {station.hasYard && (
@@ -459,8 +453,8 @@ import PageHeader from '@/components/page-header';
                   </button>
                 ))}
               </div>
-            
-            {/*               
+
+              {/*               
               <div className="mt-6">
                 <h4 className="font-semibold text-gray-800 mb-2">Section Controllers</h4>
                 <div className="space-y-2">
@@ -486,7 +480,7 @@ import PageHeader from '@/components/page-header';
                     <h2 className="text-2xl font-bold text-gray-800">{selectedStation.name}</h2>
                     <p className="text-gray-600">Station Code: {selectedStation.code} • Type: {selectedStation.type}</p>
                   </div>
-                  
+
                   <div className="grid grid-cols-2 gap-6">
                     <div className="bg-gradient-to-br from-card to-card/95 rounded-xl shadow-md border-2 border-[color:var(--irctc-blue)]/20 p-4">
                       <h3 className="font-semibold text-gray-800 mb-4">Communication</h3>
@@ -494,10 +488,9 @@ import PageHeader from '@/components/page-header';
                         <button
                           onClick={() => handleStationCall(selectedStation)}
                           disabled={activeCall !== null}
-                          className={`w-full p-3 rounded-xl flex items-center gap-3 transition-all duration-200 ${
-                            activeCall ? 'bg-muted/50 text-muted-foreground cursor-not-allowed border-2 border-border' :
+                          className={`w-full p-3 rounded-xl flex items-center gap-3 transition-all duration-200 ${activeCall ? 'bg-muted/50 text-muted-foreground cursor-not-allowed border-2 border-border' :
                             'bg-gradient-to-r from-[oklch(0.7_0.2_150)]/10 to-[oklch(0.7_0.2_150)]/5 hover:from-[oklch(0.7_0.2_150)]/20 hover:to-[oklch(0.7_0.2_150)]/10 border-2 border-[oklch(0.7_0.2_150)]/30 text-[oklch(0.7_0.2_150)] font-semibold hover:shadow-md'
-                          }`}
+                            }`}
                         >
                           <Phone className="w-5 h-5" />
                           <div className="text-left">
@@ -505,7 +498,7 @@ import PageHeader from '@/components/page-header';
                             <div className="text-sm opacity-75">{selectedStation.hotline}</div>
                           </div>
                         </button>
-                        
+
                         {selectedStation.hasYard && (
                           <button
                             className="w-full p-3 bg-orange-50 hover:bg-orange-100 border border-orange-200 rounded-lg flex items-center space-x-3 text-orange-800"
@@ -519,7 +512,7 @@ import PageHeader from '@/components/page-header';
                         )}
                       </div>
                     </div>
-                    
+
                     <div className="bg-gradient-to-br from-card to-card/95 rounded-xl shadow-md border-2 border-[color:var(--irctc-blue)]/20 p-4">
                       <h3 className="font-semibold text-gray-800 mb-4">Quick Actions</h3>
                       <div className="space-y-2">
@@ -540,7 +533,7 @@ import PageHeader from '@/components/page-header';
                       </div>
                     </div>
                   </div>
-                  
+
                   {selectedStation.hasYard && (
                     <div className="mt-6 bg-white rounded-lg shadow-sm border border-gray-200 p-4">
                       <h3 className="font-semibold text-gray-800 mb-4">
@@ -575,7 +568,7 @@ import PageHeader from '@/components/page-header';
           <div className="w-full flex">
             <div className="w-80 bg-gradient-to-b from-card/95 to-card/90 border-r-2 border-[color:var(--irctc-blue)]/20 p-4 shadow-inner">
               <h3 className="font-semibold text-gray-800 mb-4">Communication Filters</h3>
-              
+
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Priority Level</label>
@@ -590,7 +583,7 @@ import PageHeader from '@/components/page-header';
                     <option value="normal">Normal</option>
                   </select>
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Communication Type</label>
                   <div className="space-y-2">
@@ -602,7 +595,7 @@ import PageHeader from '@/components/page-header';
                     ))}
                   </div>
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Search</label>
                   <div className="relative">
@@ -617,7 +610,7 @@ import PageHeader from '@/components/page-header';
                   </div>
                 </div>
               </div>
-              
+
               <div className="mt-6 p-4 bg-blue-50 rounded-lg">
                 <h4 className="font-semibold text-blue-800 mb-2">Today's KPIs</h4>
                 <div className="space-y-2 text-sm">
@@ -646,7 +639,7 @@ import PageHeader from '@/components/page-header';
                 <h2 className="text-2xl font-bold text-gray-800">Communication Logs</h2>
                 <p className="text-gray-600">Real-time communication tracking with AI summaries</p>
               </div>
-              
+
               <div className="space-y-4">
                 {communications.map((comm) => (
                   <div key={comm.id} className="bg-gradient-to-br from-card to-card/95 rounded-xl shadow-md border-2 border-[color:var(--irctc-blue)]/20 p-4 hover:shadow-lg transition-shadow">
@@ -654,8 +647,8 @@ import PageHeader from '@/components/page-header';
                       <div className="flex items-center space-x-3">
                         <div className="p-2 bg-blue-100 rounded-lg">
                           {comm.type === 'hotline' ? <Phone className="w-4 h-4" /> :
-                           comm.type === 'radio' ? <Radio className="w-4 h-4" /> :
-                           <MessageSquare className="w-4 h-4" />}
+                            comm.type === 'radio' ? <Radio className="w-4 h-4" /> :
+                              <MessageSquare className="w-4 h-4" />}
                         </div>
                         <div>
                           <div className="font-semibold text-gray-800">{comm.station}</div>
@@ -668,11 +661,10 @@ import PageHeader from '@/components/page-header';
                         </div>
                       </div>
                       <div className="flex items-center space-x-2">
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium border ${
-                          comm.priority === 'emergency' ? 'text-red-600 bg-red-50 border-red-200' :
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium border ${comm.priority === 'emergency' ? 'text-red-600 bg-red-50 border-red-200' :
                           comm.priority === 'priority' ? 'text-orange-600 bg-orange-50 border-orange-200' :
-                          'text-green-600 bg-green-50 border-green-200'
-                        }`}>
+                            'text-green-600 bg-green-50 border-green-200'
+                          }`}>
                           {comm.priority.toUpperCase()}
                         </span>
                         <div className="flex items-center space-x-1">
@@ -688,7 +680,7 @@ import PageHeader from '@/components/page-header';
                         </div>
                       </div>
                     </div>
-                    
+
                     <div className="bg-green-50 p-3 rounded-lg mb-3">
                       <div className="flex items-start space-x-2">
                         <div className="w-6 h-6 bg-green-200 rounded flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -705,7 +697,7 @@ import PageHeader from '@/components/page-header';
                         </div>
                       </div>
                     </div>
-                    
+
                     <details className="group">
                       <summary className="cursor-pointer text-sm text-gray-600 hover:text-gray-800 flex items-center space-x-1">
                         <span>View Full Transcript</span>

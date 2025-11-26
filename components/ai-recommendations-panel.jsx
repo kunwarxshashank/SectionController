@@ -7,36 +7,37 @@ import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Brain, Clock, TrendingUp, AlertTriangle, CheckCircle, XCircle, Edit3, RefreshCw } from "lucide-react"
+import { useRecommendation } from "@/hooks/useRecommendation"
 
 export default function AIRecommendationsPanel() {
+  const { recommendations: socketRecommendations, wsError, isLoading } = useRecommendation()
   const [recommendations, setRecommendations] = useState([])
-  const [loading, setLoading] = useState(true)
   const [processingId, setProcessingId] = useState(null)
   const [showNotesFor, setShowNotesFor] = useState(null)
   const [notes, setNotes] = useState("")
   const [error, setError] = useState("")
 
+  // Update recommendations when socket data changes
   useEffect(() => {
-    fetchRecommendations()
-    // Refresh recommendations every 30 seconds
-    const interval = setInterval(fetchRecommendations, 30000)
-    return () => clearInterval(interval)
-  }, [])
-
-  const fetchRecommendations = async () => {
-    try {
-      const response = await fetch("/api/ai/recommendations")
-      if (response.ok) {
-        const data = await response.json()
-        setRecommendations(data.recommendations)
-      } else {
-        setError("Failed to fetch recommendations")
-      }
-    } catch (error) {
-      setError("Network error")
-    } finally {
-      setLoading(false)
+    if (socketRecommendations && socketRecommendations.length > 0) {
+      setRecommendations(socketRecommendations)
+      // Clear error when data is received successfully
+      setError("")
     }
+  }, [socketRecommendations])
+
+  // Show WebSocket errors only if no data is available
+  useEffect(() => {
+    if (wsError && recommendations.length === 0) {
+      setError(wsError)
+    } else if (!wsError) {
+      setError("")
+    }
+  }, [wsError, recommendations.length])
+
+  const handleRefresh = () => {
+    // Force reconnect or manual refresh logic could go here
+    window.location.reload()
   }
 
   const handleDecision = async (recommendationId, decision) => {
@@ -106,7 +107,7 @@ export default function AIRecommendationsPanel() {
     }
   }
 
-  if (loading) {
+  if (isLoading) {
     return (
       <Card className="h-full rounded-none border-0 bg-transparent shadow-none">
         <CardHeader className="pb-3 bg-gradient-to-r from-[color:var(--irctc-blue)]/10 to-transparent border-b border-[color:var(--irctc-blue)]/20">
@@ -142,10 +143,10 @@ export default function AIRecommendationsPanel() {
               </Badge>
             )}
           </CardTitle>
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            onClick={fetchRecommendations} 
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleRefresh}
             className="h-8 w-8 p-0 hover:bg-[color:var(--irctc-blue)]/10 rounded-lg"
           >
             <RefreshCw className="h-4 w-4 text-[color:var(--irctc-blue)]" />
@@ -175,64 +176,156 @@ export default function AIRecommendationsPanel() {
           </div>
         ) : (
           recommendations.map((rec) => (
-            <div key={rec.id} className="p-4 bg-gradient-to-br from-card to-card/95 rounded-xl border-2 border-[color:var(--irctc-blue)]/20 shadow-md hover:shadow-lg hover:border-[color:var(--irctc-blue)]/40 transition-all duration-200 space-y-3">
-              <div className="flex items-start justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="p-1.5 rounded-lg bg-[color:var(--irctc-blue)]/10">
-                    {getActionIcon(rec.action)}
-                  </div>
-                  <h4 className="font-semibold text-sm text-foreground">{rec.actionType}</h4>
+            <div
+              key={rec.id || rec.train_id}
+              className="group relative overflow-hidden p-4 bg-gradient-to-br from-card via-card/98 to-[color:var(--irctc-blue)]/5 rounded-xl border border-[color:var(--irctc-blue)]/30 shadow-md hover:shadow-lg hover:border-[color:var(--irctc-blue)]/50 transition-all duration-200 space-y-3"
+            >
+              {/* Railway Track Accent - Top */}
+              <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-[color:var(--irctc-blue)] to-transparent opacity-50"></div>
+
+              {/* Station Board Style Header - Train ID, Name, and Priority */}
+              <div className="flex items-center justify-between gap-3 pb-2.5 border-b border-dashed border-[color:var(--irctc-blue)]/20">
+                {/* Train Information Section */}
+                <div className="flex items-center gap-2.5 flex-1">
+                  {rec.train_id && (
+                    <Badge
+                      variant="secondary"
+                      className="px-2.5 py-1 bg-gradient-to-br from-[color:var(--irctc-blue)] to-[color:var(--irctc-blue)]/80 text-white border border-[color:var(--irctc-blue)]/40 font-mono text-xs font-bold shadow-sm"
+                    >
+                      #{rec.train_id}
+                    </Badge>
+                  )}
+                  {rec.train_name && (
+                    <span className="font-semibold text-sm text-foreground">
+                      {rec.train_name}
+                    </span>
+                  )}
                 </div>
-                <div className="flex items-center gap-2">
-                  <Badge variant="outline" className={`text-xs font-semibold border-2 ${getUrgencyColor(rec.urgency)}`}>
-                    {rec.urgency}
+
+                {/* Priority Badge */}
+                {rec.priority && (
+                  <Badge
+                    variant="outline"
+                    className="px-2.5 py-0.5 text-xs font-semibold uppercase bg-gradient-to-br from-[oklch(0.71_0.2_50)]/15 to-[oklch(0.6_0.23_25)]/15 text-[oklch(0.71_0.2_50)] border border-[oklch(0.71_0.2_50)]/40 shadow-sm"
+                  >
+                    {rec.priority}
                   </Badge>
-                  <Badge variant="outline" className="text-xs border-2">
-                    <span className={getConfidenceColor(rec.confidence)}>{rec.confidence}%</span>
-                  </Badge>
-                </div>
+                )}
               </div>
 
-              <div className="space-y-2">
-                <p className="text-sm text-foreground leading-relaxed">{rec.rationale}</p>
-
-                <div className="flex items-center justify-between text-xs bg-gradient-to-r from-[color:var(--irctc-blue)]/5 to-transparent p-2 rounded-lg border border-[color:var(--irctc-blue)]/10">
-                  <span className="text-muted-foreground">
-                    Location: <span className="font-semibold text-foreground">{rec.location}</span>
+              {/* Action Type Indicator */}
+              {rec.action_type && (
+                <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-gradient-to-r from-[color:var(--irctc-blue)]/8 to-transparent rounded-md border-l-2 border-[color:var(--irctc-blue)]/60">
+                  <div className="p-1 bg-[color:var(--irctc-blue)]/10 rounded">
+                    {getActionIcon(rec.action_type)}
+                  </div>
+                  <span className="text-xs font-medium text-[color:var(--irctc-blue)] uppercase">
+                    {rec.action_type.replace(/_/g, ' ')}
                   </span>
-                  <span className="text-[oklch(0.7_0.2_150)] font-bold">{rec.estimatedBenefit}</span>
                 </div>
+              )}
 
-                <div className="flex items-center gap-2 text-xs">
-                  <span className="text-muted-foreground font-medium">Affected trains:</span>
-                  <div className="flex flex-wrap gap-1">
-                    {rec.affectedTrains.map((trainId) => (
-                      <Badge key={trainId} variant="secondary" className="text-xs bg-[color:var(--irctc-blue)]/10 text-[color:var(--irctc-blue)] border-[color:var(--irctc-blue)]/20">
-                        {trainId}
-                      </Badge>
-                    ))}
-                  </div>
+              {/* Description */}
+              {(rec.description || rec.rationale) && (
+                <div className="space-y-1.5">
+                  {rec.description && (
+                    <p className="text-xs text-foreground leading-relaxed">
+                      {rec.description}
+                    </p>
+                  )}
+                  {rec.rationale && (
+                    <p className="text-xs text-muted-foreground leading-relaxed italic border-l border-[color:var(--irctc-blue)]/30 pl-2">
+                      {rec.rationale}
+                    </p>
+                  )}
                 </div>
+              )}
+
+              {/* Railway Metrics Display - Compact Single Line */}
+              <div className="flex items-center gap-3 flex-wrap text-xs">
+                {(rec.current_delay?.delay_status || rec.delay_status) && (
+                  <div className="flex items-center gap-1.5">
+                    <Clock className="h-3 w-3 text-muted-foreground" />
+                    <span className="text-muted-foreground">Status:</span>
+                    <Badge variant="outline" className="text-xs h-5 px-1.5 bg-[oklch(0.71_0.2_50)]/10 text-[oklch(0.71_0.2_50)] border-[oklch(0.71_0.2_50)]/30">
+                      {rec.current_delay?.delay_status || rec.delay_status}
+                    </Badge>
+                  </div>
+                )}
+
+                {(rec.current_delay?.delay || rec.delay) && (
+                  <div className="flex items-center gap-1.5">
+                    <AlertTriangle className="h-3 w-3 text-muted-foreground" />
+                    <span className="text-muted-foreground">Delay:</span>
+                    <span className="font-semibold text-[oklch(0.6_0.23_25)]">{rec.current_delay?.delay || rec.delay}</span>
+                  </div>
+                )}
+
+                {rec.confidence && (
+                  <div className="flex items-center gap-1.5">
+                    <Brain className="h-3 w-3 text-muted-foreground" />
+                    <span className="text-muted-foreground">Confidence:</span>
+                    <span className={`font-semibold ${getConfidenceColor(rec.confidence)}`}>{rec.confidence}%</span>
+                  </div>
+                )}
               </div>
 
+              {/* Additional Information */}
+              {(rec.location || (rec.affectedTrains && rec.affectedTrains.length > 0)) && (
+                <div className="space-y-1.5">
+                  {rec.location && (
+                    <div className="flex items-center justify-between text-xs bg-[color:var(--irctc-blue)]/5 p-2 rounded border-l-2 border-[color:var(--irctc-blue)]/50">
+                      <span className="text-muted-foreground">
+                        📍 <span className="font-medium text-foreground">{rec.location}</span>
+                      </span>
+                      {rec.estimatedBenefit && (
+                        <span className="text-[oklch(0.7_0.2_150)] font-medium flex items-center gap-1">
+                          <TrendingUp className="h-2.5 w-2.5" />
+                          {rec.estimatedBenefit}
+                        </span>
+                      )}
+                    </div>
+                  )}
+
+                  {rec.affectedTrains && rec.affectedTrains.length > 0 && (
+                    <div className="flex items-start gap-1.5 text-xs p-2 bg-muted/30 rounded border border-border/50">
+                      <span className="text-muted-foreground font-medium">🚂</span>
+                      <div className="flex flex-wrap gap-1">
+                        {rec.affectedTrains.map((trainId) => (
+                          <Badge
+                            key={trainId}
+                            variant="secondary"
+                            className="text-xs h-5 px-1.5 bg-[color:var(--irctc-blue)]/12 text-[color:var(--irctc-blue)] border-[color:var(--irctc-blue)]/30 font-mono"
+                          >
+                            #{trainId}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Notes Section */}
               {showNotesFor === rec.id && (
-                <div className="space-y-2">
+                <div className="animate-in fade-in slide-in-from-top-2 duration-200">
                   <Textarea
                     placeholder="Add notes (optional)..."
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
-                    className="text-sm border-2 border-[color:var(--irctc-blue)]/20 focus:border-[color:var(--irctc-blue)]/50"
+                    className="text-xs border border-[color:var(--irctc-blue)]/30 focus:border-[color:var(--irctc-blue)]/60 rounded"
                     rows={2}
                   />
                 </div>
               )}
 
-              <div className="flex gap-2 pt-2 border-t border-border/50">
+              {/* Action Buttons */}
+              <div className="flex gap-1.5 pt-2 border-t border-border/30">
                 <Button
                   size="sm"
                   onClick={() => handleDecision(rec.id, "accepted")}
                   disabled={processingId === rec.id}
-                  className="flex items-center gap-1 text-xs h-8 bg-[oklch(0.7_0.2_150)] hover:bg-[oklch(0.7_0.2_150)]/90 text-white border-0 shadow-sm"
+                  className="flex items-center gap-1 text-xs h-8 px-3 bg-[oklch(0.7_0.2_150)] hover:bg-[oklch(0.65_0.2_150)] text-white border-0 shadow-sm font-medium transition-colors"
                 >
                   <CheckCircle className="h-3 w-3" />
                   Accept
@@ -242,7 +335,7 @@ export default function AIRecommendationsPanel() {
                   size="sm"
                   onClick={() => handleDecision(rec.id, "overridden")}
                   disabled={processingId === rec.id}
-                  className="flex items-center gap-1 text-xs h-8 bg-[oklch(0.71_0.2_50)]/10 hover:bg-[oklch(0.71_0.2_50)]/20 text-[oklch(0.71_0.2_50)] border border-[oklch(0.71_0.2_50)]/30"
+                  className="flex items-center gap-1 text-xs h-8 px-3 bg-[oklch(0.71_0.2_50)]/10 hover:bg-[oklch(0.71_0.2_50)]/20 text-[oklch(0.71_0.2_50)] border border-[oklch(0.71_0.2_50)]/30 font-medium transition-colors"
                 >
                   <Edit3 className="h-3 w-3" />
                   Override
@@ -252,12 +345,15 @@ export default function AIRecommendationsPanel() {
                   size="sm"
                   onClick={() => handleDecision(rec.id, "rejected")}
                   disabled={processingId === rec.id}
-                  className="flex items-center gap-1 text-xs h-8 border-2 border-[oklch(0.6_0.23_25)]/30 hover:bg-[oklch(0.6_0.23_25)]/10 text-[oklch(0.6_0.23_25)]"
+                  className="flex items-center gap-1 text-xs h-8 px-3 border border-[oklch(0.6_0.23_25)]/30 hover:bg-[oklch(0.6_0.23_25)]/10 text-[oklch(0.6_0.23_25)] font-medium transition-colors"
                 >
                   <XCircle className="h-3 w-3" />
                   Reject
                 </Button>
               </div>
+
+              {/* Railway Track Decoration - Bottom */}
+              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-[color:var(--irctc-blue)]/30 to-transparent"></div>
             </div>
           ))
         )}
