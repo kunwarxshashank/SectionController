@@ -73,11 +73,3 @@ ORJSON data endpoint:
 * Make sure virtual environment is activated before installing Python packages (optional but recommended).
 
 ---
-
-Made with ❤️ for multi-service development.
-
-```
-
----
-
-
