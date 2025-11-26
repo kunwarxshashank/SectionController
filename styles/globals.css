@@ -1,0 +1,184 @@
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --ir-blue: #002B5B;
+  --ir-orange: #EA7317;
+  --ir-cream: #FEF6E4;
+  --ir-darkblue: #001233;
+  --ir-lightblue: #2E538B;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+  font-family: 'Inter', sans-serif;
+  background-color: #0a0e1a;
+  color: #ffffff;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))) rgb(var(--background-start-rgb));
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(234, 115, 23, 0.5);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(234, 115, 23, 0.7);
+}
+
+/* Glassmorphism utility classes */
+.glass {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.glass-dark {
+  background: rgba(0, 18, 51, 0.7);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.glass-orange {
+  background: rgba(234, 115, 23, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(234, 115, 23, 0.3);
+}
+
+/* Railway themed gradients */
+.gradient-railway {
+  background: linear-gradient(135deg, #002B5B 0%, #001233 100%);
+}
+
+.gradient-railway-light {
+  background: linear-gradient(135deg, #2E538B 0%, #002B5B 100%);
+}
+
+/* Live indicator pulse animation */
+.live-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: .5;
+  }
+}
+
+/* Custom button styles */
+.btn-primary {
+  @apply px-4 py-2 bg-ir-orange text-white rounded-lg font-medium transition-all duration-200 hover:bg-opacity-80 hover:shadow-lg;
+}
+
+.btn-secondary {
+  @apply px-4 py-2 bg-ir-lightblue text-white rounded-lg font-medium transition-all duration-200 hover:bg-opacity-80;
+}
+
+.btn-ghost {
+  @apply px-4 py-2 text-white rounded-lg font-medium transition-all duration-200 hover:bg-white hover:bg-opacity-10;
+}
+
+/* Badge styles */
+.badge {
+  @apply px-2 py-1 rounded-full text-xs font-semibold;
+}
+
+.badge-express {
+  @apply bg-red-500 bg-opacity-20 text-red-300 border border-red-500;
+}
+
+.badge-freight {
+  @apply bg-yellow-500 bg-opacity-20 text-yellow-300 border border-yellow-500;
+}
+
+.badge-local {
+  @apply bg-blue-500 bg-opacity-20 text-blue-300 border border-blue-500;
+}
+
+.badge-high {
+  @apply bg-red-500 bg-opacity-20 text-red-300 border border-red-500;
+}
+
+.badge-medium {
+  @apply bg-orange-500 bg-opacity-20 text-orange-300 border border-orange-500;
+}
+
+.badge-low {
+  @apply bg-green-500 bg-opacity-20 text-green-300 border border-green-500;
+}
+
+/* Card styles */
+.card {
+  @apply glass-dark rounded-xl p-4 transition-all duration-200;
+}
+
+.card-hover {
+  @apply card hover:bg-opacity-80 hover:shadow-xl cursor-pointer;
+}
+
+/* Train signal colors */
+.signal-green {
+  @apply bg-green-500 shadow-green-500/50;
+}
+
+.signal-yellow {
+  @apply bg-yellow-500 shadow-yellow-500/50;
+}
+
+.signal-red {
+  @apply bg-red-500 shadow-red-500/50;
+}
+
+/* Loading spinner */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spinner {
+  border: 3px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  border-top-color: #EA7317;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}

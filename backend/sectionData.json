@@ -1,0 +1,2177 @@
+{
+  "section": {
+    "id": "69254bb8ccf236facdea754e",
+    "name": "Shahpura - Habibganj (Short) Section",
+    "coordinates": [
+      23.35,
+      77.5
+    ]
+  },
+  "stations": [
+    {
+      "id": "69254bb8ccf236facdea7548",
+      "name": "Shahpura Road",
+      "code": "SPR",
+      "position": [
+        23.45,
+        77.81
+      ]
+    },
+    {
+      "id": "69254bb8ccf236facdea7549",
+      "name": "Sehore",
+      "code": "SEH",
+      "position": [
+        23.33,
+        77.1
+      ]
+    },
+    {
+      "id": "69254bb8ccf236facdea754a",
+      "name": "Bairagarh",
+      "code": "BIH",
+      "position": [
+        23.28,
+        77.47
+      ]
+    },
+    {
+      "id": "69254bb8ccf236facdea754b",
+      "name": "Bhopal Jn",
+      "code": "BPL",
+      "position": [
+        23.2599,
+        77.4126
+      ]
+    },
+    {
+      "id": "69254bb8ccf236facdea754c",
+      "name": "Habibganj",
+      "code": "HBJ",
+      "position": [
+        23.2322,
+        77.4445
+      ]
+    }
+  ],
+  "tracks": [
+    {
+      "id": "69254bb8ccf236facdea7550",
+      "track_id": "UP_MAIN_L01",
+      "name": "UP_MAIN",
+      "type": "MAIN",
+      "direction": "UP",
+      "isLoop": false,
+      "parentTrack": null,
+      "blocks": [
+        {
+          "id": "69254bb8ccf236facdea7557",
+          "block_id": "UP_BLK_1",
+          "index": 1,
+          "length_m": 2000,
+          "max_speed_kmph": 110,
+          "blockType": "MAIN",
+          "loopId": null,
+          "trackDirection": "UP",
+          "headwaySeconds": 120,
+          "nextBlocks": [
+            "69254bb8ccf236facdea755f"
+          ],
+          "prevBlocks": [],
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [
+                77.81,
+                23.45
+              ],
+              [
+                77.4445,
+                23.2322
+              ]
+            ]
+          },
+          "signal": {
+            "id": "69254bb8ccf236facdea7555",
+            "aspect": "GREEN",
+            "position": [
+              77.4445,
+              23.2322
+            ]
+          }
+        },
+        {
+          "id": "69254bb8ccf236facdea755f",
+          "block_id": "UP_BLK_2",
+          "index": 2,
+          "length_m": 2000,
+          "max_speed_kmph": 110,
+          "blockType": "MAIN",
+          "loopId": null,
+          "trackDirection": "UP",
+          "headwaySeconds": 120,
+          "nextBlocks": [
+            "69254bb8ccf236facdea7567"
+          ],
+          "prevBlocks": [
+            "69254bb8ccf236facdea7557"
+          ],
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [
+                77.81,
+                23.45
+              ],
+              [
+                77.4445,
+                23.2322
+              ]
+            ]
+          },
+          "signal": {
+            "id": "69254bb8ccf236facdea755d",
+            "aspect": "GREEN",
+            "position": [
+              77.4445,
+              23.2322
+            ]
+          }
+        },
+        {
+          "id": "69254bb8ccf236facdea7567",
+          "block_id": "UP_BLK_3",
+          "index": 3,
+          "length_m": 2000,
+          "max_speed_kmph": 110,
+          "blockType": "MAIN",
+          "loopId": null,
+          "trackDirection": "UP",
+          "headwaySeconds": 120,
+          "nextBlocks": [
+            "69254bb8ccf236facdea756f"
+          ],
+          "prevBlocks": [
+            "69254bb8ccf236facdea755f"
+          ],
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [
+                77.81,
+                23.45
+              ],
+              [
+                77.4445,
+                23.2322
+              ]
+            ]
+          },
+          "signal": {
+            "id": "69254bb8ccf236facdea7565",
+            "aspect": "GREEN",
+            "position": [
+              77.4445,
+              23.2322
+            ]
+          }
+        },
+        {
+          "id": "69254bb8ccf236facdea756f",
+          "block_id": "UP_BLK_4",
+          "index": 4,
+          "length_m": 2000,
+          "max_speed_kmph": 110,
+          "blockType": "MAIN",
+          "loopId": null,
+          "trackDirection": "UP",
+          "headwaySeconds": 120,
+          "nextBlocks": [
+            "69254bb8ccf236facdea7577"
+          ],
+          "prevBlocks": [
+            "69254bb8ccf236facdea7567"
+          ],
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [
+                77.81,
+                23.45
+              ],
+              [
+                77.4445,
+                23.2322
+              ]
+            ]
+          },
+          "signal": {
+            "id": "69254bb8ccf236facdea756d",
+            "aspect": "GREEN",
+            "position": [
+              77.4445,
+              23.2322
+            ]
+          }
+        },
+        {
+          "id": "69254bb8ccf236facdea7577",
+          "block_id": "UP_BLK_5",
+          "index": 5,
+          "length_m": 2000,
+          "max_speed_kmph": 110,
+          "blockType": "MAIN",
+          "loopId": null,
+          "trackDirection": "UP",
+          "headwaySeconds": 120,
+          "nextBlocks": [
+            "69254bb8ccf236facdea757f",
+            "69254bb9ccf236facdea7623"
+          ],
+          "prevBlocks": [
+            "69254bb8ccf236facdea756f"
+          ],
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [
+                77.81,
+                23.45
+              ],
+              [
+                77.4445,
+                23.2322
+              ]
+            ]
+          },
+          "signal": {
+            "id": "69254bb8ccf236facdea7575",
+            "aspect": "GREEN",
+            "position": [
+              77.4445,
+              23.2322
+            ]
+          }
+        },
+        {
+          "id": "69254bb8ccf236facdea757f",
+          "block_id": "UP_BLK_6",
+          "index": 6,
+          "length_m": 2000,
+          "max_speed_kmph": 110,
+          "blockType": "MAIN",
+          "loopId": null,
+          "trackDirection": "UP",
+          "headwaySeconds": 120,
+          "nextBlocks": [
+            "69254bb8ccf236facdea7587"
+          ],
+          "prevBlocks": [
+            "69254bb8ccf236facdea7577",
+            "69254bb9ccf236facdea7627"
+          ],
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [
+                77.81,
+                23.45
+              ],
+              [
+                77.4445,
+                23.2322
+              ]
+            ]
+          },
+          "signal": {
+            "id": "69254bb8ccf236facdea757d",
+            "aspect": "GREEN",
+            "position": [
+              77.4445,
+              23.2322
+            ]
+          }
+        },
+        {
+          "id": "69254bb8ccf236facdea7587",
+          "block_id": "UP_BLK_7",
+          "index": 7,
+          "length_m": 2000,
+          "max_speed_kmph": 110,
+          "blockType": "MAIN",
+          "loopId": null,
+          "trackDirection": "UP",
+          "headwaySeconds": 120,
+          "nextBlocks": [
+            "69254bb8ccf236facdea758f"
+          ],
+          "prevBlocks": [
+            "69254bb8ccf236facdea757f"
+          ],
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [
+                77.81,
+                23.45
+              ],
+              [
+                77.4445,
+                23.2322
+              ]
+            ]
+          },
+          "signal": {
+            "id": "69254bb8ccf236facdea7585",
+            "aspect": "GREEN",
+            "position": [
+              77.4445,
+              23.2322
+            ]
+          }
+        },
+        {
+          "id": "69254bb8ccf236facdea758f",
+          "block_id": "UP_BLK_8",
+          "index": 8,
+          "length_m": 2000,
+          "max_speed_kmph": 110,
+          "blockType": "MAIN",
+          "loopId": null,
+          "trackDirection": "UP",
+          "headwaySeconds": 120,
+          "nextBlocks": [
+            "69254bb8ccf236facdea7597"
+          ],
+          "prevBlocks": [
+            "69254bb8ccf236facdea7587"
+          ],
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [
+                77.81,
+                23.45
+              ],
+              [
+                77.4445,
+                23.2322
+              ]
+            ]
+          },
+          "signal": {
+            "id": "69254bb8ccf236facdea758d",
+            "aspect": "GREEN",
+            "position": [
+              77.4445,
+              23.2322
+            ]
+          }
+        },
+        {
+          "id": "69254bb8ccf236facdea7597",
+          "block_id": "UP_BLK_9",
+          "index": 9,
+          "length_m": 2000,
+          "max_speed_kmph": 110,
+          "blockType": "MAIN",
+          "loopId": null,
+          "trackDirection": "UP",
+          "headwaySeconds": 120,
+          "nextBlocks": [
+            "69254bb8ccf236facdea759f"
+          ],
+          "prevBlocks": [
+            "69254bb8ccf236facdea758f"
+          ],
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [
+                77.81,
+                23.45
+              ],
+              [
+                77.4445,
+                23.2322
+              ]
+            ]
+          },
+          "signal": {
+            "id": "69254bb8ccf236facdea7595",
+            "aspect": "GREEN",
+            "position": [
+              77.4445,
+              23.2322
+            ]
+          }
+        },
+        {
+          "id": "69254bb8ccf236facdea759f",
+          "block_id": "UP_BLK_10",
+          "index": 10,
+          "length_m": 2000,
+          "max_speed_kmph": 110,
+          "blockType": "MAIN",
+          "loopId": null,
+          "trackDirection": "UP",
+          "headwaySeconds": 120,
+          "nextBlocks": [
+            "69254bb8ccf236facdea75a7"
+          ],
+          "prevBlocks": [
+            "69254bb8ccf236facdea7597"
+          ],
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [
+                77.81,
+                23.45
+              ],
+              [
+                77.4445,
+                23.2322
+              ]
+            ]
+          },
+          "signal": {
+            "id": "69254bb8ccf236facdea759d",
+            "aspect": "GREEN",
+            "position": [
+              77.4445,
+              23.2322
+            ]
+          }
+        },
+        {
+          "id": "69254bb8ccf236facdea75a7",
+          "block_id": "UP_BLK_11",
+          "index": 11,
+          "length_m": 2000,
+          "max_speed_kmph": 110,
+          "blockType": "MAIN",
+          "loopId": null,
+          "trackDirection": "UP",
+          "headwaySeconds": 120,
+          "nextBlocks": [
+            "69254bb9ccf236facdea75af",
+            "69254bb9ccf236facdea7633"
+          ],
+          "prevBlocks": [
+            "69254bb8ccf236facdea759f"
+          ],
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [
+                77.81,
+                23.45
+              ],
+              [
+                77.4445,
+                23.2322
+              ]
+            ]
+          },
+          "signal": {
+            "id": "69254bb8ccf236facdea75a5",
+            "aspect": "GREEN",
+            "position": [
+              77.4445,
+              23.2322
+            ]
+          }
+        },
+        {
+          "id": "69254bb9ccf236facdea75af",
+          "block_id": "UP_BLK_12",
+          "index": 12,
+          "length_m": 2000,
+          "max_speed_kmph": 110,
+          "blockType": "MAIN",
+          "loopId": null,
+          "trackDirection": "UP",
+          "headwaySeconds": 120,
+          "nextBlocks": [
+            "69254bb9ccf236facdea75b7"
+          ],
+          "prevBlocks": [
+            "69254bb8ccf236facdea75a7",
+            "69254bb9ccf236facdea7637"
+          ],
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [
+                77.81,
+                23.45
+              ],
+              [
+                77.4445,
+                23.2322
+              ]
+            ]
+          },
+          "signal": {
+            "id": "69254bb9ccf236facdea75ad",
+            "aspect": "GREEN",
+            "position": [
+              77.4445,
+              23.2322
+            ]
+          }
+        },
+        {
+          "id": "69254bb9ccf236facdea75b7",
+          "block_id": "UP_BLK_13",
+          "index": 13,
+          "length_m": 2000,
+          "max_speed_kmph": 110,
+          "blockType": "MAIN",
+          "loopId": null,
+          "trackDirection": "UP",
+          "headwaySeconds": 120,
+          "nextBlocks": [
+            "69254bb9ccf236facdea75bf"
+          ],
+          "prevBlocks": [
+            "69254bb9ccf236facdea75af"
+          ],
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [
+                77.81,
+                23.45
+              ],
+              [
+                77.4445,
+                23.2322
+              ]
+            ]
+          },
+          "signal": {
+            "id": "69254bb9ccf236facdea75b5",
+            "aspect": "GREEN",
+            "position": [
+              77.4445,
+              23.2322
+            ]
+          }
+        },
+        {
+          "id": "69254bb9ccf236facdea75bf",
+          "block_id": "UP_BLK_14",
+          "index": 14,
+          "length_m": 2000,
+          "max_speed_kmph": 110,
+          "blockType": "MAIN",
+          "loopId": null,
+          "trackDirection": "UP",
+          "headwaySeconds": 120,
+          "nextBlocks": [
+            "69254bb9ccf236facdea75c7"
+          ],
+          "prevBlocks": [
+            "69254bb9ccf236facdea75b7"
+          ],
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [
+                77.81,
+                23.45
+              ],
+              [
+                77.4445,
+                23.2322
+              ]
+            ]
+          },
+          "signal": {
+            "id": "69254bb9ccf236facdea75bd",
+            "aspect": "GREEN",
+            "position": [
+              77.4445,
+              23.2322
+            ]
+          }
+        },
+        {
+          "id": "69254bb9ccf236facdea75c7",
+          "block_id": "UP_BLK_15",
+          "index": 15,
+          "length_m": 2000,
+          "max_speed_kmph": 110,
+          "blockType": "MAIN",
+          "loopId": null,
+          "trackDirection": "UP",
+          "headwaySeconds": 120,
+          "nextBlocks": [
+            "69254bb9ccf236facdea75cf"
+          ],
+          "prevBlocks": [
+            "69254bb9ccf236facdea75bf"
+          ],
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [
+                77.81,
+                23.45
+              ],
+              [
+                77.4445,
+                23.2322
+              ]
+            ]
+          },
+          "signal": {
+            "id": "69254bb9ccf236facdea75c5",
+            "aspect": "GREEN",
+            "position": [
+              77.4445,
+              23.2322
+            ]
+          }
+        },
+        {
+          "id": "69254bb9ccf236facdea75cf",
+          "block_id": "UP_BLK_16",
+          "index": 16,
+          "length_m": 2000,
+          "max_speed_kmph": 110,
+          "blockType": "MAIN",
+          "loopId": null,
+          "trackDirection": "UP",
+          "headwaySeconds": 120,
+          "nextBlocks": [
+            "69254bb9ccf236facdea75d7"
+          ],
+          "prevBlocks": [
+            "69254bb9ccf236facdea75c7"
+          ],
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [
+                77.81,
+                23.45
+              ],
+              [
+                77.4445,
+                23.2322
+              ]
+            ]
+          },
+          "signal": {
+            "id": "69254bb9ccf236facdea75cd",
+            "aspect": "GREEN",
+            "position": [
+              77.4445,
+              23.2322
+            ]
+          }
+        },
+        {
+          "id": "69254bb9ccf236facdea75d7",
+          "block_id": "UP_BLK_17",
+          "index": 17,
+          "length_m": 2000,
+          "max_speed_kmph": 110,
+          "blockType": "MAIN",
+          "loopId": null,
+          "trackDirection": "UP",
+          "headwaySeconds": 120,
+          "nextBlocks": [
+            "69254bb9ccf236facdea75df",
+            "69254bb9ccf236facdea7643"
+          ],
+          "prevBlocks": [
+            "69254bb9ccf236facdea75cf"
+          ],
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [
+                77.81,
+                23.45
+              ],
+              [
+                77.4445,
+                23.2322
+              ]
+            ]
+          },
+          "signal": {
+            "id": "69254bb9ccf236facdea75d5",
+            "aspect": "GREEN",
+            "position": [
+              77.4445,
+              23.2322
+            ]
+          }
+        },
+        {
+          "id": "69254bb9ccf236facdea75df",
+          "block_id": "UP_BLK_18",
+          "index": 18,
+          "length_m": 2000,
+          "max_speed_kmph": 110,
+          "blockType": "MAIN",
+          "loopId": null,
+          "trackDirection": "UP",
+          "headwaySeconds": 120,
+          "nextBlocks": [
+            "69254bb9ccf236facdea75e7"
+          ],
+          "prevBlocks": [
+            "69254bb9ccf236facdea75d7",
+            "69254bb9ccf236facdea7647"
+          ],
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [
+                77.81,
+                23.45
+              ],
+              [
+                77.4445,
+                23.2322
+              ]
+            ]
+          },
+          "signal": {
+            "id": "69254bb9ccf236facdea75dd",
+            "aspect": "GREEN",
+            "position": [
+              77.4445,
+              23.2322
+            ]
+          }
+        },
+        {
+          "id": "69254bb9ccf236facdea75e7",
+          "block_id": "UP_BLK_19",
+          "index": 19,
+          "length_m": 2000,
+          "max_speed_kmph": 110,
+          "blockType": "MAIN",
+          "loopId": null,
+          "trackDirection": "UP",
+          "headwaySeconds": 120,
+          "nextBlocks": [
+            "69254bb9ccf236facdea75ef"
+          ],
+          "prevBlocks": [
+            "69254bb9ccf236facdea75df"
+          ],
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [
+                77.81,
+                23.45
+              ],
+              [
+                77.4445,
+                23.2322
+              ]
+            ]
+          },
+          "signal": {
+            "id": "69254bb9ccf236facdea75e5",
+            "aspect": "GREEN",
+            "position": [
+              77.4445,
+              23.2322
+            ]
+          }
+        },
+        {
+          "id": "69254bb9ccf236facdea75ef",
+          "block_id": "UP_BLK_20",
+          "index": 20,
+          "length_m": 2000,
+          "max_speed_kmph": 110,
+          "blockType": "MAIN",
+          "loopId": null,
+          "trackDirection": "UP",
+          "headwaySeconds": 120,
+          "nextBlocks": [],
+          "prevBlocks": [
+            "69254bb9ccf236facdea75e7"
+          ],
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [
+                77.81,
+                23.45
+              ],
+              [
+                77.4445,
+                23.2322
+              ]
+            ]
+          },
+          "signal": {
+            "id": "69254bb9ccf236facdea75ed",
+            "aspect": "GREEN",
+            "position": [
+              77.4445,
+              23.2322
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "69254bb8ccf236facdea7552",
+      "track_id": "DOWN_MAIN_L01",
+      "name": "DOWN_MAIN",
+      "type": "MAIN",
+      "direction": "DOWN",
+      "isLoop": false,
+      "parentTrack": null,
+      "blocks": [
+        {
+          "id": "69254bb8ccf236facdea755b",
+          "block_id": "DN_BLK_1",
+          "index": 1,
+          "length_m": 2000,
+          "max_speed_kmph": 110,
+          "blockType": "MAIN",
+          "loopId": null,
+          "trackDirection": "DOWN",
+          "headwaySeconds": 120,
+          "nextBlocks": [
+            "69254bb8ccf236facdea7563"
+          ],
+          "prevBlocks": [],
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [
+                77.81,
+                23.45
+              ],
+              [
+                77.4445,
+                23.2322
+              ]
+            ]
+          },
+          "signal": {
+            "id": "69254bb8ccf236facdea7559",
+            "aspect": "GREEN",
+            "position": [
+              77.81,
+              23.45
+            ]
+          }
+        },
+        {
+          "id": "69254bb8ccf236facdea7563",
+          "block_id": "DN_BLK_2",
+          "index": 2,
+          "length_m": 2000,
+          "max_speed_kmph": 110,
+          "blockType": "MAIN",
+          "loopId": null,
+          "trackDirection": "DOWN",
+          "headwaySeconds": 120,
+          "nextBlocks": [
+            "69254bb8ccf236facdea756b"
+          ],
+          "prevBlocks": [
+            "69254bb8ccf236facdea755b"
+          ],
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [
+                77.81,
+                23.45
+              ],
+              [
+                77.4445,
+                23.2322
+              ]
+            ]
+          },
+          "signal": {
+            "id": "69254bb8ccf236facdea7561",
+            "aspect": "GREEN",
+            "position": [
+              77.81,
+              23.45
+            ]
+          }
+        },
+        {
+          "id": "69254bb8ccf236facdea756b",
+          "block_id": "DN_BLK_3",
+          "index": 3,
+          "length_m": 2000,
+          "max_speed_kmph": 110,
+          "blockType": "MAIN",
+          "loopId": null,
+          "trackDirection": "DOWN",
+          "headwaySeconds": 120,
+          "nextBlocks": [
+            "69254bb8ccf236facdea7573"
+          ],
+          "prevBlocks": [
+            "69254bb8ccf236facdea7563"
+          ],
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [
+                77.81,
+                23.45
+              ],
+              [
+                77.4445,
+                23.2322
+              ]
+            ]
+          },
+          "signal": {
+            "id": "69254bb8ccf236facdea7569",
+            "aspect": "GREEN",
+            "position": [
+              77.81,
+              23.45
+            ]
+          }
+        },
+        {
+          "id": "69254bb8ccf236facdea7573",
+          "block_id": "DN_BLK_4",
+          "index": 4,
+          "length_m": 2000,
+          "max_speed_kmph": 110,
+          "blockType": "MAIN",
+          "loopId": null,
+          "trackDirection": "DOWN",
+          "headwaySeconds": 120,
+          "nextBlocks": [
+            "69254bb8ccf236facdea757b"
+          ],
+          "prevBlocks": [
+            "69254bb8ccf236facdea756b"
+          ],
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [
+                77.81,
+                23.45
+              ],
+              [
+                77.4445,
+                23.2322
+              ]
+            ]
+          },
+          "signal": {
+            "id": "69254bb8ccf236facdea7571",
+            "aspect": "GREEN",
+            "position": [
+              77.81,
+              23.45
+            ]
+          }
+        },
+        {
+          "id": "69254bb8ccf236facdea757b",
+          "block_id": "DN_BLK_5",
+          "index": 5,
+          "length_m": 2000,
+          "max_speed_kmph": 110,
+          "blockType": "MAIN",
+          "loopId": null,
+          "trackDirection": "DOWN",
+          "headwaySeconds": 120,
+          "nextBlocks": [
+            "69254bb8ccf236facdea7583"
+          ],
+          "prevBlocks": [
+            "69254bb8ccf236facdea7573"
+          ],
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [
+                77.81,
+                23.45
+              ],
+              [
+                77.4445,
+                23.2322
+              ]
+            ]
+          },
+          "signal": {
+            "id": "69254bb8ccf236facdea7579",
+            "aspect": "GREEN",
+            "position": [
+              77.81,
+              23.45
+            ]
+          }
+        },
+        {
+          "id": "69254bb8ccf236facdea7583",
+          "block_id": "DN_BLK_6",
+          "index": 6,
+          "length_m": 2000,
+          "max_speed_kmph": 110,
+          "blockType": "MAIN",
+          "loopId": null,
+          "trackDirection": "DOWN",
+          "headwaySeconds": 120,
+          "nextBlocks": [
+            "69254bb8ccf236facdea758b"
+          ],
+          "prevBlocks": [
+            "69254bb8ccf236facdea757b"
+          ],
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [
+                77.81,
+                23.45
+              ],
+              [
+                77.4445,
+                23.2322
+              ]
+            ]
+          },
+          "signal": {
+            "id": "69254bb8ccf236facdea7581",
+            "aspect": "GREEN",
+            "position": [
+              77.81,
+              23.45
+            ]
+          }
+        },
+        {
+          "id": "69254bb8ccf236facdea758b",
+          "block_id": "DN_BLK_7",
+          "index": 7,
+          "length_m": 2000,
+          "max_speed_kmph": 110,
+          "blockType": "MAIN",
+          "loopId": null,
+          "trackDirection": "DOWN",
+          "headwaySeconds": 120,
+          "nextBlocks": [
+            "69254bb8ccf236facdea7593"
+          ],
+          "prevBlocks": [
+            "69254bb8ccf236facdea7583"
+          ],
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [
+                77.81,
+                23.45
+              ],
+              [
+                77.4445,
+                23.2322
+              ]
+            ]
+          },
+          "signal": {
+            "id": "69254bb8ccf236facdea7589",
+            "aspect": "GREEN",
+            "position": [
+              77.81,
+              23.45
+            ]
+          }
+        },
+        {
+          "id": "69254bb8ccf236facdea7593",
+          "block_id": "DN_BLK_8",
+          "index": 8,
+          "length_m": 2000,
+          "max_speed_kmph": 110,
+          "blockType": "MAIN",
+          "loopId": null,
+          "trackDirection": "DOWN",
+          "headwaySeconds": 120,
+          "nextBlocks": [
+            "69254bb8ccf236facdea759b"
+          ],
+          "prevBlocks": [
+            "69254bb8ccf236facdea758b"
+          ],
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [
+                77.81,
+                23.45
+              ],
+              [
+                77.4445,
+                23.2322
+              ]
+            ]
+          },
+          "signal": {
+            "id": "69254bb8ccf236facdea7591",
+            "aspect": "GREEN",
+            "position": [
+              77.81,
+              23.45
+            ]
+          }
+        },
+        {
+          "id": "69254bb8ccf236facdea759b",
+          "block_id": "DN_BLK_9",
+          "index": 9,
+          "length_m": 2000,
+          "max_speed_kmph": 110,
+          "blockType": "MAIN",
+          "loopId": null,
+          "trackDirection": "DOWN",
+          "headwaySeconds": 120,
+          "nextBlocks": [
+            "69254bb8ccf236facdea75a3"
+          ],
+          "prevBlocks": [
+            "69254bb8ccf236facdea7593"
+          ],
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [
+                77.81,
+                23.45
+              ],
+              [
+                77.4445,
+                23.2322
+              ]
+            ]
+          },
+          "signal": {
+            "id": "69254bb8ccf236facdea7599",
+            "aspect": "GREEN",
+            "position": [
+              77.81,
+              23.45
+            ]
+          }
+        },
+        {
+          "id": "69254bb8ccf236facdea75a3",
+          "block_id": "DN_BLK_10",
+          "index": 10,
+          "length_m": 2000,
+          "max_speed_kmph": 110,
+          "blockType": "MAIN",
+          "loopId": null,
+          "trackDirection": "DOWN",
+          "headwaySeconds": 120,
+          "nextBlocks": [
+            "69254bb9ccf236facdea75ab"
+          ],
+          "prevBlocks": [
+            "69254bb8ccf236facdea759b"
+          ],
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [
+                77.81,
+                23.45
+              ],
+              [
+                77.4445,
+                23.2322
+              ]
+            ]
+          },
+          "signal": {
+            "id": "69254bb8ccf236facdea75a1",
+            "aspect": "GREEN",
+            "position": [
+              77.81,
+              23.45
+            ]
+          }
+        },
+        {
+          "id": "69254bb9ccf236facdea75ab",
+          "block_id": "DN_BLK_11",
+          "index": 11,
+          "length_m": 2000,
+          "max_speed_kmph": 110,
+          "blockType": "MAIN",
+          "loopId": null,
+          "trackDirection": "DOWN",
+          "headwaySeconds": 120,
+          "nextBlocks": [
+            "69254bb9ccf236facdea75b3"
+          ],
+          "prevBlocks": [
+            "69254bb8ccf236facdea75a3"
+          ],
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [
+                77.81,
+                23.45
+              ],
+              [
+                77.4445,
+                23.2322
+              ]
+            ]
+          },
+          "signal": {
+            "id": "69254bb8ccf236facdea75a9",
+            "aspect": "GREEN",
+            "position": [
+              77.81,
+              23.45
+            ]
+          }
+        },
+        {
+          "id": "69254bb9ccf236facdea75b3",
+          "block_id": "DN_BLK_12",
+          "index": 12,
+          "length_m": 2000,
+          "max_speed_kmph": 110,
+          "blockType": "MAIN",
+          "loopId": null,
+          "trackDirection": "DOWN",
+          "headwaySeconds": 120,
+          "nextBlocks": [
+            "69254bb9ccf236facdea75bb"
+          ],
+          "prevBlocks": [
+            "69254bb9ccf236facdea75ab"
+          ],
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [
+                77.81,
+                23.45
+              ],
+              [
+                77.4445,
+                23.2322
+              ]
+            ]
+          },
+          "signal": {
+            "id": "69254bb9ccf236facdea75b1",
+            "aspect": "GREEN",
+            "position": [
+              77.81,
+              23.45
+            ]
+          }
+        },
+        {
+          "id": "69254bb9ccf236facdea75bb",
+          "block_id": "DN_BLK_13",
+          "index": 13,
+          "length_m": 2000,
+          "max_speed_kmph": 110,
+          "blockType": "MAIN",
+          "loopId": null,
+          "trackDirection": "DOWN",
+          "headwaySeconds": 120,
+          "nextBlocks": [
+            "69254bb9ccf236facdea75c3"
+          ],
+          "prevBlocks": [
+            "69254bb9ccf236facdea75b3"
+          ],
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [
+                77.81,
+                23.45
+              ],
+              [
+                77.4445,
+                23.2322
+              ]
+            ]
+          },
+          "signal": {
+            "id": "69254bb9ccf236facdea75b9",
+            "aspect": "GREEN",
+            "position": [
+              77.81,
+              23.45
+            ]
+          }
+        },
+        {
+          "id": "69254bb9ccf236facdea75c3",
+          "block_id": "DN_BLK_14",
+          "index": 14,
+          "length_m": 2000,
+          "max_speed_kmph": 110,
+          "blockType": "MAIN",
+          "loopId": null,
+          "trackDirection": "DOWN",
+          "headwaySeconds": 120,
+          "nextBlocks": [
+            "69254bb9ccf236facdea75cb"
+          ],
+          "prevBlocks": [
+            "69254bb9ccf236facdea75bb"
+          ],
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [
+                77.81,
+                23.45
+              ],
+              [
+                77.4445,
+                23.2322
+              ]
+            ]
+          },
+          "signal": {
+            "id": "69254bb9ccf236facdea75c1",
+            "aspect": "GREEN",
+            "position": [
+              77.81,
+              23.45
+            ]
+          }
+        },
+        {
+          "id": "69254bb9ccf236facdea75cb",
+          "block_id": "DN_BLK_15",
+          "index": 15,
+          "length_m": 2000,
+          "max_speed_kmph": 110,
+          "blockType": "MAIN",
+          "loopId": null,
+          "trackDirection": "DOWN",
+          "headwaySeconds": 120,
+          "nextBlocks": [
+            "69254bb9ccf236facdea75d3"
+          ],
+          "prevBlocks": [
+            "69254bb9ccf236facdea75c3"
+          ],
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [
+                77.81,
+                23.45
+              ],
+              [
+                77.4445,
+                23.2322
+              ]
+            ]
+          },
+          "signal": {
+            "id": "69254bb9ccf236facdea75c9",
+            "aspect": "GREEN",
+            "position": [
+              77.81,
+              23.45
+            ]
+          }
+        },
+        {
+          "id": "69254bb9ccf236facdea75d3",
+          "block_id": "DN_BLK_16",
+          "index": 16,
+          "length_m": 2000,
+          "max_speed_kmph": 110,
+          "blockType": "MAIN",
+          "loopId": null,
+          "trackDirection": "DOWN",
+          "headwaySeconds": 120,
+          "nextBlocks": [
+            "69254bb9ccf236facdea75db"
+          ],
+          "prevBlocks": [
+            "69254bb9ccf236facdea75cb"
+          ],
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [
+                77.81,
+                23.45
+              ],
+              [
+                77.4445,
+                23.2322
+              ]
+            ]
+          },
+          "signal": {
+            "id": "69254bb9ccf236facdea75d1",
+            "aspect": "GREEN",
+            "position": [
+              77.81,
+              23.45
+            ]
+          }
+        },
+        {
+          "id": "69254bb9ccf236facdea75db",
+          "block_id": "DN_BLK_17",
+          "index": 17,
+          "length_m": 2000,
+          "max_speed_kmph": 110,
+          "blockType": "MAIN",
+          "loopId": null,
+          "trackDirection": "DOWN",
+          "headwaySeconds": 120,
+          "nextBlocks": [
+            "69254bb9ccf236facdea75e3"
+          ],
+          "prevBlocks": [
+            "69254bb9ccf236facdea75d3"
+          ],
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [
+                77.81,
+                23.45
+              ],
+              [
+                77.4445,
+                23.2322
+              ]
+            ]
+          },
+          "signal": {
+            "id": "69254bb9ccf236facdea75d9",
+            "aspect": "GREEN",
+            "position": [
+              77.81,
+              23.45
+            ]
+          }
+        },
+        {
+          "id": "69254bb9ccf236facdea75e3",
+          "block_id": "DN_BLK_18",
+          "index": 18,
+          "length_m": 2000,
+          "max_speed_kmph": 110,
+          "blockType": "MAIN",
+          "loopId": null,
+          "trackDirection": "DOWN",
+          "headwaySeconds": 120,
+          "nextBlocks": [
+            "69254bb9ccf236facdea75eb"
+          ],
+          "prevBlocks": [
+            "69254bb9ccf236facdea75db"
+          ],
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [
+                77.81,
+                23.45
+              ],
+              [
+                77.4445,
+                23.2322
+              ]
+            ]
+          },
+          "signal": {
+            "id": "69254bb9ccf236facdea75e1",
+            "aspect": "GREEN",
+            "position": [
+              77.81,
+              23.45
+            ]
+          }
+        },
+        {
+          "id": "69254bb9ccf236facdea75eb",
+          "block_id": "DN_BLK_19",
+          "index": 19,
+          "length_m": 2000,
+          "max_speed_kmph": 110,
+          "blockType": "MAIN",
+          "loopId": null,
+          "trackDirection": "DOWN",
+          "headwaySeconds": 120,
+          "nextBlocks": [
+            "69254bb9ccf236facdea75f3"
+          ],
+          "prevBlocks": [
+            "69254bb9ccf236facdea75e3"
+          ],
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [
+                77.81,
+                23.45
+              ],
+              [
+                77.4445,
+                23.2322
+              ]
+            ]
+          },
+          "signal": {
+            "id": "69254bb9ccf236facdea75e9",
+            "aspect": "GREEN",
+            "position": [
+              77.81,
+              23.45
+            ]
+          }
+        },
+        {
+          "id": "69254bb9ccf236facdea75f3",
+          "block_id": "DN_BLK_20",
+          "index": 20,
+          "length_m": 2000,
+          "max_speed_kmph": 110,
+          "blockType": "MAIN",
+          "loopId": null,
+          "trackDirection": "DOWN",
+          "headwaySeconds": 120,
+          "nextBlocks": [],
+          "prevBlocks": [
+            "69254bb9ccf236facdea75eb"
+          ],
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [
+                77.81,
+                23.45
+              ],
+              [
+                77.4445,
+                23.2322
+              ]
+            ]
+          },
+          "signal": {
+            "id": "69254bb9ccf236facdea75f1",
+            "aspect": "GREEN",
+            "position": [
+              77.81,
+              23.45
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "69254bb9ccf236facdea761f",
+      "track_id": "UP_LOOP_AT_5",
+      "name": "UP_LOOP_5",
+      "type": "LOOP",
+      "direction": "UP",
+      "isLoop": true,
+      "parentTrack": "69254bb8ccf236facdea7550",
+      "blocks": [
+        {
+          "id": "69254bb9ccf236facdea7623",
+          "block_id": "UP_LOOP_5_A",
+          "index": 5,
+          "length_m": 1000,
+          "max_speed_kmph": 50,
+          "blockType": "LOOP",
+          "loopId": "69254bb9ccf236facdea761f",
+          "trackDirection": "UP",
+          "headwaySeconds": 120,
+          "nextBlocks": [
+            "69254bb9ccf236facdea7627"
+          ],
+          "prevBlocks": [
+            "69254bb8ccf236facdea7577"
+          ],
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [
+                77.81,
+                23.45
+              ],
+              [
+                77.4445,
+                23.2322
+              ]
+            ]
+          },
+          "signal": {
+            "id": "69254bb9ccf236facdea7621",
+            "aspect": "GREEN",
+            "position": [
+              77.4445,
+              23.2322
+            ]
+          }
+        },
+        {
+          "id": "69254bb9ccf236facdea7627",
+          "block_id": "UP_LOOP_5_B",
+          "index": 6,
+          "length_m": 1000,
+          "max_speed_kmph": 50,
+          "blockType": "LOOP",
+          "loopId": "69254bb9ccf236facdea761f",
+          "trackDirection": "UP",
+          "headwaySeconds": 120,
+          "nextBlocks": [
+            "69254bb8ccf236facdea757f"
+          ],
+          "prevBlocks": [
+            "69254bb9ccf236facdea7623"
+          ],
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [
+                77.81,
+                23.45
+              ],
+              [
+                77.4445,
+                23.2322
+              ]
+            ]
+          },
+          "signal": {
+            "id": "69254bb9ccf236facdea7625",
+            "aspect": "GREEN",
+            "position": [
+              77.4445,
+              23.2322
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "69254bb9ccf236facdea762f",
+      "track_id": "UP_LOOP_AT_11",
+      "name": "UP_LOOP_11",
+      "type": "LOOP",
+      "direction": "UP",
+      "isLoop": true,
+      "parentTrack": "69254bb8ccf236facdea7550",
+      "blocks": [
+        {
+          "id": "69254bb9ccf236facdea7633",
+          "block_id": "UP_LOOP_11_A",
+          "index": 11,
+          "length_m": 1000,
+          "max_speed_kmph": 50,
+          "blockType": "LOOP",
+          "loopId": "69254bb9ccf236facdea762f",
+          "trackDirection": "UP",
+          "headwaySeconds": 120,
+          "nextBlocks": [
+            "69254bb9ccf236facdea7637"
+          ],
+          "prevBlocks": [
+            "69254bb8ccf236facdea75a7"
+          ],
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [
+                77.81,
+                23.45
+              ],
+              [
+                77.4445,
+                23.2322
+              ]
+            ]
+          },
+          "signal": {
+            "id": "69254bb9ccf236facdea7631",
+            "aspect": "GREEN",
+            "position": [
+              77.4445,
+              23.2322
+            ]
+          }
+        },
+        {
+          "id": "69254bb9ccf236facdea7637",
+          "block_id": "UP_LOOP_11_B",
+          "index": 12,
+          "length_m": 1000,
+          "max_speed_kmph": 50,
+          "blockType": "LOOP",
+          "loopId": "69254bb9ccf236facdea762f",
+          "trackDirection": "UP",
+          "headwaySeconds": 120,
+          "nextBlocks": [
+            "69254bb9ccf236facdea75af"
+          ],
+          "prevBlocks": [
+            "69254bb9ccf236facdea7633"
+          ],
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [
+                77.81,
+                23.45
+              ],
+              [
+                77.4445,
+                23.2322
+              ]
+            ]
+          },
+          "signal": {
+            "id": "69254bb9ccf236facdea7635",
+            "aspect": "GREEN",
+            "position": [
+              77.4445,
+              23.2322
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "69254bb9ccf236facdea763f",
+      "track_id": "UP_LOOP_AT_17",
+      "name": "UP_LOOP_17",
+      "type": "LOOP",
+      "direction": "UP",
+      "isLoop": true,
+      "parentTrack": "69254bb8ccf236facdea7550",
+      "blocks": [
+        {
+          "id": "69254bb9ccf236facdea7643",
+          "block_id": "UP_LOOP_17_A",
+          "index": 17,
+          "length_m": 1000,
+          "max_speed_kmph": 50,
+          "blockType": "LOOP",
+          "loopId": "69254bb9ccf236facdea763f",
+          "trackDirection": "UP",
+          "headwaySeconds": 120,
+          "nextBlocks": [
+            "69254bb9ccf236facdea7647"
+          ],
+          "prevBlocks": [
+            "69254bb9ccf236facdea75d7"
+          ],
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [
+                77.81,
+                23.45
+              ],
+              [
+                77.4445,
+                23.2322
+              ]
+            ]
+          },
+          "signal": {
+            "id": "69254bb9ccf236facdea7641",
+            "aspect": "GREEN",
+            "position": [
+              77.4445,
+              23.2322
+            ]
+          }
+        },
+        {
+          "id": "69254bb9ccf236facdea7647",
+          "block_id": "UP_LOOP_17_B",
+          "index": 18,
+          "length_m": 1000,
+          "max_speed_kmph": 50,
+          "blockType": "LOOP",
+          "loopId": "69254bb9ccf236facdea763f",
+          "trackDirection": "UP",
+          "headwaySeconds": 120,
+          "nextBlocks": [
+            "69254bb9ccf236facdea75df"
+          ],
+          "prevBlocks": [
+            "69254bb9ccf236facdea7643"
+          ],
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [
+                77.81,
+                23.45
+              ],
+              [
+                77.4445,
+                23.2322
+              ]
+            ]
+          },
+          "signal": {
+            "id": "69254bb9ccf236facdea7645",
+            "aspect": "GREEN",
+            "position": [
+              77.4445,
+              23.2322
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "trains": [
+    {
+      "id": "69254bb9ccf236facdea7650",
+      "name": "Bhopal Express",
+      "number": "12156",
+      "type": "EXPRESS",
+      "priority": 10,
+      "delay_min": 4,
+      "current_block": "69254bb8ccf236facdea7557",
+      "offset_m": 583,
+      "speed_kmph": 75.03928278118472,
+      "direction": "UP",
+      "lat": null,
+      "lon": null,
+      "status": "RUNNING",
+      "perf": {
+        "maxSpeedKmph": 100,
+        "accelMps2": 0.6,
+        "decelMps2": 0.7,
+        "lengthM": 200
+      }
+    },
+    {
+      "id": "69254bb9ccf236facdea7652",
+      "name": "Shatabdi Express",
+      "number": "12002",
+      "type": "EXPRESS",
+      "priority": 12,
+      "delay_min": 13,
+      "current_block": "69254bb8ccf236facdea75a3",
+      "offset_m": 1380,
+      "speed_kmph": 49.22622334378032,
+      "direction": "DOWN",
+      "lat": null,
+      "lon": null,
+      "status": "RUNNING",
+      "perf": {
+        "maxSpeedKmph": 100,
+        "accelMps2": 0.6,
+        "decelMps2": 0.7,
+        "lengthM": 200
+      }
+    },
+    {
+      "id": "69254bb9ccf236facdea7654",
+      "name": "Narmada Express",
+      "number": "18234",
+      "type": "EXPRESS",
+      "priority": 10,
+      "delay_min": 4,
+      "current_block": "69254bb9ccf236facdea75cf",
+      "offset_m": 1734,
+      "speed_kmph": 65.20537783602025,
+      "direction": "UP",
+      "lat": null,
+      "lon": null,
+      "status": "RUNNING",
+      "perf": {
+        "maxSpeedKmph": 100,
+        "accelMps2": 0.6,
+        "decelMps2": 0.7,
+        "lengthM": 200
+      }
+    },
+    {
+      "id": "69254bb9ccf236facdea7656",
+      "name": "Rajdhani Express",
+      "number": "12434",
+      "type": "EXPRESS",
+      "priority": 12,
+      "delay_min": 26,
+      "current_block": "69254bb8ccf236facdea7577",
+      "offset_m": 542,
+      "speed_kmph": 106.21700698200979,
+      "direction": "UP",
+      "lat": null,
+      "lon": null,
+      "status": "RUNNING",
+      "perf": {
+        "maxSpeedKmph": 100,
+        "accelMps2": 0.6,
+        "decelMps2": 0.7,
+        "lengthM": 200
+      }
+    },
+    {
+      "id": "69254bb9ccf236facdea7658",
+      "name": "Jabalpur Intercity",
+      "number": "12198",
+      "type": "EXPRESS",
+      "priority": 3,
+      "delay_min": 5,
+      "current_block": "69254bb8ccf236facdea757f",
+      "offset_m": 1088,
+      "speed_kmph": 64.71970629886174,
+      "direction": "UP",
+      "lat": null,
+      "lon": null,
+      "status": "RUNNING",
+      "perf": {
+        "maxSpeedKmph": 100,
+        "accelMps2": 0.6,
+        "decelMps2": 0.7,
+        "lengthM": 200
+      }
+    },
+    {
+      "id": "69254bb9ccf236facdea765a",
+      "name": "Freight Coal A1",
+      "number": "FRE001",
+      "type": "FREIGHT",
+      "priority": 3,
+      "delay_min": 3,
+      "current_block": "69254bb8ccf236facdea7577",
+      "offset_m": 147,
+      "speed_kmph": 54.74632118060755,
+      "direction": "UP",
+      "lat": null,
+      "lon": null,
+      "status": "RUNNING",
+      "perf": {
+        "maxSpeedKmph": 100,
+        "accelMps2": 0.6,
+        "decelMps2": 0.7,
+        "lengthM": 200
+      }
+    },
+    {
+      "id": "69254bb9ccf236facdea765c",
+      "name": "Freight Grain B4",
+      "number": "FRE002",
+      "type": "FREIGHT",
+      "priority": 3,
+      "delay_min": 3,
+      "current_block": "69254bb8ccf236facdea7597",
+      "offset_m": 897,
+      "speed_kmph": 97.40901215249593,
+      "direction": "UP",
+      "lat": null,
+      "lon": null,
+      "status": "RUNNING",
+      "perf": {
+        "maxSpeedKmph": 100,
+        "accelMps2": 0.6,
+        "decelMps2": 0.7,
+        "lengthM": 200
+      }
+    },
+    {
+      "id": "69254bb9ccf236facdea765e",
+      "name": "Goods Long C7",
+      "number": "FRE003",
+      "type": "FREIGHT",
+      "priority": 3,
+      "delay_min": 4,
+      "current_block": "69254bb8ccf236facdea755f",
+      "offset_m": 313,
+      "speed_kmph": 85.08775095935152,
+      "direction": "UP",
+      "lat": null,
+      "lon": null,
+      "status": "RUNNING",
+      "perf": {
+        "maxSpeedKmph": 100,
+        "accelMps2": 0.6,
+        "decelMps2": 0.7,
+        "lengthM": 200
+      }
+    },
+    {
+      "id": "69254bb9ccf236facdea7660",
+      "name": "Passenger Shuttle",
+      "number": "PSG01",
+      "type": "FREIGHT",
+      "priority": 3,
+      "delay_min": 3,
+      "current_block": "69254bb8ccf236facdea7587",
+      "offset_m": 581,
+      "speed_kmph": 49.07569867444014,
+      "direction": "UP",
+      "lat": null,
+      "lon": null,
+      "status": "RUNNING",
+      "perf": {
+        "maxSpeedKmph": 100,
+        "accelMps2": 0.6,
+        "decelMps2": 0.7,
+        "lengthM": 200
+      }
+    },
+    {
+      "id": "69254bb9ccf236facdea7662",
+      "name": "MEMU Local",
+      "number": "MEMU09",
+      "type": "FREIGHT",
+      "priority": 3,
+      "delay_min": 5,
+      "current_block": "69254bb8ccf236facdea7567",
+      "offset_m": 338,
+      "speed_kmph": 73.8904982248806,
+      "direction": "UP",
+      "lat": null,
+      "lon": null,
+      "status": "RUNNING",
+      "perf": {
+        "maxSpeedKmph": 100,
+        "accelMps2": 0.6,
+        "decelMps2": 0.7,
+        "lengthM": 200
+      }
+    },
+    {
+      "id": "69254bb9ccf236facdea7664",
+      "name": "Mail Express",
+      "number": "MAIL77",
+      "type": "FREIGHT",
+      "priority": 3,
+      "delay_min": 1,
+      "current_block": "69254bb8ccf236facdea759f",
+      "offset_m": 183,
+      "speed_kmph": 58.21992345053799,
+      "direction": "UP",
+      "lat": null,
+      "lon": null,
+      "status": "RUNNING",
+      "perf": {
+        "maxSpeedKmph": 100,
+        "accelMps2": 0.6,
+        "decelMps2": 0.7,
+        "lengthM": 200
+      }
+    },
+    {
+      "id": "69254bb9ccf236facdea7666",
+      "name": "SuperFast",
+      "number": "SF090",
+      "type": "FREIGHT",
+      "priority": 3,
+      "delay_min": 2,
+      "current_block": "69254bb9ccf236facdea75df",
+      "offset_m": 16,
+      "speed_kmph": 30.755962506906158,
+      "direction": "UP",
+      "lat": null,
+      "lon": null,
+      "status": "RUNNING",
+      "perf": {
+        "maxSpeedKmph": 100,
+        "accelMps2": 0.6,
+        "decelMps2": 0.7,
+        "lengthM": 200
+      }
+    },
+    {
+      "id": "69254bb9ccf236facdea7668",
+      "name": "Special Super",
+      "number": "SP001",
+      "type": "EXPRESS",
+      "priority": 3,
+      "delay_min": 5,
+      "current_block": "69254bb9ccf236facdea75ef",
+      "offset_m": 0,
+      "speed_kmph": 59.256178971819025,
+      "direction": "UP",
+      "lat": null,
+      "lon": null,
+      "status": "RUNNING",
+      "perf": {
+        "maxSpeedKmph": 100,
+        "accelMps2": 0.6,
+        "decelMps2": 0.7,
+        "lengthM": 200
+      }
+    },
+    {
+      "id": "69254bb9ccf236facdea766a",
+      "name": "HighPrio Extra",
+      "number": "HP100",
+      "type": "EXPRESS",
+      "priority": 15,
+      "delay_min": 18,
+      "current_block": "69254bb9ccf236facdea75b3",
+      "offset_m": 772,
+      "speed_kmph": 72.4631383986655,
+      "direction": "DOWN",
+      "lat": null,
+      "lon": null,
+      "status": "RUNNING",
+      "perf": {
+        "maxSpeedKmph": 100,
+        "accelMps2": 0.6,
+        "decelMps2": 0.7,
+        "lengthM": 200
+      }
+    },
+    {
+      "id": "69254bb9ccf236facdea766c",
+      "name": "Late Freight",
+      "number": "LF200",
+      "type": "EXPRESS",
+      "priority": 2,
+      "delay_min": 25,
+      "current_block": "69254bb8ccf236facdea7593",
+      "offset_m": 74,
+      "speed_kmph": 72.18852053005963,
+      "direction": "DOWN",
+      "lat": null,
+      "lon": null,
+      "status": "RUNNING",
+      "perf": {
+        "maxSpeedKmph": 100,
+        "accelMps2": 0.6,
+        "decelMps2": 0.7,
+        "lengthM": 200
+      }
+    }
+  ]
+}
