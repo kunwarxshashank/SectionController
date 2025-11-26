@@ -11,7 +11,7 @@ A multi-service setup consisting of a **Next.js frontend**, **Node.js backend**,
 
 ## 📦 Project Structure
 
-```
+```text
 
 SectionController
 ├── frontend (Next.js)
