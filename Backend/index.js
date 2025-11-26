@@ -1,12 +1,16 @@
-import { configDotenv } from 'dotenv'
-configDotenv();
+import { config as configDotenv } from "dotenv"
+configDotenv()
 import express from 'express'
 import http  from'http'
 import { Server } from 'socket.io' 
 import cors  from 'cors'
-import sectionSchema from './models/sectionSchema';
+import sectionRoutes from "./routes/section.routes.js";
 
-import mongoose from 'mongoose'
+import adminRoutes from "./routes/admin.routes.js";
+
+import logRoutes from "./routes/log.routes.js";
+
+import mongoose from 'mongoose' ; 
 
 const app = express() ;
 const server = http.createServer(app)
@@ -44,6 +48,13 @@ app.use(cors({
 }) 
 )
 
+app.use("/api", sectionRoutes);
+
+app.use("/api", adminRoutes);
+
+app.use("/api", logRoutes);
+
+
 let userSocketmap = []  ;
 
 io.on("connection" , Socket=>{
@@ -52,10 +63,7 @@ io.on("connection" , Socket=>{
       userSocketmap.push({data ,id })
       const s  = await  sectionSchema.find().select("trains")
       Socket.emit(s);
-
    })
-   
-    
 })
 
 
