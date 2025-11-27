@@ -106,8 +106,7 @@
           "trackDirection": "UP",
           "headwaySeconds": 180,
           "nextBlocks": [
-            "69249f1202304d4329f2e340",
-            "LOOP_69249f1202304d4329f2e338"
+            "69249f1202304d4329f2e340"
           ],
           "prevBlocks": [
             "69249f1202304d4329f2e330"
@@ -411,8 +410,7 @@
           "trackDirection": "UP",
           "headwaySeconds": 180,
           "nextBlocks": [
-            "69249f1202304d4329f2e380",
-            "LOOP_69249f1202304d4329f2e378"
+            "69249f1202304d4329f2e380"
           ],
           "prevBlocks": [
             "69249f1202304d4329f2e370"
@@ -488,8 +486,7 @@
           "trackDirection": "UP",
           "headwaySeconds": 180,
           "nextBlocks": [
-            "69249f1202304d4329f2e390",
-            "LOOP_69249f1202304d4329f2e388"
+            "69249f1202304d4329f2e390"
           ],
           "prevBlocks": [
             "69249f1202304d4329f2e380"
@@ -717,8 +714,7 @@
           "trackDirection": "UP",
           "headwaySeconds": 180,
           "nextBlocks": [
-            "69249f1202304d4329f2e3c0",
-            "LOOP_69249f1202304d4329f2e3b8"
+            "69249f1202304d4329f2e3c0"
           ],
           "prevBlocks": [
             "69249f1202304d4329f2e3b0"
@@ -794,8 +790,7 @@
           "trackDirection": "UP",
           "headwaySeconds": 180,
           "nextBlocks": [
-            "69249f1202304d4329f2e3d0",
-            "LOOP_69249f1202304d4329f2e3c8"
+            "69249f1202304d4329f2e3d0"
           ],
           "prevBlocks": [
             "69249f1202304d4329f2e3c0"
@@ -909,8 +904,7 @@
           "trackDirection": "UP",
           "headwaySeconds": 180,
           "nextBlocks": [
-            "69249f1202304d4329f2e3e8",
-            "LOOP_69249f1202304d4329f2e3e0"
+            "69249f1202304d4329f2e3e8"
           ],
           "prevBlocks": [
             "69249f1202304d4329f2e3d8"
@@ -986,8 +980,7 @@
           "trackDirection": "UP",
           "headwaySeconds": 180,
           "nextBlocks": [
-            "69249f1202304d4329f2e3f8",
-            "LOOP_69249f1202304d4329f2e3f0"
+            "69249f1202304d4329f2e3f8"
           ],
           "prevBlocks": [
             "69249f1202304d4329f2e3e8"
@@ -1025,8 +1018,7 @@
           "trackDirection": "UP",
           "headwaySeconds": 180,
           "nextBlocks": [
-            "69249f1202304d4329f2e400",
-            "LOOP_69249f1202304d4329f2e3f8"
+            "69249f1202304d4329f2e400"
           ],
           "prevBlocks": [
             "69249f1202304d4329f2e3f0"
@@ -1126,102 +1118,6 @@
               23.2322
             ]
           }
-        },
-        {
-          "id": "LOOP_69249f1202304d4329f2e378",
-          "blockType": "LOOP",
-          "length_m": 200,
-          "headwaySeconds": 60,
-          "prevBlocks": [
-            "69249f1202304d4329f2e378"
-          ],
-          "nextBlocks": [
-            "69249f1202304d4329f2e380"
-          ]
-        },
-        {
-          "id": "LOOP_69249f1202304d4329f2e3e0",
-          "blockType": "LOOP",
-          "length_m": 200,
-          "headwaySeconds": 60,
-          "prevBlocks": [
-            "69249f1202304d4329f2e3e0"
-          ],
-          "nextBlocks": [
-            "69249f1202304d4329f2e3e8"
-          ]
-        },
-        {
-          "id": "LOOP_69249f1202304d4329f2e3f0",
-          "blockType": "LOOP",
-          "length_m": 200,
-          "headwaySeconds": 60,
-          "prevBlocks": [
-            "69249f1202304d4329f2e3f0"
-          ],
-          "nextBlocks": [
-            "69249f1202304d4329f2e3f8"
-          ]
-        },
-        {
-          "id": "LOOP_69249f1202304d4329f2e3f8",
-          "blockType": "LOOP",
-          "length_m": 200,
-          "headwaySeconds": 60,
-          "prevBlocks": [
-            "69249f1202304d4329f2e3f8"
-          ],
-          "nextBlocks": [
-            "69249f1202304d4329f2e400"
-          ]
-        },
-        {
-          "id": "LOOP_69249f1202304d4329f2e3c8",
-          "blockType": "LOOP",
-          "length_m": 200,
-          "headwaySeconds": 60,
-          "prevBlocks": [
-            "69249f1202304d4329f2e3c8"
-          ],
-          "nextBlocks": [
-            "69249f1202304d4329f2e3d0"
-          ]
-        },
-        {
-          "id": "LOOP_69249f1202304d4329f2e338",
-          "blockType": "LOOP",
-          "length_m": 200,
-          "headwaySeconds": 60,
-          "prevBlocks": [
-            "69249f1202304d4329f2e338"
-          ],
-          "nextBlocks": [
-            "69249f1202304d4329f2e340"
-          ]
-        },
-        {
-          "id": "LOOP_69249f1202304d4329f2e388",
-          "blockType": "LOOP",
-          "length_m": 200,
-          "headwaySeconds": 60,
-          "prevBlocks": [
-            "69249f1202304d4329f2e388"
-          ],
-          "nextBlocks": [
-            "69249f1202304d4329f2e390"
-          ]
-        },
-        {
-          "id": "LOOP_69249f1202304d4329f2e3b8",
-          "blockType": "LOOP",
-          "length_m": 200,
-          "headwaySeconds": 60,
-          "prevBlocks": [
-            "69249f1202304d4329f2e3b8"
-          ],
-          "nextBlocks": [
-            "69249f1202304d4329f2e3c0"
-          ]
         }
       ]
     },

@@ -215,28 +215,13 @@ class RailOptimizerWithLoops:
 
 
 def load_json(file):
-    """Load data from a JSON file (for backward compatibility)"""
     with open(file, "r") as f:
         return json.load(f)
 
 
 # this function is used to send data to python server
-def get_train_priorities(data=None):
-    """
-    Get train priorities. If data is provided, use it.
-    Otherwise, use default JSON file for backward compatibility.
-    
-    Args:
-        data: Section data dictionary (from API or other source)
-    
-    Returns:
-        List of train priority recommendations
-    """
-    
-    # if data is None:
-    #     # Fallback to JSON file
-    #     data = load_json("sectionData.json")
-    
+def get_train_priorities(json_file="sectionData.json"):
+    data = load_json(json_file)
     engine = RailOptimizerWithLoops(data)
     engine.create_variables()
     engine.add_headway_and_no_overlap()
@@ -275,4 +260,4 @@ if __name__ == "__main__":
     engine.add_objective()
     schedule = engine.solve()
 
-    print(json.dumps(schedule, indent=2))
+    # print(schedule)

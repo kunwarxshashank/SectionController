@@ -25,6 +25,7 @@ SectionController
 
 ```bash
 cd SectionController
+npm install 
 npm run dev
 ````
 
@@ -36,6 +37,7 @@ Frontend runs at: **[http://localhost:3000](http://localhost:3000)**
 
 ```bash
 cd SectionController/backend
+npm install
 node index.js
 ```
 
@@ -61,7 +63,9 @@ uvicorn server:app --reload
 Python API runs at: **[http://127.0.0.1:8000](http://127.0.0.1:8000)**
 
 ORJSON data endpoint:
-👉 **[http://127.0.0.1:8000/api/orengine](http://127.0.0.1:8000/api/orengine)**
+👉 **[http://127.0.0.1:8000/api/orengine?sectionid=6926a23c2b59850b5b5b28cfe](http://127.0.0.1:8000/api/orengine?sectionid=6926a23c2b59850b5b5b28cfe)**
+
+Change the section sectionid as you want
 
 ---
 
