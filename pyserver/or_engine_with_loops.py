@@ -219,35 +219,6 @@ def load_json(file):
         return json.load(f)
 
 
-# this function is used to send data to python server
-def get_train_priorities(json_file="sectionData.json"):
-    data = load_json(json_file)
-    engine = RailOptimizerWithLoops(data)
-    engine.create_variables()
-    engine.add_headway_and_no_overlap()
-    engine.add_objective()
-    schedule = engine.solve()
-
-    if not schedule:
-        return []
-
-    rows = []
-
-    for info in schedule:
-        rows.append({
-            "train_id": info["train_id"],
-            "train_name": info.get("train_name"),
-            "target_block": info.get("chosen_target_block"),
-            "use_loop": info.get("use_loop"),
-            "enter_at_s": info.get("enter_at_s"),
-            "exit_at_s": info.get("exit_at_s"),
-            "duration_s": info.get("duration_s")
-        })
-
-    return rows
-
-
-#main function
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         print("Usage: python or_engine_with_loops.py sectionData.json")
@@ -260,4 +231,7 @@ if __name__ == "__main__":
     engine.add_objective()
     schedule = engine.solve()
 
-    # print(schedule)
+    if schedule:
+        print("\n=== SCHEDULE ===")
+        for row in schedule:
+            print(row)

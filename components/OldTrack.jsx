@@ -12,7 +12,7 @@ export default function TrackControl() {
     // Fetch data from API
     const fetchSectionData = async () => {
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/section/6926a23c2b59850b5b5b28cf/display`);
+            const response = await fetch('http://localhost:5000/api/section/6926a23c2b59850b5b5b28cf/display');
             if (!response.ok) throw new Error('Failed to fetch section data');
             const data = await response.json();
             setSectionData(data);
@@ -149,7 +149,7 @@ export default function TrackControl() {
     // Calculate SVG width based on number of blocks (ensure minimum width for scrolling)
     const maxBlocks = Math.max(...tracks.map(t => t.blocks.length));
     const svgWidth = Math.max(1000, maxBlocks * 50 + 100);
-    const svgHeight = 100 + mainTracks.length * 140 + loopTracks.length * 20;
+    const svgHeight = 100 + mainTracks.length * 100 + loopTracks.length * 20;
 
     return (
         <div className={`${isFullscreen ? 'fixed inset-0 z-50 bg-gray-900' : 'card h-full'} flex flex-col gap-4`}>
@@ -200,21 +200,14 @@ export default function TrackControl() {
                                 style={{ display: 'block' }}
                             >
                                 <defs>
-                                    {/* Steel rail gradient */}
-                                    <linearGradient id="railGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                                        <stop offset="0%" stopColor="#94a3b8" />
-                                        <stop offset="50%" stopColor="#64748b" />
-                                        <stop offset="100%" stopColor="#475569" />
-                                    </linearGradient>
-
-                                    {/* Sleeper gradient */}
-                                    <linearGradient id="sleeperGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                                        <stop offset="0%" stopColor="#78716c" />
-                                        <stop offset="100%" stopColor="#57534e" />
+                                    <linearGradient id="trackGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                        <stop offset="0%" stopColor="#475569" stopOpacity="0.7" />
+                                        <stop offset="50%" stopColor="#334155" stopOpacity="1" />
+                                        <stop offset="100%" stopColor="#475569" stopOpacity="0.7" />
                                     </linearGradient>
 
                                     <filter id="signalGlow">
-                                        <feGaussianBlur stdDeviation="3" result="coloredBlur" />
+                                        <feGaussianBlur stdDeviation="4" result="coloredBlur" />
                                         <feMerge>
                                             <feMergeNode in="coloredBlur" />
                                             <feMergeNode in="SourceGraphic" />
@@ -222,7 +215,7 @@ export default function TrackControl() {
                                     </filter>
                                 </defs>
 
-                                {/* Render Stations at Top with connecting lines */}
+                                {/* Render Stations at Top */}
                                 {stations.map((station, idx) => {
                                     const stationX = 150 + idx * 160;
                                     const stationY = 40;
@@ -231,36 +224,23 @@ export default function TrackControl() {
 
                                     return (
                                         <g key={station._id}>
-                                            {/* Vertical line connecting to tracks */}
-                                            <line
-                                                x1={stationX}
-                                                y1={stationY + 5}
-                                                x2={stationX}
-                                                y2={svgHeight - 20}
-                                                stroke={color}
-                                                strokeWidth="1.5"
-                                                strokeDasharray="3,3"
-                                                opacity="0.3"
-                                            />
-
-                                            {/* Station marker circle */}
-                                            <circle
-                                                cx={stationX}
-                                                cy={stationY}
-                                                r="12"
+                                            <rect
+                                                x={stationX - 30}
+                                                y={stationY - 15}
+                                                width="60"
+                                                height="28"
                                                 fill={color}
-                                                fillOpacity="0.15"
+                                                fillOpacity="0.2"
                                                 stroke={color}
                                                 strokeWidth="2"
+                                                rx="6"
                                             />
-
-                                            {/* Station code text */}
                                             <text
                                                 x={stationX}
                                                 y={stationY + 4}
                                                 textAnchor="middle"
                                                 fill={color}
-                                                fontSize="9"
+                                                fontSize="12"
                                                 fontWeight="700"
                                             >
                                                 {station.station_code}
@@ -271,81 +251,68 @@ export default function TrackControl() {
 
                                 {/* Render Main Tracks */}
                                 {mainTracks.map((track, trackIdx) => {
-                                    const yPosition = 100 + trackIdx * 140;
+                                    const yPosition = 100 + trackIdx * 100;
                                     const trackLength = track.blocks.length;
                                     const blockWidth = 45;
-                                    const railGap = 6; // Gap between dual rails
 
                                     return (
                                         <g key={track.id}>
                                             {/* Track Name Label */}
                                             <text
                                                 x="30"
-                                                y={yPosition - 30}
-                                                fill="#e2e8f0"
-                                                fontSize="12"
-                                                fontWeight="600"
+                                                y={yPosition - 25}
+                                                fill="#FEF6E4"
+                                                fontSize="14"
+                                                fontWeight="700"
                                             >
                                                 {track.name} ({track.direction})
                                             </text>
 
-                                            {/* Railway Sleepers (ties) - behind rails */}
-                                            {Array.from({ length: trackLength * 3 }).map((_, i) => (
+                                            {/* Track shadow */}
+                                            <line
+                                                x1="50"
+                                                y1={yPosition + 2}
+                                                x2={50 + trackLength * blockWidth}
+                                                y2={yPosition + 2}
+                                                stroke="#1e293b"
+                                                strokeWidth="7"
+                                                opacity="0.4"
+                                            />
+
+                                            {/* Main track */}
+                                            <line
+                                                x1="50"
+                                                y1={yPosition}
+                                                x2={50 + trackLength * blockWidth}
+                                                y2={yPosition}
+                                                stroke="url(#trackGradient)"
+                                                strokeWidth="6"
+                                            />
+
+                                            {/* Track highlight */}
+                                            <line
+                                                x1="50"
+                                                y1={yPosition - 1}
+                                                x2={50 + trackLength * blockWidth}
+                                                y2={yPosition - 1}
+                                                stroke="#64748b"
+                                                strokeWidth="1"
+                                                opacity="0.6"
+                                            />
+
+                                            {/* Railway sleepers */}
+                                            {track.blocks.map((_, i) => (
                                                 <rect
-                                                    key={`sleeper-${i}`}
-                                                    x={50 + i * 15}
-                                                    y={yPosition - railGap - 2}
-                                                    width="8"
-                                                    height={railGap * 2 + 4}
-                                                    fill="url(#sleeperGradient)"
-                                                    opacity="0.6"
+                                                    key={i}
+                                                    x={60 + i * blockWidth}
+                                                    y={yPosition - 10}
+                                                    width="4"
+                                                    height="20"
+                                                    fill="#64748b"
+                                                    opacity="0.4"
                                                     rx="1"
                                                 />
                                             ))}
-
-                                            {/* Upper Rail */}
-                                            <line
-                                                x1="50"
-                                                y1={yPosition - railGap}
-                                                x2={50 + trackLength * blockWidth}
-                                                y2={yPosition - railGap}
-                                                stroke="url(#railGradient)"
-                                                strokeWidth="3.5"
-                                                strokeLinecap="round"
-                                            />
-
-                                            {/* Upper Rail highlight */}
-                                            <line
-                                                x1="50"
-                                                y1={yPosition - railGap - 1}
-                                                x2={50 + trackLength * blockWidth}
-                                                y2={yPosition - railGap - 1}
-                                                stroke="#cbd5e1"
-                                                strokeWidth="0.5"
-                                                opacity="0.6"
-                                            />
-
-                                            {/* Lower Rail */}
-                                            <line
-                                                x1="50"
-                                                y1={yPosition + railGap}
-                                                x2={50 + trackLength * blockWidth}
-                                                y2={yPosition + railGap}
-                                                stroke="url(#railGradient)"
-                                                strokeWidth="3.5"
-                                                strokeLinecap="round"
-                                            />
-
-                                            {/* Lower Rail highlight */}
-                                            <line
-                                                x1="50"
-                                                y1={yPosition + railGap - 1}
-                                                x2={50 + trackLength * blockWidth}
-                                                y2={yPosition + railGap - 1}
-                                                stroke="#cbd5e1"
-                                                strokeWidth="0.5"
-                                                opacity="0.6"
-                                            />
 
                                             {/* Render Blocks and Signals */}
                                             {track.blocks.map((block, blockIdx) => {
@@ -357,23 +324,23 @@ export default function TrackControl() {
                                                         {/* Block boundary marker */}
                                                         <line
                                                             x1={blockX}
-                                                            y1={yPosition - 20}
+                                                            y1={yPosition - 18}
                                                             x2={blockX}
-                                                            y2={yPosition + 20}
+                                                            y2={yPosition + 18}
                                                             stroke="#64748b"
-                                                            strokeWidth="1"
-                                                            strokeDasharray="2,2"
-                                                            opacity="0.4"
+                                                            strokeWidth="1.5"
+                                                            strokeDasharray="4,4"
+                                                            opacity="0.5"
                                                         />
 
-                                                        {/* Block ID label (below track) */}
+                                                        {/* Block ID label */}
                                                         <text
                                                             x={blockX + blockWidth / 2}
-                                                            y={yPosition + 30}
+                                                            y={yPosition + 35}
                                                             textAnchor="middle"
                                                             fill="#94a3b8"
-                                                            fontSize="8"
-                                                            fontWeight="500"
+                                                            fontSize="9"
+                                                            fontWeight="600"
                                                         >
                                                             {block.block_id}
                                                         </text>
@@ -382,11 +349,11 @@ export default function TrackControl() {
                                                         {isSelected && (
                                                             <rect
                                                                 x={blockX}
-                                                                y={yPosition - 25}
+                                                                y={yPosition - 20}
                                                                 width={blockWidth}
-                                                                height="50"
+                                                                height="40"
                                                                 fill="#EA7317"
-                                                                opacity="0.15"
+                                                                opacity="0.2"
                                                                 stroke="#EA7317"
                                                                 strokeWidth="2"
                                                                 rx="4"
@@ -395,73 +362,60 @@ export default function TrackControl() {
                                                             />
                                                         )}
 
-                                                        {/* Signal - positioned above track at block end */}
+                                                        {/* Signal at block end */}
                                                         {block.signal && (
                                                             <g>
-                                                                {/* Signal pole */}
-                                                                <rect
-                                                                    x={blockX + blockWidth - 1}
-                                                                    y={yPosition - 35}
-                                                                    width="2"
-                                                                    height="35"
-                                                                    fill="#334155"
-                                                                    rx="1"
-                                                                />
-
-                                                                {/* Signal housing */}
-                                                                <rect
-                                                                    x={blockX + blockWidth - 7}
-                                                                    y={yPosition - 40}
-                                                                    width="14"
-                                                                    height="8"
-                                                                    fill="#1e293b"
-                                                                    stroke="#334155"
-                                                                    strokeWidth="1"
-                                                                    rx="2"
-                                                                />
-
-                                                                {/* Signal light with glow */}
+                                                                {/* Signal glow */}
                                                                 <circle
                                                                     cx={blockX + blockWidth}
-                                                                    cy={yPosition - 36}
-                                                                    r="8"
+                                                                    cy={yPosition - 30}
+                                                                    r="12"
                                                                     fill={getSignalColor(block.signal.aspect)}
                                                                     filter="url(#signalGlow)"
-                                                                    opacity="0.4"
+                                                                    opacity="0.3"
                                                                 />
-
                                                                 {/* Signal light */}
                                                                 <circle
                                                                     cx={blockX + blockWidth}
-                                                                    cy={yPosition - 36}
-                                                                    r="4"
+                                                                    cy={yPosition - 30}
+                                                                    r="7"
                                                                     fill={getSignalColor(block.signal.aspect)}
-                                                                    stroke="#0f172a"
-                                                                    strokeWidth="1"
+                                                                    stroke="#FEF6E4"
+                                                                    strokeWidth="2"
+                                                                    opacity="0.95"
                                                                     className="cursor-pointer"
                                                                     onClick={() => setSelectedBlock(block)}
+                                                                />
+                                                                {/* Signal pole */}
+                                                                <rect
+                                                                    x={blockX + blockWidth - 1.5}
+                                                                    y={yPosition - 23}
+                                                                    width="3"
+                                                                    height="15"
+                                                                    fill="#475569"
+                                                                    rx="1.5"
                                                                 />
                                                             </g>
                                                         )}
 
-                                                        {/* Show loop connections (switches) */}
+                                                        {/* Show loop connections */}
                                                         {block.nextBlocks && block.nextBlocks.length > 1 && (
                                                             <g>
                                                                 <circle
                                                                     cx={blockX + blockWidth}
                                                                     cy={yPosition}
-                                                                    r="8"
+                                                                    r="10"
                                                                     fill="#3b82f6"
-                                                                    fillOpacity="0.2"
+                                                                    fillOpacity="0.3"
                                                                     stroke="#3b82f6"
-                                                                    strokeWidth="2"
+                                                                    strokeWidth="2.5"
                                                                 />
                                                                 <text
                                                                     x={blockX + blockWidth}
-                                                                    y={yPosition + 3}
+                                                                    y={yPosition + 4}
                                                                     textAnchor="middle"
-                                                                    fill="#3b82f6"
-                                                                    fontSize="7"
+                                                                    fill="#FEF6E4"
+                                                                    fontSize="9"
                                                                     fontWeight="700"
                                                                 >
                                                                     SW
@@ -480,8 +434,8 @@ export default function TrackControl() {
                                     const parentTrackIdx = mainTracks.findIndex(t => t.id === loopTrack.parentTrack);
                                     if (parentTrackIdx === -1) return null;
 
-                                    const parentY = 100 + parentTrackIdx * 140;
-                                    const loopY = parentY + 60 + loopIdx * 20;
+                                    const parentY = 100 + parentTrackIdx * 100;
+                                    const loopY = parentY + 50 + loopIdx * 20;
 
                                     const startBlock = loopTrack.blocks[0];
                                     const endBlock = loopTrack.blocks[loopTrack.blocks.length - 1];
@@ -537,7 +491,7 @@ export default function TrackControl() {
                                 const trainPos = calculateTrainPosition(train, tracks);
                                 if (!trainPos) return null;
 
-                                const trackY = 85 + trainPos.trackIndex * 140;
+                                const trackY = 85 + trainPos.trackIndex * 100;
                                 const blockWidth = 45;
 
                                 return (
@@ -551,8 +505,9 @@ export default function TrackControl() {
                                         }}
                                     >
                                         <div className="relative group">
-                                            <div className={`w-8 h-6 rounded-lg bg-gradient-to-r ${getTrainColor(train.status)} border ${train.status === 'RUNNING' ? 'border-green-300' : 'border-red-300'} flex items-center justify-center shadow-lg transform group-hover:scale-125 transition-transform`}>
-                                                <Train className="w-4 h-4 text-white" />
+                                            <div className={`absolute inset-0 bg-gradient-to-r ${getTrainColor(train.status)} blur-lg opacity-60 rounded-xl`} />
+                                            <div className={`relative w-12 h-8 rounded-xl bg-gradient-to-r ${getTrainColor(train.status)} border-2 ${train.status === 'RUNNING' ? 'border-green-300' : 'border-red-300'} flex items-center justify-center shadow-lg transform group-hover:scale-125 transition-transform`}>
+                                                <Train className="w-6 h-6 text-white" />
                                             </div>
 
                                             <div className="absolute -top-24 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">

@@ -3,6 +3,7 @@ import mongoose from 'mongoose'
 const SectionSchema = new mongoose.Schema({
   section_id: String,
   name: String,
+  sectionLength: Number,
 
   coordinates: {
     type: [Number],

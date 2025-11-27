@@ -9,6 +9,7 @@ import Train from "../models/trainSchema.js";
 
 export const getSectionDisplay = async (req, res) => {
   try {
+    console.log(`Api calls: `, req.params.id)
     const sectionId = req.params.id;
 
     // 1. Load section with tracks + stations
@@ -58,10 +59,10 @@ export const getSectionDisplay = async (req, res) => {
 
           signal: b.signal
             ? {
-                id: b.signal._id,
-                aspect: b.signal.aspect,
-                position: b.signal.position
-              }
+              id: b.signal._id,
+              aspect: b.signal.aspect,
+              position: b.signal.position
+            }
             : null
         }))
       });
@@ -93,6 +94,7 @@ export const getSectionDisplay = async (req, res) => {
       section: {
         id: section._id,
         name: section.name,
+        sectionLength: section.sectionLength,
         coordinates: section.coordinates,
       },
 
