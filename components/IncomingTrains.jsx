@@ -51,8 +51,8 @@ export default function IncomingTrains() {
                         key={filter.value}
                         onClick={() => setTimeFilter(filter.value)}
                         className={`px-3 py-1 rounded-lg text-sm font-medium transition-all ${timeFilter === filter.value
-                                ? 'bg-ir-orange text-white'
-                                : 'bg-white/5 text-ir-cream hover:bg-white/10'
+                            ? 'bg-ir-orange text-white'
+                            : 'bg-white/5 text-ir-cream hover:bg-white/10'
                             }`}
                     >
                         {filter.label}

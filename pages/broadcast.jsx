@@ -1,65 +1,381 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 import { useAuth } from '@/context/AuthContext';
 import Layout from '@/components/Layout';
-import { Phone, Radio as RadioIcon, MessageSquare, Download, Search } from 'lucide-react';
-import { format } from 'date-fns';
+import { Phone, Radio as RadioIcon, MessageSquare, PhoneOff, Mic, MicOff, Video, VideoOff, Volume2 } from 'lucide-react';
+import io from 'socket.io-client';
 
 export default function BroadcastPage() {
     const router = useRouter();
-    const { authenticated, loading } = useAuth();
+    const { authenticated, loading, admin } = useAuth();
     const [activeTab, setActiveTab] = useState('hotline');
+    const [admins, setAdmins] = useState([]);
+    const [onlineUsers, setOnlineUsers] = useState([]);
+    const [socket, setSocket] = useState(null);
+
+    // Call state
     const [activeCall, setActiveCall] = useState(null);
-    const [transcript, setTranscript] = useState([]);
-    const [callLogs, setCallLogs] = useState([
-        {
-            id: 1,
-            type: 'hotline',
-            participants: ['Bhopal Section', 'Itarsi Section'],
-            duration: '05:32',
-            timestamp: new Date(Date.now() - 3600000),
-            summary: 'Discussed train priority for Express 12345',
-        },
-        {
-            id: 2,
-            type: 'radio',
-            participants: ['Control Center', 'Train 11078'],
-            duration: '02:15',
-            timestamp: new Date(Date.now() - 7200000),
-            summary: 'Speed restriction advisory',
-        },
-    ]);
+    const [incomingCall, setIncomingCall] = useState(null);
+    const [callStatus, setCallStatus] = useState(''); // idle, calling, ringing, connected
+    const [isMuted, setIsMuted] = useState(false);
+    const [isVideoEnabled, setIsVideoEnabled] = useState(false);
 
-    // Mock section controllers for hotline
-    const sections = [
-        { id: 'itarsi', name: 'Itarsi Section', status: 'available' },
-        { id: 'habibganj', name: 'Habibganj Section', status: 'available' },
-        { id: 'vidisha', name: 'Vidisha Section', status: 'busy' },
-        { id: 'ganjbasoda', name: 'Ganj Basoda Section', status: 'available' },
-    ];
+    // Radio state
+    const [isPTT, setIsPTT] = useState(false);
+    const [radioChannel, setRadioChannel] = useState(1);
+    const [activeRadioUser, setActiveRadioUser] = useState(null);
 
-    const startCall = (section) => {
-        setActiveCall(section);
-        setTranscript([
-            { speaker: 'You', message: `Calling ${section.name}...`, time: new Date() },
-            { speaker: section.name, message: 'Connected. This is control.', time: new Date() },
-        ]);
+    // WebRTC refs
+    const localVideoRef = useRef(null);
+    const remoteVideoRef = useRef(null);
+    const peerConnection = useRef(null);
+    const localStream = useRef(null);
+    const radioStreamRef = useRef(null);
+    const mediaRecorderRef = useRef(null);
+
+    // ICE servers configuration
+    const iceServers = {
+        iceServers: [
+            { urls: 'stun:stun.l.google.com:19302' },
+            { urls: 'stun:stun1.l.google.com:19302' },
+        ]
     };
 
+    // Initialize socket connection
+    useEffect(() => {
+        if (authenticated && admin) {
+            const newSocket = io('http://localhost:5000');
+            setSocket(newSocket);
+
+            newSocket.on('connect', () => {
+                console.log('Connected to signaling server');
+                newSocket.emit('register', {
+                    email: admin.email,
+                    sectionId: admin.sectionId
+                });
+            });
+
+            newSocket.on('users-online', (users) => {
+                setOnlineUsers(users.filter(u => u.email !== admin.email));
+            });
+
+            newSocket.on('incoming-call', handleIncomingCall);
+            newSocket.on('call-accepted', handleCallAccepted);
+            newSocket.on('ice-candidate', handleIceCandidate);
+            newSocket.on('call-ended', handleCallEnded);
+
+            // Radio events
+            newSocket.on('radio-ptt-start', (data) => {
+                setActiveRadioUser(data.from);
+            });
+
+            newSocket.on('radio-ptt-end', () => {
+                setActiveRadioUser(null);
+            });
+
+            newSocket.on('radio-audio', async (data) => {
+                // Play received radio audio
+                if (radioStreamRef.current) {
+                    const audioBlob = new Blob([data.audio], { type: 'audio/webm' });
+                    const audioUrl = URL.createObjectURL(audioBlob);
+                    const audio = new Audio(audioUrl);
+                    audio.play();
+                }
+            });
+
+            return () => {
+                newSocket.disconnect();
+            };
+        }
+    }, [authenticated, admin]);
+
+    // Fetch admins list
+    useEffect(() => {
+        if (authenticated) {
+            fetchAdmins();
+        }
+    }, [authenticated]);
+
+    const fetchAdmins = async () => {
+        try {
+            const token = localStorage.getItem('accessToken');
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/broadcast/admins`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            const data = await response.json();
+            if (data.success) {
+                setAdmins(data.data.filter(a => a.email !== admin?.email));
+            }
+        } catch (error) {
+            console.error('Error fetching admins:', error);
+        }
+    };
+
+    // Initialize peer connection
+    const createPeerConnection = () => {
+        const pc = new RTCPeerConnection(iceServers);
+
+        pc.onicecandidate = (event) => {
+            if (event.candidate && socket && activeCall) {
+                socket.emit('ice-candidate', {
+                    to: activeCall.email,
+                    candidate: event.candidate
+                });
+            }
+        };
+
+        pc.ontrack = (event) => {
+            if (remoteVideoRef.current) {
+                remoteVideoRef.current.srcObject = event.streams[0];
+            }
+        };
+
+        pc.onconnectionstatechange = () => {
+            console.log('Connection state:', pc.connectionState);
+            if (pc.connectionState === 'connected') {
+                setCallStatus('connected');
+            } else if (pc.connectionState === 'disconnected' || pc.connectionState === 'failed') {
+                endCall();
+            }
+        };
+
+        return pc;
+    };
+
+    // Start call
+    const startCall = async (targetAdmin, videoCall = false) => {
+        try {
+            setActiveCall(targetAdmin);
+            setCallStatus('calling');
+            setIsVideoEnabled(videoCall);
+
+            // Get user media
+            const stream = await navigator.mediaDevices.getUserMedia({
+                audio: true,
+                video: videoCall
+            });
+
+            localStream.current = stream;
+            if (localVideoRef.current && videoCall) {
+                localVideoRef.current.srcObject = stream;
+            }
+
+            // Create peer connection
+            peerConnection.current = createPeerConnection();
+
+            // Add tracks to peer connection
+            stream.getTracks().forEach(track => {
+                peerConnection.current.addTrack(track, stream);
+            });
+
+            // Create offer
+            const offer = await peerConnection.current.createOffer();
+            await peerConnection.current.setLocalDescription(offer);
+
+            // Send offer via socket
+            socket.emit('call-user', {
+                from: admin.email,
+                to: targetAdmin.email,
+                offer: offer,
+                callType: videoCall ? 'video' : 'audio'
+            });
+
+        } catch (error) {
+            console.error('Error starting call:', error);
+            alert('Could not start call. Please check permissions.');
+            setActiveCall(null);
+            setCallStatus('');
+        }
+    };
+
+    // Handle incoming call
+    const handleIncomingCall = async (data) => {
+        setIncomingCall({
+            from: data.from,
+            offer: data.offer,
+            callType: data.callType
+        });
+        setCallStatus('ringing');
+    };
+
+    // Accept call
+    const acceptCall = async () => {
+        try {
+            const isVideo = incomingCall.callType === 'video';
+            setIsVideoEnabled(isVideo);
+
+            // Get user media
+            const stream = await navigator.mediaDevices.getUserMedia({
+                audio: true,
+                video: isVideo
+            });
+
+            localStream.current = stream;
+            if (localVideoRef.current && isVideo) {
+                localVideoRef.current.srcObject = stream;
+            }
+
+            // Create peer connection
+            peerConnection.current = createPeerConnection();
+
+            // Add tracks
+            stream.getTracks().forEach(track => {
+                peerConnection.current.addTrack(track, stream);
+            });
+
+            // Set remote description
+            await peerConnection.current.setRemoteDescription(
+                new RTCSessionDescription(incomingCall.offer)
+            );
+
+            // Create answer
+            const answer = await peerConnection.current.createAnswer();
+            await peerConnection.current.setLocalDescription(answer);
+
+            // Send answer
+            socket.emit('call-accepted', {
+                to: incomingCall.from,
+                answer: answer
+            });
+
+            setActiveCall({ email: incomingCall.from });
+            setIncomingCall(null);
+            setCallStatus('connected');
+
+        } catch (error) {
+            console.error('Error accepting call:', error);
+            rejectCall();
+        }
+    };
+
+    // Reject call
+    const rejectCall = () => {
+        if (incomingCall) {
+            socket.emit('end-call', { to: incomingCall.from });
+        }
+        setIncomingCall(null);
+        setCallStatus('');
+    };
+
+    // Handle call accepted
+    const handleCallAccepted = async (data) => {
+        try {
+            await peerConnection.current.setRemoteDescription(
+                new RTCSessionDescription(data.answer)
+            );
+            setCallStatus('connected');
+        } catch (error) {
+            console.error('Error handling call accepted:', error);
+        }
+    };
+
+    // Handle ICE candidate
+    const handleIceCandidate = async (data) => {
+        try {
+            if (peerConnection.current) {
+                await peerConnection.current.addIceCandidate(
+                    new RTCIceCandidate(data.candidate)
+                );
+            }
+        } catch (error) {
+            console.error('Error handling ICE candidate:', error);
+        }
+    };
+
+    // End call
     const endCall = () => {
         if (activeCall) {
-            const newLog = {
-                id: callLogs.length + 1,
-                type: activeTab,
-                participants: ['Bhopal Section', activeCall.name],
-                duration: '01:23',
-                timestamp: new Date(),
-                summary: 'Call completed',
-            };
-            setCallLogs([newLog, ...callLogs]);
+            socket?.emit('end-call', { to: activeCall.email });
         }
+
+        if (localStream.current) {
+            localStream.current.getTracks().forEach(track => track.stop());
+        }
+
+        if (peerConnection.current) {
+            peerConnection.current.close();
+        }
+
+        localStream.current = null;
+        peerConnection.current = null;
         setActiveCall(null);
-        setTranscript([]);
+        setCallStatus('');
+        setIsMuted(false);
+        setIsVideoEnabled(false);
+    };
+
+    // Handle call ended
+    const handleCallEnded = () => {
+        endCall();
+    };
+
+    // Toggle mute
+    const toggleMute = () => {
+        if (localStream.current) {
+            const audioTrack = localStream.current.getAudioTracks()[0];
+            if (audioTrack) {
+                audioTrack.enabled = !audioTrack.enabled;
+                setIsMuted(!audioTrack.enabled);
+            }
+        }
+    };
+
+    // Toggle video
+    const toggleVideo = () => {
+        if (localStream.current) {
+            const videoTrack = localStream.current.getVideoTracks()[0];
+            if (videoTrack) {
+                videoTrack.enabled = !videoTrack.enabled;
+                setIsVideoEnabled(videoTrack.enabled);
+            }
+        }
+    };
+
+    // Radio PTT functions
+    const startPTT = async () => {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            radioStreamRef.current = stream;
+
+            const mediaRecorder = new MediaRecorder(stream);
+            mediaRecorderRef.current = mediaRecorder;
+
+            const audioChunks = [];
+
+            mediaRecorder.ondataavailable = (event) => {
+                audioChunks.push(event.data);
+            };
+
+            mediaRecorder.onstop = () => {
+                const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                socket.emit('radio-audio', {
+                    from: admin.email,
+                    audio: audioBlob
+                });
+                stream.getTracks().forEach(track => track.stop());
+                radioStreamRef.current = null;
+            };
+
+            mediaRecorder.start();
+            setIsPTT(true);
+
+            socket.emit('radio-ptt-start', {
+                from: admin.email,
+                channel: radioChannel
+            });
+        } catch (error) {
+            console.error('Error starting PTT:', error);
+        }
+    };
+
+    const endPTT = () => {
+        if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+            mediaRecorderRef.current.stop();
+        }
+        setIsPTT(false);
+        socket?.emit('radio-ptt-end', { from: admin.email });
     };
 
     if (loading) {
@@ -87,8 +403,8 @@ export default function BroadcastPage() {
                     <button
                         onClick={() => setActiveTab('hotline')}
                         className={`flex items-center space-x-2 px-6 py-3 rounded-lg font-medium transition-all ${activeTab === 'hotline'
-                                ? 'bg-ir-orange text-white shadow-lg'
-                                : 'glass-dark text-ir-cream hover:bg-white/10'
+                            ? 'bg-ir-orange text-white shadow-lg'
+                            : 'glass-dark text-ir-cream hover:bg-white/10'
                             }`}
                     >
                         <Phone size={20} />
@@ -97,92 +413,163 @@ export default function BroadcastPage() {
                     <button
                         onClick={() => setActiveTab('radio')}
                         className={`flex items-center space-x-2 px-6 py-3 rounded-lg font-medium transition-all ${activeTab === 'radio'
-                                ? 'bg-ir-orange text-white shadow-lg'
-                                : 'glass-dark text-ir-cream hover:bg-white/10'
+                            ? 'bg-ir-orange text-white shadow-lg'
+                            : 'glass-dark text-ir-cream hover:bg-white/10'
                             }`}
                     >
                         <RadioIcon size={20} />
                         <span>Radio</span>
                     </button>
-                    <button
-                        onClick={() => setActiveTab('logs')}
-                        className={`flex items-center space-x-2 px-6 py-3 rounded-lg font-medium transition-all ${activeTab === 'logs'
-                                ? 'bg-ir-orange text-white shadow-lg'
-                                : 'glass-dark text-ir-cream hover:bg-white/10'
-                            }`}
-                    >
-                        <MessageSquare size={20} />
-                        <span>Communication Logs</span>
-                    </button>
                 </div>
 
+                {/* Incoming Call Modal */}
+                {incomingCall && (
+                    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
+                        <div className="glass-dark p-8 rounded-2xl max-w-md w-full">
+                            <div className="text-center mb-6">
+                                <Phone size={64} className="text-green-500 mx-auto mb-4 animate-pulse" />
+                                <h2 className="text-2xl font-bold text-white mb-2">Incoming Call</h2>
+                                <p className="text-gray-300">{incomingCall.from}</p>
+                                <p className="text-sm text-gray-400 mt-2">
+                                    {incomingCall.callType === 'video' ? 'Video Call' : 'Audio Call'}
+                                </p>
+                            </div>
+                            <div className="flex gap-4">
+                                <button
+                                    onClick={acceptCall}
+                                    className="flex-1 py-3 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg transition-all"
+                                >
+                                    Accept
+                                </button>
+                                <button
+                                    onClick={rejectCall}
+                                    className="flex-1 py-3 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-lg transition-all"
+                                >
+                                    Reject
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
                 <div className="grid grid-cols-12 gap-6">
-                    {/* Left Panel - Communication Interface */}
+                    {/* Main Panel */}
                     <div className="col-span-8">
                         <div className="card">
                             {activeTab === 'hotline' && (
                                 <div>
-                                    <h2 className="text-xl font-semibold text-white mb-4">Hotline Directory</h2>
+                                    <h2 className="text-xl font-semibold text-white mb-4">Section Controllers Directory</h2>
 
                                     {activeCall ? (
                                         <div>
-                                            {/* Active Call */}
+                                            {/* Active Call UI */}
                                             <div className="glass-orange p-6 rounded-xl mb-4">
                                                 <div className="flex items-center justify-between mb-4">
                                                     <div>
                                                         <h3 className="text-2xl font-bold text-white mb-1">
-                                                            {activeCall.name}
+                                                            {activeCall.email}
                                                         </h3>
                                                         <div className="flex items-center space-x-2">
                                                             <div className="w-3 h-3 bg-green-500 rounded-full live-pulse"></div>
-                                                            <span className="text-sm text-green-300">Call in progress</span>
+                                                            <span className="text-sm text-green-300">
+                                                                {callStatus === 'connected' ? 'Connected' : 'Connecting...'}
+                                                            </span>
                                                         </div>
                                                     </div>
+                                                </div>
+
+                                                {/* Video containers */}
+                                                {isVideoEnabled && (
+                                                    <div className="grid grid-cols-2 gap-4 mb-4">
+                                                        <div className="relative bg-black rounded-lg overflow-hidden aspect-video">
+                                                            <video
+                                                                ref={remoteVideoRef}
+                                                                autoPlay
+                                                                playsInline
+                                                                className="w-full h-full object-cover"
+                                                            />
+                                                            <div className="absolute bottom-2 left-2 bg-black/50 px-2 py-1 rounded text-white text-sm">
+                                                                Remote
+                                                            </div>
+                                                        </div>
+                                                        <div className="relative bg-black rounded-lg overflow-hidden aspect-video">
+                                                            <video
+                                                                ref={localVideoRef}
+                                                                autoPlay
+                                                                playsInline
+                                                                muted
+                                                                className="w-full h-full object-cover"
+                                                            />
+                                                            <div className="absolute bottom-2 left-2 bg-black/50 px-2 py-1 rounded text-white text-sm">
+                                                                You
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                )}
+
+                                                {/* Call controls */}
+                                                <div className="flex items-center justify-center gap-4">
+                                                    <button
+                                                        onClick={toggleMute}
+                                                        className={`p-4 rounded-full transition-all ${isMuted ? 'bg-red-500' : 'bg-white/20 hover:bg-white/30'
+                                                            }`}
+                                                    >
+                                                        {isMuted ? <MicOff size={24} className="text-white" /> : <Mic size={24} className="text-white" />}
+                                                    </button>
+                                                    {isVideoEnabled && (
+                                                        <button
+                                                            onClick={toggleVideo}
+                                                            className="p-4 rounded-full bg-white/20 hover:bg-white/30 transition-all"
+                                                        >
+                                                            {isVideoEnabled ? <Video size={24} className="text-white" /> : <VideoOff size={24} className="text-white" />}
+                                                        </button>
+                                                    )}
                                                     <button
                                                         onClick={endCall}
-                                                        className="px-6 py-3 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-lg transition-all"
+                                                        className="px-6 py-4 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-full transition-all flex items-center gap-2"
                                                     >
+                                                        <PhoneOff size={24} />
                                                         End Call
                                                     </button>
-                                                </div>
-                                            </div>
-
-                                            {/* Transcript */}
-                                            <div className="glass-dark p-4 rounded-xl" style={{ minHeight: '400px', maxHeight: '400px', overflowY: 'auto' }}>
-                                                <h3 className="text-lg font-semibold text-white mb-3">Live Transcript</h3>
-                                                <div className="space-y-3">
-                                                    {transcript.map((msg, idx) => (
-                                                        <div key={idx} className="flex flex-col">
-                                                            <div className="flex items-center justify-between mb-1">
-                                                                <span className="text-sm font-semibold text-ir-orange">{msg.speaker}</span>
-                                                                <span className="text-xs text-gray-400">{format(msg.time, 'HH:mm:ss')}</span>
-                                                            </div>
-                                                            <p className="text-sm text-gray-200 bg-black/20 rounded p-2">{msg.message}</p>
-                                                        </div>
-                                                    ))}
                                                 </div>
                                             </div>
                                         </div>
                                     ) : (
                                         <div className="grid grid-cols-2 gap-4">
-                                            {sections.map((section) => (
-                                                <div key={section.id} className="card-hover border border-white/10">
-                                                    <div className="flex items-center justify-between mb-2">
-                                                        <h3 className="text-lg font-semibold text-white">{section.name}</h3>
-                                                        <span className={`badge ${section.status === 'available' ? 'badge-low' : 'badge-medium'}`}>
-                                                            {section.status}
-                                                        </span>
+                                            {admins.map((adminItem) => {
+                                                const isOnline = onlineUsers.some(u => u.email === adminItem.email);
+                                                return (
+                                                    <div key={adminItem._id} className="card-hover border border-white/10">
+                                                        <div className="flex items-center justify-between mb-2">
+                                                            <div>
+                                                                <h3 className="text-lg font-semibold text-white">{adminItem.email}</h3>
+                                                                <p className="text-sm text-gray-400">Section: {adminItem.sectionId}</p>
+                                                            </div>
+                                                            <span className={`badge ${isOnline ? 'badge-low' : 'badge-medium'}`}>
+                                                                {isOnline ? 'online' : 'offline'}
+                                                            </span>
+                                                        </div>
+                                                        <div className="flex gap-2">
+                                                            <button
+                                                                onClick={() => startCall(adminItem, false)}
+                                                                disabled={!isOnline}
+                                                                className="flex-1 px-4 py-2 bg-green-500 hover:bg-green-600 disabled:bg-gray-500 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-all flex items-center justify-center space-x-2"
+                                                            >
+                                                                <Phone size={18} />
+                                                                <span>Audio</span>
+                                                            </button>
+                                                            <button
+                                                                onClick={() => startCall(adminItem, true)}
+                                                                disabled={!isOnline}
+                                                                className="flex-1 px-4 py-2 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-500 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-all flex items-center justify-center space-x-2"
+                                                            >
+                                                                <Video size={18} />
+                                                                <span>Video</span>
+                                                            </button>
+                                                        </div>
                                                     </div>
-                                                    <button
-                                                        onClick={() => startCall(section)}
-                                                        disabled={section.status !== 'available'}
-                                                        className="w-full mt-2 px-4 py-2 bg-green-500 hover:bg-green-600 disabled:bg-gray-500 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-all flex items-center justify-center space-x-2"
-                                                    >
-                                                        <Phone size={18} />
-                                                        <span>Call</span>
-                                                    </button>
-                                                </div>
-                                            ))}
+                                                );
+                                            })}
                                         </div>
                                     )}
                                 </div>
@@ -197,12 +584,27 @@ export default function BroadcastPage() {
                                             <div className="inline-flex items-center justify-center w-24 h-24 bg-blue-500/20 rounded-full mb-4">
                                                 <RadioIcon size={48} className="text-blue-400" />
                                             </div>
-                                            <h3 className="text-xl font-semibold text-white mb-2">Channel 1 - Main</h3>
-                                            <p className="text-sm text-gray-400">Push to talk</p>
+                                            <h3 className="text-xl font-semibold text-white mb-2">Channel {radioChannel} - Main</h3>
+                                            <p className="text-sm text-gray-400">Push and hold to talk</p>
+                                            {activeRadioUser && (
+                                                <div className="mt-4 flex items-center justify-center gap-2">
+                                                    <Volume2 size={20} className="text-green-500 animate-pulse" />
+                                                    <span className="text-green-400 font-medium">{activeRadioUser} is speaking</span>
+                                                </div>
+                                            )}
                                         </div>
 
-                                        <button className="w-full py-4 bg-blue-500 hover:bg-blue-600 text-white font-bold text-lg rounded-xl transition active:scale-95">
-                                            🎙️ PRESS TO TALK
+                                        <button
+                                            onMouseDown={startPTT}
+                                            onMouseUp={endPTT}
+                                            onTouchStart={startPTT}
+                                            onTouchEnd={endPTT}
+                                            className={`w-full py-4 font-bold text-lg rounded-xl transition select-none ${isPTT
+                                                ? 'bg-red-500 text-white scale-95'
+                                                : 'bg-blue-500 hover:bg-blue-600 text-white'
+                                                }`}
+                                        >
+                                            {isPTT ? '🔴 TRANSMITTING...' : '🎙️ PRESS TO TALK'}
                                         </button>
                                     </div>
 
@@ -210,7 +612,11 @@ export default function BroadcastPage() {
                                         {[1, 2, 3, 4].map((ch) => (
                                             <button
                                                 key={ch}
-                                                className="px-4 py-2 glass-dark hover:bg-white/10 text-white rounded-lg transition-all"
+                                                onClick={() => setRadioChannel(ch)}
+                                                className={`px-4 py-2 rounded-lg transition-all font-medium ${radioChannel === ch
+                                                    ? 'bg-ir-orange text-white'
+                                                    : 'glass-dark hover:bg-white/10 text-white'
+                                                    }`}
                                             >
                                                 CH {ch}
                                             </button>
@@ -218,76 +624,27 @@ export default function BroadcastPage() {
                                     </div>
                                 </div>
                             )}
-
-                            {activeTab === 'logs' && (
-                                <div>
-                                    <h2 className="text-xl font-semibold text-white mb-4">Communication Logs</h2>
-
-                                    {/* Search */}
-                                    <div className="relative mb-4">
-                                        <Search size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                                        <input
-                                            type="text"
-                                            placeholder="Search logs..."
-                                            className="w-full pl-10 pr-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-ir-orange"
-                                        />
-                                    </div>
-
-                                    {/* Logs Table */}
-                                    <div className="overflow-x-auto">
-                                        <table className="w-full text-sm">
-                                            <thead className="bg-white/5 text-gray-400 text-left">
-                                                <tr>
-                                                    <th className="px-4 py-3">Time</th>
-                                                    <th className="px-4 py-3">Type</th>
-                                                    <th className="px-4 py-3">Participants</th>
-                                                    <th className="px-4 py-3">Duration</th>
-                                                    <th className="px-4 py-3">Actions</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody className="text-white">
-                                                {callLogs.map((log) => (
-                                                    <tr key={log.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
-                                                        <td className="px-4 py-3">{format(log.timestamp, 'dd/MM/yyyy HH:mm')}</td>
-                                                        <td className="px-4 py-3">
-                                                            <span className={`badge ${log.type === 'hotline' ? 'badge-express' : 'badge-freight'}`}>
-                                                                {log.type}
-                                                            </span>
-                                                        </td>
-                                                        <td className="px-4 py-3">{log.participants.join(' ↔ ')}</td>
-                                                        <td className="px-4 py-3">{log.duration}</td>
-                                                        <td className="px-4 py-3">
-                                                            <button className="text-ir-orange hover:text-orange-400 transition-colors">
-                                                                <Download size={16} />
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-                                                ))}
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            )}
                         </div>
                     </div>
 
-                    {/* Right Panel - Info */}
+                    {/* Right Panel */}
                     <div className="col-span-4">
                         <div className="card">
-                            <h3 className="text-lg font-semibold text-white mb-4">Quick Info</h3>
-                            <div className="space-y-4">
-                                <div className="glass-dark p-3 rounded-lg">
-                                    <p className="text-xs text-gray-400 mb-1">Total Calls Today</p>
-                                    <p className="text-2xl font-bold text-white">24</p>
-                                </div>
-                                <div className="glass-dark p-3 rounded-lg">
-                                    <p className="text-xs text-gray-400 mb-1">Average Duration</p>
-                                    <p className="text-2xl font-bold text-white">04:32</p>
-                                </div>
-                                <div className="glass-dark p-3 rounded-lg">
-                                    <p className="text-xs text-gray-400 mb-1">Active Channels</p>
-                                    <p className="text-2xl font-bold text-white">3</p>
-                                </div>
+                            <h3 className="text-lg font-semibold text-white mb-4">Online Users</h3>
+                            <div className="space-y-2">
+                                {onlineUsers.length > 0 ? (
+                                    onlineUsers.map((user, idx) => (
+                                        <div key={idx} className="glass-dark p-3 rounded-lg flex items-center gap-2">
+                                            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                                            <div className="flex-1">
+                                                <p className="text-white text-sm font-medium">{user.email}</p>
+                                                <p className="text-gray-400 text-xs">{user.sectionId}</p>
+                                            </div>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <p className="text-gray-400 text-sm text-center py-4">No users online</p>
+                                )}
                             </div>
                         </div>
                     </div>
