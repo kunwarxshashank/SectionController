@@ -18,7 +18,7 @@ app.add_middleware(
 
 def fetch_section_data(section_id):
     """Fetch section data from the API endpoint"""
-    url = f"http://localhost:5000/api/section/{section_id}/display"
+    url = f"http://localhost:5000/api/section/{section_id}/export"
     try:
         response = requests.get(url, timeout=10)
         response.raise_for_status()

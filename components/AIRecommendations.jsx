@@ -11,14 +11,13 @@ export default function AIRecommendations() {
         setLoading(true);
         setError(null);
         try {
-            // Add section ID as query parameter
             const sectionId = '6926a23c2b59850b5b5b28cf';
             const response = await fetch(`http://127.0.0.1:8000/api/orengine?sectionid=${sectionId}`);
             if (!response.ok) {
                 throw new Error(`Failed to fetch: ${response.status}`);
             }
             const data = await response.json();
-            setRecommendations(data);
+            setRecommendations(generateTrainInstructions(data));
         } catch (err) {
             console.error('Error fetching recommendations:', err);
             setError(err.message);
@@ -28,18 +27,13 @@ export default function AIRecommendations() {
     };
 
     useEffect(() => {
-        // Fetch recommendations on mount
         fetchRecommendations();
-
-        // Optional: Auto-refresh every 30 seconds
         const interval = setInterval(fetchRecommendations, 30000);
         return () => clearInterval(interval);
     }, []);
 
     const handleAction = (recommendationId, action) => {
         setProcessing((prev) => ({ ...prev, [recommendationId]: action }));
-
-        // Simulate processing
         setTimeout(() => {
             setProcessing((prev) => {
                 const newState = { ...prev };
@@ -49,8 +43,33 @@ export default function AIRecommendations() {
         }, 2000);
     };
 
+    function generateTrainInstructions(scheduleData) {
+        return scheduleData.map(train => {
+            const { train_name, use_loop, enter_at_s, exit_at_s, duration_s } = train;
+            let instruction = "";
+
+            if (use_loop) {
+                instruction = `Loop the train ${train_name}. Start at ${enter_at_s}s and remove at ${exit_at_s}s.`;
+            } else {
+                const speedKmH = ((2 / duration_s) * 3600).toFixed(2);
+
+                if (enter_at_s === 0) {
+                    instruction = `Move this train ${train_name} with the speed of ${speedKmH} km/h for 2 km.`;
+                } else {
+                    instruction = `Delay this train ${train_name} for ${enter_at_s}s and after that start it with the speed of ${speedKmH} km/h for 2 km.`;
+                }
+            }
+
+            return {
+                ...train,
+                instruction,
+            };
+        });
+    }
+
     return (
         <div className="card h-full flex flex-col">
+
             {/* Header */}
             <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center">
@@ -74,7 +93,7 @@ export default function AIRecommendations() {
                 </button>
             </div>
 
-            {/* Recommendations List */}
+            {/* List */}
             <div className="flex-1 overflow-y-auto space-y-3 pr-2" style={{ maxHeight: 'calc(100vh - 400px)' }}>
                 {error && (
                     <div className="bg-red-500/20 border border-red-500/50 rounded-xl p-4 mb-3">
@@ -99,7 +118,7 @@ export default function AIRecommendations() {
                     </div>
                 ) : (
                     recommendations.map((rec, index) => {
-                        const recId = rec.train_id || index;
+                        const recId = index;
                         const isProcessing = processing[recId];
 
                         return (
@@ -107,65 +126,26 @@ export default function AIRecommendations() {
                                 key={recId}
                                 className="glass-orange p-4 rounded-xl border border-orange-500/30 hover:border-orange-500/50 transition-all"
                             >
-                                {/* Train Info Header */}
+                                {/* SIMPLE HEADER */}
                                 <div className="flex items-start justify-between mb-3">
-                                    <div className="flex-1">
-                                        <div className="flex items-center space-x-2 mb-1">
-                                            <span className="text-lg font-bold text-white">
-                                                {rec.train_name}
-                                            </span>
-                                        </div>
-                                        <div className="text-xs text-gray-400">
-                                            ID: {rec.train_id}
-                                        </div>
-                                    </div>
-                                    <div className="flex flex-col items-end space-y-1">
-                                        <span className={`badge ${rec.use_loop ? 'badge-success' : 'badge-info'}`}>
-                                            {rec.use_loop ? '🔄 Loop' : '→ Direct'}
-                                        </span>
-                                    </div>
+                                    <span className="text-lg font-bold text-white">
+                                        Recommendation #{index + 1}
+                                    </span>
+
+                                    <span className={`badge ${rec.use_loop ? 'badge-success' : 'badge-info'}`}>
+                                        {rec.use_loop ? '🔄 Loop' : '→ Direct'}
+                                    </span>
                                 </div>
 
-                                {/* Target Block */}
+                                {/* ONLY THE STRING */}
                                 <div className="bg-black/20 rounded-lg p-3 mb-3">
-                                    <div className="text-xs text-gray-400 mb-1">Target Block</div>
-                                    <div className="text-sm font-mono font-semibold text-ir-orange">
-                                        {rec.target_block}
+                                    <div className="text-xs text-gray-400 mb-1">Instruction</div>
+                                    <div className="text-sm font-medium text-ir-orange leading-relaxed">
+                                        {rec.instruction}
                                     </div>
                                 </div>
 
-                                {/* Timing Information */}
-                                <div className="grid grid-cols-3 gap-2 mb-3">
-                                    <div className="bg-black/20 rounded-lg p-2">
-                                        <div className="flex items-center space-x-1 mb-1">
-                                            <Clock size={12} className="text-green-400" />
-                                            <span className="text-xs text-gray-400">Enter</span>
-                                        </div>
-                                        <div className="text-sm font-bold text-green-400">
-                                            {rec.enter_at_s}s
-                                        </div>
-                                    </div>
-                                    <div className="bg-black/20 rounded-lg p-2">
-                                        <div className="flex items-center space-x-1 mb-1">
-                                            <ArrowRight size={12} className="text-blue-400" />
-                                            <span className="text-xs text-gray-400">Exit</span>
-                                        </div>
-                                        <div className="text-sm font-bold text-blue-400">
-                                            {rec.exit_at_s}s
-                                        </div>
-                                    </div>
-                                    <div className="bg-black/20 rounded-lg p-2">
-                                        <div className="flex items-center space-x-1 mb-1">
-                                            <Clock size={12} className="text-purple-400" />
-                                            <span className="text-xs text-gray-400">Duration</span>
-                                        </div>
-                                        <div className="text-sm font-bold text-purple-400">
-                                            {rec.duration_s}s
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Action Buttons */}
+                                {/* BUTTONS (unchanged) */}
                                 <div className="flex space-x-1">
                                     <button
                                         onClick={() => handleAction(recId, 'accept')}
@@ -184,6 +164,7 @@ export default function AIRecommendations() {
                                             </>
                                         )}
                                     </button>
+
                                     <button
                                         onClick={() => handleAction(recId, 'override')}
                                         disabled={isProcessing}
@@ -201,6 +182,7 @@ export default function AIRecommendations() {
                                             </>
                                         )}
                                     </button>
+
                                     <button
                                         onClick={() => handleAction(recId, 'reject')}
                                         disabled={isProcessing}
