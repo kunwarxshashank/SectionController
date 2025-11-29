@@ -52,8 +52,8 @@ export default function Layout({ children }) {
                                         key={item.name}
                                         href={item.href}
                                         className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-200 ${isActive
-                                                ? 'bg-ir-orange text-white shadow-lg shadow-orange-500/30'
-                                                : 'text-ir-cream hover:bg-white/10'
+                                            ? 'bg-ir-orange text-white shadow-lg shadow-orange-500/30'
+                                            : 'text-ir-cream hover:bg-white/10'
                                             }`}
                                     >
                                         <Icon size={20} />

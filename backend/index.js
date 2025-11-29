@@ -5,11 +5,9 @@ import http from 'http'
 import { Server } from 'socket.io'
 import cors from 'cors'
 import sectionRoutes from "./routes/section.routes.js";
-
 import adminRoutes from "./routes/admin.routes.js";
-
 import logRoutes from "./routes/log.routes.js";
-
+import broadcastRoutes from "./routes/broadcast.routes.js";
 import mongoose from 'mongoose';
 
 const app = express();
@@ -32,38 +30,101 @@ dbConnection()
 
 const io = new Server(server, {
    cors: {
-      origin: "http://localhost:3000",
+      origin: "*",
       methods: ["GET", "POST"],
-      credentials: false
    },
 
 });
 app.use(express.json());
 app.use(cors({
-
-   origin: "http://localhost:3000",
-   credentials: true,
+   origin: "*",
    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
    allowedHeaders: ["Content-Type", "Authorization"],
 })
 )
 
 app.use("/api", sectionRoutes);
-
 app.use("/api", adminRoutes);
-
 app.use("/api", logRoutes);
+app.use("/api", broadcastRoutes);
 
 
 let userSocketmap = [];
 
+// WebRTC signaling
 io.on("connection", Socket => {
-   Socket.on("register", async (data) => {
-      const id = Socket.id
-      userSocketmap.push({ data, id })
-      const s = await sectionSchema.find().select("trains")
-      Socket.emit(s);
-   })
+   console.log("User connected:", Socket.id);
+
+   Socket.on("register", (data) => {
+      userSocketmap = userSocketmap.filter(user => user.id !== Socket.id);
+      userSocketmap.push({ ...data, id: Socket.id });
+      console.log("User registered:", data.email);
+      io.emit("users-online", userSocketmap.map(u => ({ email: u.email, sectionId: u.sectionId })));
+   });
+
+   // WebRTC signaling events
+   Socket.on("call-user", (data) => {
+      const targetUser = userSocketmap.find(u => u.email === data.to);
+      if (targetUser) {
+         io.to(targetUser.id).emit("incoming-call", {
+            from: data.from,
+            offer: data.offer,
+            callType: data.callType
+         });
+      }
+   });
+
+   Socket.on("call-accepted", (data) => {
+      const targetUser = userSocketmap.find(u => u.email === data.to);
+      if (targetUser) {
+         io.to(targetUser.id).emit("call-accepted", {
+            answer: data.answer
+         });
+      }
+   });
+
+   Socket.on("ice-candidate", (data) => {
+      const targetUser = userSocketmap.find(u => u.email === data.to);
+      if (targetUser) {
+         io.to(targetUser.id).emit("ice-candidate", {
+            candidate: data.candidate
+         });
+      }
+   });
+
+   Socket.on("end-call", (data) => {
+      const targetUser = userSocketmap.find(u => u.email === data.to);
+      if (targetUser) {
+         io.to(targetUser.id).emit("call-ended");
+      }
+   });
+
+   // Radio/PTT events
+   Socket.on("radio-ptt-start", (data) => {
+      Socket.broadcast.emit("radio-ptt-start", {
+         from: data.from,
+         channel: data.channel
+      });
+   });
+
+   Socket.on("radio-ptt-end", (data) => {
+      Socket.broadcast.emit("radio-ptt-end", {
+         from: data.from
+      });
+   });
+
+   Socket.on("radio-audio", (data) => {
+      Socket.broadcast.emit("radio-audio", {
+         from: data.from,
+         audio: data.audio
+      });
+   });
+
+   Socket.on("disconnect", () => {
+      console.log("User disconnected:", Socket.id);
+      userSocketmap = userSocketmap.filter(user => user.id !== Socket.id);
+      io.emit("users-online", userSocketmap.map(u => ({ email: u.email, sectionId: u.sectionId })));
+   });
 })
 
 

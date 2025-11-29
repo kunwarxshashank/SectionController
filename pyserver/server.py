@@ -3,8 +3,15 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 import requests
 from orengine import get_train_priorities
+from dotenv import load_dotenv
+import os
 
+#loading environment variables
+load_dotenv()
+
+# Initialize FastAPI app
 app = FastAPI()
+NODEJS_BACKEND_API = os.getenv("NODEJS_BACKEND_API")
 
 # Configure CORS to allow all origins
 app.add_middleware(

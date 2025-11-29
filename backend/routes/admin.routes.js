@@ -1,5 +1,5 @@
 import express from "express";
-import { loginAdmin , refreshAccessToken } from "../controllers/adminAuth.controller.js";
+import { loginAdmin, refreshAccessToken } from "../controllers/adminAuth.controller.js";
 
 const router = express.Router();
 
