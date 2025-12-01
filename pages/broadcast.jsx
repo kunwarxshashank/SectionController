@@ -28,10 +28,12 @@ export default function BroadcastPage() {
     // WebRTC refs
     const localVideoRef = useRef(null);
     const remoteVideoRef = useRef(null);
+    const remoteAudioRef = useRef(null);
     const peerConnection = useRef(null);
     const localStream = useRef(null);
     const radioStreamRef = useRef(null);
     const mediaRecorderRef = useRef(null);
+    const iceCandidateBuffer = useRef([]);
 
     // ICE servers configuration
     const iceServers = {
@@ -89,6 +91,28 @@ export default function BroadcastPage() {
         }
     }, [authenticated, admin]);
 
+    // Monitor remote stream and ensure it's set to audio element
+    useEffect(() => {
+        if (remoteAudioRef.current && peerConnection.current) {
+            const pc = peerConnection.current;
+
+            // Manually check for remote streams
+            const receivers = pc.getReceivers();
+            console.log('📡 Checking receivers:', receivers.length);
+
+            receivers.forEach(receiver => {
+                if (receiver.track && receiver.track.kind === 'audio') {
+                    const stream = new MediaStream([receiver.track]);
+                    console.log('🔊 Manually setting audio stream to element');
+                    remoteAudioRef.current.srcObject = stream;
+                    remoteAudioRef.current.play().catch(e => console.log('▶️ Play error (can ignore):', e.message));
+                }
+            });
+        }
+    }, [callStatus, activeCall]);
+
+
+
     // Fetch admins list
     useEffect(() => {
         if (authenticated) {
@@ -113,23 +137,48 @@ export default function BroadcastPage() {
         }
     };
 
+
     // Initialize peer connection
     const createPeerConnection = () => {
         const pc = new RTCPeerConnection(iceServers);
 
         pc.onicecandidate = (event) => {
             if (event.candidate && socket && activeCall) {
+                console.log('Sending ICE candidate to:', activeCall.email);
                 socket.emit('ice-candidate', {
                     to: activeCall.email,
                     candidate: event.candidate
                 });
+            } else if (!event.candidate) {
+                console.log('All ICE candidates have been sent');
             }
         };
 
         pc.ontrack = (event) => {
-            if (remoteVideoRef.current) {
-                remoteVideoRef.current.srcObject = event.streams[0];
+            console.log('🎵 Received remote track:', event.track.kind, 'Streams:', event.streams.length);
+            const remoteStream = event.streams[0];
+
+            console.log('Remote stream tracks:', remoteStream.getTracks().map(t => ({ kind: t.kind, enabled: t.enabled, readyState: t.readyState })));
+
+            // Set remote stream to audio element for audio-only calls
+            if (remoteAudioRef.current) {
+                remoteAudioRef.current.srcObject = remoteStream;
+                console.log('✅ Set remote stream to audio element');
             }
+
+            // Set remote stream to video element for video calls
+            if (remoteVideoRef.current) {
+                remoteVideoRef.current.srcObject = remoteStream;
+                console.log('✅ Set remote stream to video element');
+            }
+        };
+
+        pc.oniceconnectionstatechange = () => {
+            console.log('ICE connection state:', pc.iceConnectionState);
+        };
+
+        pc.onsignalingstatechange = () => {
+            console.log('Signaling state:', pc.signalingState);
         };
 
         pc.onconnectionstatechange = () => {
@@ -144,18 +193,27 @@ export default function BroadcastPage() {
         return pc;
     };
 
+
     // Start call
     const startCall = async (targetAdmin, videoCall = false) => {
         try {
+            console.log('📞 Starting call to:', targetAdmin.email, 'Video:', videoCall);
             setActiveCall(targetAdmin);
             setCallStatus('calling');
             setIsVideoEnabled(videoCall);
+            iceCandidateBuffer.current = [];
 
             // Get user media
             const stream = await navigator.mediaDevices.getUserMedia({
-                audio: true,
+                audio: {
+                    echoCancellation: true,
+                    noiseSuppression: true,
+                    autoGainControl: true
+                },
                 video: videoCall
             });
+
+            console.log('🎤 Got local stream with tracks:', stream.getTracks().map(t => ({ kind: t.kind, enabled: t.enabled })));
 
             localStream.current = stream;
             if (localVideoRef.current && videoCall) {
@@ -167,11 +225,16 @@ export default function BroadcastPage() {
 
             // Add tracks to peer connection
             stream.getTracks().forEach(track => {
-                peerConnection.current.addTrack(track, stream);
+                const sender = peerConnection.current.addTrack(track, stream);
+                console.log('➕ Added track to peer connection:', track.kind);
             });
 
             // Create offer
-            const offer = await peerConnection.current.createOffer();
+            const offer = await peerConnection.current.createOffer({
+                offerToReceiveAudio: true,
+                offerToReceiveVideo: videoCall
+            });
+            console.log('📤 Created offer:', offer.type);
             await peerConnection.current.setLocalDescription(offer);
 
             // Send offer via socket
@@ -183,12 +246,13 @@ export default function BroadcastPage() {
             });
 
         } catch (error) {
-            console.error('Error starting call:', error);
+            console.error('❌ Error starting call:', error);
             alert('Could not start call. Please check permissions.');
             setActiveCall(null);
             setCallStatus('');
         }
     };
+
 
     // Handle incoming call
     const handleIncomingCall = async (data) => {
@@ -200,17 +264,26 @@ export default function BroadcastPage() {
         setCallStatus('ringing');
     };
 
+
     // Accept call
     const acceptCall = async () => {
         try {
+            console.log('📞 Accepting call from:', incomingCall.from);
             const isVideo = incomingCall.callType === 'video';
             setIsVideoEnabled(isVideo);
+            iceCandidateBuffer.current = [];
 
             // Get user media
             const stream = await navigator.mediaDevices.getUserMedia({
-                audio: true,
+                audio: {
+                    echoCancellation: true,
+                    noiseSuppression: true,
+                    autoGainControl: true
+                },
                 video: isVideo
             });
+
+            console.log('🎤 Got local stream with tracks:', stream.getTracks().map(t => ({ kind: t.kind, enabled: t.enabled })));
 
             localStream.current = stream;
             if (localVideoRef.current && isVideo) {
@@ -222,16 +295,26 @@ export default function BroadcastPage() {
 
             // Add tracks
             stream.getTracks().forEach(track => {
-                peerConnection.current.addTrack(track, stream);
+                const sender = peerConnection.current.addTrack(track, stream);
+                console.log('➕ Added track to peer connection:', track.kind);
             });
 
             // Set remote description
+            console.log('📥 Setting remote description (offer)');
             await peerConnection.current.setRemoteDescription(
                 new RTCSessionDescription(incomingCall.offer)
             );
 
+            // Process buffered ICE candidates
+            console.log('Processing buffered ICE candidates:', iceCandidateBuffer.current.length);
+            for (const candidate of iceCandidateBuffer.current) {
+                await peerConnection.current.addIceCandidate(new RTCIceCandidate(candidate));
+            }
+            iceCandidateBuffer.current = [];
+
             // Create answer
             const answer = await peerConnection.current.createAnswer();
+            console.log('📤 Created answer:', answer.type);
             await peerConnection.current.setLocalDescription(answer);
 
             // Send answer
@@ -245,10 +328,12 @@ export default function BroadcastPage() {
             setCallStatus('connected');
 
         } catch (error) {
-            console.error('Error accepting call:', error);
+            console.error('❌ Error accepting call:', error);
             rejectCall();
         }
     };
+
+
 
     // Reject call
     const rejectCall = () => {
@@ -259,28 +344,45 @@ export default function BroadcastPage() {
         setCallStatus('');
     };
 
+
     // Handle call accepted
     const handleCallAccepted = async (data) => {
         try {
+            console.log('📥 Call accepted, setting remote description (answer)');
             await peerConnection.current.setRemoteDescription(
                 new RTCSessionDescription(data.answer)
             );
+
+            // Process buffered ICE candidates
+            console.log('Processing buffered ICE candidates:', iceCandidateBuffer.current.length);
+            for (const candidate of iceCandidateBuffer.current) {
+                await peerConnection.current.addIceCandidate(new RTCIceCandidate(candidate));
+            }
+            iceCandidateBuffer.current = [];
+
             setCallStatus('connected');
         } catch (error) {
-            console.error('Error handling call accepted:', error);
+            console.error('❌ Error handling call accepted:', error);
         }
     };
+
+
 
     // Handle ICE candidate
     const handleIceCandidate = async (data) => {
         try {
-            if (peerConnection.current) {
+            console.log('🧊 Received ICE candidate');
+            if (peerConnection.current && peerConnection.current.remoteDescription) {
                 await peerConnection.current.addIceCandidate(
                     new RTCIceCandidate(data.candidate)
                 );
+                console.log('✅ Added ICE candidate');
+            } else {
+                console.log('⏳ Buffering ICE candidate (no remote description yet)');
+                iceCandidateBuffer.current.push(data.candidate);
             }
         } catch (error) {
-            console.error('Error handling ICE candidate:', error);
+            console.error('❌ Error handling ICE candidate:', error);
         }
     };
 
@@ -394,7 +496,7 @@ export default function BroadcastPage() {
     return (
         <Layout>
             <div className="max-w-7xl mx-auto">
-                <h1 className="text-3xl font-bold text-white mb-6 font-railway">
+                <h1 className="text-3xl font-bold mb-6 font-railway" style={{ color: 'var(--text-primary)' }}>
                     📡 Broadcast & Communication
                 </h1>
 
@@ -403,9 +505,15 @@ export default function BroadcastPage() {
                     <button
                         onClick={() => setActiveTab('hotline')}
                         className={`flex items-center space-x-2 px-6 py-3 rounded-lg font-medium transition-all ${activeTab === 'hotline'
-                            ? 'bg-ir-orange text-white shadow-lg'
-                            : 'glass-dark text-ir-cream hover:bg-white/10'
+                            ? 'shadow-lg'
+                            : 'glass-dark hover:bg-white/10'
                             }`}
+                        style={activeTab === 'hotline' ? {
+                            background: 'var(--gradient-accent)',
+                            color: 'white'
+                        } : {
+                            color: 'var(--text-secondary)'
+                        }}
                     >
                         <Phone size={20} />
                         <span>Hotline</span>
@@ -413,9 +521,15 @@ export default function BroadcastPage() {
                     <button
                         onClick={() => setActiveTab('radio')}
                         className={`flex items-center space-x-2 px-6 py-3 rounded-lg font-medium transition-all ${activeTab === 'radio'
-                            ? 'bg-ir-orange text-white shadow-lg'
-                            : 'glass-dark text-ir-cream hover:bg-white/10'
+                            ? 'shadow-lg'
+                            : 'glass-dark hover:bg-white/10'
                             }`}
+                        style={activeTab === 'radio' ? {
+                            background: 'var(--gradient-accent)',
+                            color: 'white'
+                        } : {
+                            color: 'var(--text-secondary)'
+                        }}
                     >
                         <RadioIcon size={20} />
                         <span>Radio</span>
@@ -428,7 +542,7 @@ export default function BroadcastPage() {
                         <div className="glass-dark p-8 rounded-2xl max-w-md w-full">
                             <div className="text-center mb-6">
                                 <Phone size={64} className="text-green-500 mx-auto mb-4 animate-pulse" />
-                                <h2 className="text-2xl font-bold text-white mb-2">Incoming Call</h2>
+                                <h2 className="text-2xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>Incoming Call</h2>
                                 <p className="text-gray-300">{incomingCall.from}</p>
                                 <p className="text-sm text-gray-400 mt-2">
                                     {incomingCall.callType === 'video' ? 'Video Call' : 'Audio Call'}
@@ -458,7 +572,7 @@ export default function BroadcastPage() {
                         <div className="card">
                             {activeTab === 'hotline' && (
                                 <div>
-                                    <h2 className="text-xl font-semibold text-white mb-4">Section Controllers Directory</h2>
+                                    <h2 className="text-xl font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Section Controllers Directory</h2>
 
                                     {activeCall ? (
                                         <div>
@@ -466,7 +580,7 @@ export default function BroadcastPage() {
                                             <div className="glass-orange p-6 rounded-xl mb-4">
                                                 <div className="flex items-center justify-between mb-4">
                                                     <div>
-                                                        <h3 className="text-2xl font-bold text-white mb-1">
+                                                        <h3 className="text-2xl font-bold mb-1" style={{ color: 'var(--text-primary)' }}>
                                                             {activeCall.email}
                                                         </h3>
                                                         <div className="flex items-center space-x-2">
@@ -524,6 +638,7 @@ export default function BroadcastPage() {
                                                             {isVideoEnabled ? <Video size={24} className="text-white" /> : <VideoOff size={24} className="text-white" />}
                                                         </button>
                                                     )}
+
                                                     <button
                                                         onClick={endCall}
                                                         className="px-6 py-4 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-full transition-all flex items-center gap-2"
@@ -542,7 +657,7 @@ export default function BroadcastPage() {
                                                     <div key={adminItem._id} className="card-hover border border-white/10">
                                                         <div className="flex items-center justify-between mb-2">
                                                             <div>
-                                                                <h3 className="text-lg font-semibold text-white">{adminItem.email}</h3>
+                                                                <h3 className="text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>{adminItem.email}</h3>
                                                                 <p className="text-sm text-gray-400">Section: {adminItem.sectionId}</p>
                                                             </div>
                                                             <span className={`badge ${isOnline ? 'badge-low' : 'badge-medium'}`}>
@@ -577,7 +692,7 @@ export default function BroadcastPage() {
 
                             {activeTab === 'radio' && (
                                 <div>
-                                    <h2 className="text-xl font-semibold text-white mb-4">Radio Communication</h2>
+                                    <h2 className="text-xl font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Radio Communication</h2>
 
                                     <div className="glass-dark p-6 rounded-xl mb-4">
                                         <div className="text-center mb-6">
@@ -614,9 +729,15 @@ export default function BroadcastPage() {
                                                 key={ch}
                                                 onClick={() => setRadioChannel(ch)}
                                                 className={`px-4 py-2 rounded-lg transition-all font-medium ${radioChannel === ch
-                                                    ? 'bg-ir-orange text-white'
-                                                    : 'glass-dark hover:bg-white/10 text-white'
+                                                    ? 'text-white'
+                                                    : 'hover:bg-white/10'
                                                     }`}
+                                                style={radioChannel === ch ? {
+                                                    background: 'var(--gradient-accent)',
+                                                    color: 'white'
+                                                } : {
+                                                    color: 'var(--text-primary)'
+                                                }}
                                             >
                                                 CH {ch}
                                             </button>
@@ -630,14 +751,14 @@ export default function BroadcastPage() {
                     {/* Right Panel */}
                     <div className="col-span-4">
                         <div className="card">
-                            <h3 className="text-lg font-semibold text-white mb-4">Online Users</h3>
+                            <h3 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Online Users</h3>
                             <div className="space-y-2">
                                 {onlineUsers.length > 0 ? (
                                     onlineUsers.map((user, idx) => (
                                         <div key={idx} className="glass-dark p-3 rounded-lg flex items-center gap-2">
                                             <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                                             <div className="flex-1">
-                                                <p className="text-white text-sm font-medium">{user.email}</p>
+                                                <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{user.email}</p>
                                                 <p className="text-gray-400 text-xs">{user.sectionId}</p>
                                             </div>
                                         </div>
@@ -650,6 +771,17 @@ export default function BroadcastPage() {
                     </div>
                 </div>
             </div>
+
+            {/* Always-present audio element for remote stream */}
+            <audio
+                ref={remoteAudioRef}
+                autoPlay
+                playsInline
+                volume={1.0}
+                muted={false}
+                controls={false}
+                style={{ display: 'none' }}
+            />
         </Layout>
     );
 }

@@ -8,7 +8,7 @@ import IncomingTrains from '@/components/IncomingTrains';
 import TrackControl from '@/components/TrackControl';
 import AIRecommendations from '@/components/AIRecommendations';
 import { format } from 'date-fns';
-import { Clock, AlertCircle, Wifi, WifiOff } from 'lucide-react';
+import { Clock, AlertCircle, Wifi, WifiOff, Activity, Zap } from 'lucide-react';
 import { useState } from 'react';
 
 export default function HomePage() {
@@ -41,8 +41,17 @@ export default function HomePage() {
 
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center">
-                <div className="spinner"></div>
+            <div
+                className="min-h-screen flex flex-col items-center justify-center"
+                style={{ background: 'var(--gradient-primary)' }}
+            >
+                <div className="spinner mb-4"></div>
+                <p
+                    className="text-lg font-semibold animate-pulse"
+                    style={{ color: 'var(--text-secondary)' }}
+                >
+                    Loading Section Controller...
+                </p>
             </div>
         );
     }
@@ -54,74 +63,130 @@ export default function HomePage() {
     return (
         <Layout>
             {/* Page Header */}
-            <div className="glass-dark rounded-xl p-4 mb-6">
+            {/* <div
+                className="glass-dark rounded-xl p-3 mb-4 animate-slide-in"
+                style={{ border: '1px solid var(--border-primary)' }}
+            >
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="text-2xl font-bold text-white font-railway mb-1">
-                            {sectionMetadata?.name || 'Section Control Dashboard'}
+                        <h1
+                            className="text-2xl font-bold font-railway mb-2"
+                        >
+                            <span style={{
+                                background: 'var(--gradient-accent)',
+                                WebkitBackgroundClip: 'text',
+                                WebkitTextFillColor: 'transparent',
+                                backgroundClip: 'text'
+                            }}>
+                                {sectionMetadata?.name || 'Section Control Dashboard'}
+                            </span>
                         </h1>
-                        <p className="text-sm text-gray-400">
-                            Real-time monitoring and AI-powered traffic control
+                        <p
+                            className="text-sm font-medium flex items-center space-x-1"
+                            style={{ color: 'var(--text-tertiary)' }}
+                        >
+                            <Activity size={14} className="animate-pulse" style={{ color: '#22c55e' }} />
+                            <span>Real-time monitoring and AI-powered traffic control</span>
                         </p>
                     </div>
 
-                    <div className="flex items-center space-x-6">
-                        {/* Current Time */}
-                        <div className="flex items-center space-x-2 text-ir-cream">
-                            <Clock size={20} />
-                            <div className="text-right">
-                                <p className="text-xs text-gray-400">IST</p>
-                                <p className="font-mono font-semibold">
-                                    {format(currentTime, 'HH:mm:ss')}
-                                </p>
+                    <div className="flex items-center space-x-4">
+
+ 
+                        <div
+                            className="glass px-4 py-3 rounded-lg"
+                            style={{ border: '1px solid var(--border-accent)' }}
+                        >
+                            <div className="flex items-center space-x-2">
+                                <Clock size={24} style={{ color: 'var(--brand-orange)' }} />
+                                <div>
+                                    <p
+                                        className="text-xs font-bold uppercase tracking-wider"
+                                        style={{ color: 'var(--text-tertiary)' }}
+                                    >
+                                        IST {format(currentTime, 'HH:mm:ss')}
+                                    </p>
+                                </div>
                             </div>
                         </div>
 
-                        {/* Connection Status */}
-                        <div className={`flex items-center space-x-2 px-3 py-2 rounded-lg ${connected ? 'bg-green-500/20' : 'bg-red-500/20'
-                            }`}>
-                            {connected ? (
-                                <>
-                                    <Wifi size={18} className="text-green-400" />
-                                    <span className="text-xs font-medium text-green-300">CONNECTED</span>
-                                </>
-                            ) : (
-                                <>
-                                    <WifiOff size={18} className="text-red-400" />
-                                    <span className="text-xs font-medium text-red-300">DISCONNECTED</span>
-                                </>
-                            )}
+  
+                        <div
+                            className="px-4 py-3 rounded-lg transition-all duration-300"
+                            style={{
+                                background: connected
+                                    ? 'rgba(34, 197, 94, 0.15)'
+                                    : 'rgba(239, 68, 68, 0.15)',
+                                border: `1px solid ${connected ? '#22c55e' : '#ef4444'}`
+                            }}
+                        >
+                            <div className="flex items-center space-x-2">
+                                {connected ? (
+                                    <>
+                                        <Wifi size={20} className="animate-pulse" style={{ color: '#86efac' }} />
+                                        <span
+                                            className="text-xs font-bold uppercase tracking-wider"
+                                            style={{ color: '#86efac' }}
+                                        >
+                                            Connected
+                                        </span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <WifiOff size={20} style={{ color: '#fca5a5' }} />
+                                        <span
+                                            className="text-xs font-bold uppercase tracking-wider"
+                                            style={{ color: '#fca5a5' }}
+                                        >
+                                            Disconnected
+                                        </span>
+                                    </>
+                                )}
+                            </div>
                         </div>
 
-                        {/* Active Alerts */}
-                        <div className="flex items-center space-x-2 px-3 py-2 bg-orange-500/20 rounded-lg">
-                            <AlertCircle size={18} className="text-orange-400" />
-                            <div className="text-right">
-                                <p className="text-xs text-gray-400">Alerts</p>
-                                <p className="font-semibold text-orange-300">2</p>
+
+                        <div
+                            className="px-4 py-3 rounded-lg"
+                            style={{
+                                background: 'rgba(234, 115, 23, 0.15)',
+                                border: '1px solid var(--brand-orange)'
+                            }}
+                        >
+                            <div className="flex items-center space-x-3">
+                                <AlertCircle size={20} className="animate-pulse" style={{ color: 'var(--brand-orange)' }} />
+                                <div className="text-right">
+                                    <p
+                                        className="text-xs font-bold uppercase tracking-wider"
+                                        style={{ color: 'var(--text-tertiary)' }}
+                                    >
+                                        Alerts: 2
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> */}
 
             {/* Main Dashboard Grid */}
-            <div className="grid grid-cols-12 gap-6" style={{ minHeight: 'calc(100vh - 300px)' }}>
+            <div className="grid grid-cols-12 gap-6" style={{ minHeight: 'calc(100vh - 350px)' }}>
                 {/* Left Panel - Incoming Trains */}
-                <div className="col-span-3">
+                <div className="col-span-3 animate-slide-in" style={{ animationDelay: '0.1s' }}>
                     <IncomingTrains />
                 </div>
 
                 {/* Center Panel - Track Control */}
-                <div className="col-span-6">
+                <div className="col-span-6 animate-slide-in" style={{ animationDelay: '0.2s' }}>
                     <TrackControl />
                 </div>
 
                 {/* Right Panel - AI Recommendations */}
-                <div className="col-span-3">
+                <div className="col-span-3 animate-slide-in" style={{ animationDelay: '0.3s' }}>
                     <AIRecommendations />
                 </div>
             </div>
         </Layout>
     );
 }
+

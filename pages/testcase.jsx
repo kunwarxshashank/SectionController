@@ -137,7 +137,7 @@ export default function TestCasePage() {
     return (
         <Layout>
             <div className="max-w-7xl mx-auto">
-                <h1 className="text-3xl font-bold text-white mb-6 font-railway">
+                <h1 className="text-3xl font-bold mb-6 font-railway" style={{ color: 'var(--text-primary)' }}>
                     🧪 Test Case Simulation
                 </h1>
 
@@ -145,19 +145,19 @@ export default function TestCasePage() {
                     {/* Left Panel - Scenario Selection */}
                     <div className="col-span-4">
                         <div className="card">
-                            <h2 className="text-xl font-semibold text-white mb-4">Select Scenario</h2>
+                            <h2 className="text-xl font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Select Scenario</h2>
                             <div className="space-y-3">
                                 {scenarios.map((scenario) => (
                                     <div
                                         key={scenario.id}
                                         onClick={() => setSelectedScenario(scenario)}
                                         className={`card-hover border cursor-pointer transition-all ${selectedScenario?.id === scenario.id
-                                                ? 'border-ir-orange bg-ir-orange/10'
-                                                : 'border-white/10'
+                                            ? 'border-ir-orange bg-ir-orange/10'
+                                            : 'border-white/10'
                                             }`}
                                     >
                                         <div className="flex items-start justify-between mb-2">
-                                            <h3 className="font-semibold text-white">{scenario.name}</h3>
+                                            <h3 className="font-semibold" style={{ color: 'var(--text-primary)' }}>{scenario.name}</h3>
                                             <span className={`badge ${getDifficultyColor(scenario.difficulty)}`}>
                                                 {scenario.difficulty}
                                             </span>
@@ -183,14 +183,14 @@ export default function TestCasePage() {
                             <div className="space-y-6">
                                 {/* Simulation Info */}
                                 <div className="card">
-                                    <h2 className="text-2xl font-bold text-white mb-2">{selectedScenario.name}</h2>
+                                    <h2 className="text-2xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>{selectedScenario.name}</h2>
                                     <p className="text-gray-300 mb-4">{selectedScenario.description}</p>
 
                                     <div className="grid grid-cols-3 gap-4 mb-4">
                                         {Object.entries(selectedScenario.params).map(([key, value]) => (
                                             <div key={key} className="glass-dark p-3 rounded-lg">
                                                 <p className="text-xs text-gray-400 capitalize">{key.replace(/([A-Z])/g, ' $1')}</p>
-                                                <p className="text-lg font-bold text-white">{value}</p>
+                                                <p className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>{value}</p>
                                             </div>
                                         ))}
                                     </div>
@@ -232,9 +232,15 @@ export default function TestCasePage() {
                                                     key={speed}
                                                     onClick={() => setSimulationSpeed(speed)}
                                                     className={`px-3 py-1 rounded text-sm font-medium transition-all ${simulationSpeed === speed
-                                                            ? 'bg-ir-orange text-white'
-                                                            : 'bg-white/5 text-gray-300 hover:bg-white/10'
+                                                        ? ''
+                                                        : 'bg-white/5 hover:bg-white/10'
                                                         }`}
+                                                    style={simulationSpeed === speed ? {
+                                                        background: 'var(--gradient-accent)',
+                                                        color: 'white'
+                                                    } : {
+                                                        color: 'var(--text-secondary)'
+                                                    }}
                                                 >
                                                     {speed}x
                                                 </button>
@@ -246,7 +252,7 @@ export default function TestCasePage() {
                                     <div className="mt-4">
                                         <div className="flex justify-between text-sm mb-2">
                                             <span className="text-gray-400">Progress</span>
-                                            <span className="text-white font-semibold">{Math.round(simulationProgress)}%</span>
+                                            <span className="font-semibold" style={{ color: 'var(--text-primary)' }}>{Math.round(simulationProgress)}%</span>
                                         </div>
                                         <div className="w-full bg-white/10 rounded-full h-3 overflow-hidden">
                                             <div
@@ -262,18 +268,18 @@ export default function TestCasePage() {
                                     <div className="card">
                                         <div className="flex items-center mb-4">
                                             <Zap size={24} className="text-yellow-400 mr-2" />
-                                            <h3 className="text-xl font-semibold text-white">Simulation Results</h3>
+                                            <h3 className="text-xl font-semibold" style={{ color: 'var(--text-primary)' }}>Simulation Results</h3>
                                         </div>
 
                                         {/* KPIs */}
                                         <div className="grid grid-cols-4 gap-4 mb-6">
                                             <div className="glass-dark p-4 rounded-lg text-center">
                                                 <p className="text-xs text-gray-400 mb-1">Total Time</p>
-                                                <p className="text-2xl font-bold text-white">{results.totalTime}</p>
+                                                <p className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>{results.totalTime}</p>
                                             </div>
                                             <div className="glass-dark p-4 rounded-lg text-center">
                                                 <p className="text-xs text-gray-400 mb-1">Trains</p>
-                                                <p className="text-2xl font-bold text-white">{results.trainsProcessed}</p>
+                                                <p className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>{results.trainsProcessed}</p>
                                             </div>
                                             <div className="glass-dark p-4 rounded-lg text-center">
                                                 <p className="text-xs text-gray-400 mb-1">Avg Delay</p>
@@ -287,12 +293,12 @@ export default function TestCasePage() {
 
                                         {/* AI Recommendations */}
                                         <div className="mb-4">
-                                            <h4 className="text-lg font-semibold text-white mb-3">AI Recommendations</h4>
+                                            <h4 className="text-lg font-semibold mb-3" style={{ color: 'var(--text-primary)' }}>AI Recommendations</h4>
                                             <div className="space-y-2">
                                                 {results.aiRecommendations.map((rec) => (
                                                     <div key={rec.id} className="glass-orange p-3 rounded-lg flex items-center justify-between">
                                                         <div className="flex-1">
-                                                            <p className="text-sm text-white font-medium">{rec.action}</p>
+                                                            <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{rec.action}</p>
                                                             <p className="text-xs text-gray-300 mt-1">Impact: {rec.impact}</p>
                                                         </div>
                                                         <div className="text-right">

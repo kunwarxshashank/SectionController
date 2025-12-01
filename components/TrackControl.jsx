@@ -57,10 +57,9 @@ export default function TrackControl() {
         }
     };
 
-    const getTrainColor = (status) => {
-        return status === 'RUNNING'
-            ? 'from-green-500 to-emerald-600'
-            : 'from-red-500 to-red-700';
+    const getBlockColor = (blockIdx) => {
+        const colors = ['#ec4899', '#10b981', '#3b82f6', '#f59e0b', '#06b6d4', '#8b5cf6'];
+        return colors[blockIdx % colors.length];
     };
 
     // Calculate train position on track
@@ -87,11 +86,11 @@ export default function TrackControl() {
 
         if (trackIndex === -1 || !block) return null;
 
-        const blockPosition = blockIndex / 20;
+        const blockPosition = blockIndex / tracks[trackIndex].blocks.length;
         const offsetWithinBlock = (train.offset_m || 0) / (block.length_m || 2000);
-        const position = (blockPosition + offsetWithinBlock / 20) * 100;
+        const position = (blockPosition + offsetWithinBlock / tracks[trackIndex].blocks.length) * 100;
 
-        return { trackIndex, position, block };
+        return { trackIndex, position, block, blockIndex };
     };
 
     // Loading state
@@ -99,8 +98,8 @@ export default function TrackControl() {
         return (
             <div className="card h-full flex items-center justify-center">
                 <div className="text-center">
-                    <Loader2 className="w-12 h-12 text-blue-400 animate-spin mx-auto mb-4" />
-                    <div className="text-gray-300 font-semibold">Loading Section Data...</div>
+                    <Loader2 className="w-12 h-12 animate-spin mx-auto mb-4" style={{ color: 'var(--brand-orange)' }} />
+                    <div className="font-semibold" style={{ color: 'var(--text-secondary)' }}>Loading Section Data...</div>
                 </div>
             </div>
         );
@@ -127,7 +126,7 @@ export default function TrackControl() {
     const mainTracks = tracks.filter(t => !t.isLoop);
     const loopTracks = tracks.filter(t => t.isLoop);
 
-    // Calculate total signals
+    // Calculate stats
     const totalSignals = tracks.reduce((acc, track) => {
         return acc + track.blocks.filter(b => b.signal).length;
     }, 0);
@@ -146,38 +145,54 @@ export default function TrackControl() {
 
     const runningTrains = trains.filter(t => t.status === 'RUNNING').length;
 
-    // Calculate SVG width based on number of blocks (ensure minimum width for scrolling)
-    const maxBlocks = Math.max(...tracks.map(t => t.blocks.length));
-    const svgWidth = Math.max(1000, maxBlocks * 50 + 100);
-    const svgHeight = 100 + mainTracks.length * 140 + loopTracks.length * 20;
+    // Calculate SVG dimensions
+    const maxBlocks = Math.max(...mainTracks.map(t => t.blocks.length), 1);
+    const svgWidth = Math.max(1200, maxBlocks * 70);
+    const svgHeight = mainTracks.length * 120 + 100;
 
     return (
-        <div className={`${isFullscreen ? 'fixed inset-0 z-50 bg-gray-900' : 'card h-full'} flex flex-col gap-4`}>
+        <div className={`${isFullscreen ? 'fixed inset-0 z-50 p-6' : 'card h-full'} flex flex-col gap-4`}
+            style={{ background: isFullscreen ? '#000000' : undefined }}>
             {/* Header */}
             <div className="flex items-center justify-between">
-                <div className="flex items-center">
-                    <div className="p-2 bg-blue-500/20 rounded-lg mr-3">
-                        <Train size={24} className="text-blue-400" />
+                <div className="flex items-center gap-3">
+                    <div
+                        className="p-2 rounded-lg"
+                        style={{
+                            background: 'var(--gradient-accent)',
+                            boxShadow: '0 4px 15px rgba(29, 46, 78, 0.3)'
+                        }}
+                    >
+                        <Train size={24} className="text-white" />
                     </div>
                     <div>
-                        <h2 className="text-xl font-semibold text-white">{section?.name || 'Track Control System'}</h2>
-                        <p className="text-xs text-gray-400">{section?.code || 'SECTION-001'} • Real-time Monitoring</p>
+                        <h2 className="text-xl font-semibold" style={{ color: 'var(--text-primary)' }}>
+                            {section?.name || 'Track Control System'}
+                        </h2>
+                        <p className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
+                            {section?.code || 'SECTION-001'} • Railway Signaling Diagram
+                        </p>
                     </div>
                 </div>
                 <div className="flex items-center gap-4">
-                    <div className="flex items-center space-x-2 px-3 py-1 bg-green-500/20 rounded-lg">
+                    <div className="flex items-center space-x-2 px-3 py-1 rounded-lg" style={{ background: 'rgba(34, 197, 94, 0.2)' }}>
                         <div className="w-2 h-2 bg-green-500 rounded-full live-pulse"></div>
-                        <span className="text-xs text-green-300 font-medium">LIVE</span>
+                        <span className="text-xs text-green-400 font-medium">LIVE</span>
                     </div>
                     <div className="text-right hidden sm:block">
-                        <div className="text-xs text-gray-400">System Time</div>
-                        <div className="text-sm font-bold text-white">
+                        <div className="text-xs" style={{ color: 'var(--text-tertiary)' }}>System Time</div>
+                        <div className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>
                             {currentTime.toLocaleTimeString()}
                         </div>
                     </div>
                     <button
                         onClick={toggleFullscreen}
-                        className="p-2 rounded-lg bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 transition-colors"
+                        className="p-2 rounded-lg transition-colors"
+                        style={{
+                            background: 'var(--surface-glass)',
+                            color: 'var(--text-primary)',
+                            border: '1px solid var(--border-primary)'
+                        }}
                         title={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
                     >
                         {isFullscreen ? <Minimize2 className="w-5 h-5" /> : <Maximize2 className="w-5 h-5" />}
@@ -185,508 +200,396 @@ export default function TrackControl() {
                 </div>
             </div>
 
-            {/* Main Content Area */}
-            <div className="flex-1 flex gap-4 min-h-0">
-                {/* Track Display - Scrollable */}
-                <div className="flex-1 relative bg-black/30 rounded-lg overflow-hidden border border-gray-700/50">
-                    {/* Scrollable Container */}
-                    <div className="absolute inset-0 overflow-auto">
-                        <div style={{ minWidth: `${svgWidth}px`, minHeight: `${svgHeight}px`, position: 'relative' }}>
-                            {/* SVG Track Visualization */}
-                            <svg
-                                className="absolute top-0 left-0"
-                                width={svgWidth}
-                                height={svgHeight}
-                                style={{ display: 'block' }}
-                            >
-                                <defs>
-                                    {/* Steel rail gradient */}
-                                    <linearGradient id="railGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                                        <stop offset="0%" stopColor="#94a3b8" />
-                                        <stop offset="50%" stopColor="#64748b" />
-                                        <stop offset="100%" stopColor="#475569" />
-                                    </linearGradient>
+            {/* Main Signaling Diagram */}
+            <div className="flex-1 rounded-lg overflow-hidden" style={{ background: '#000000', border: '1px solid #333' }}>
+                <div className="h-full overflow-auto p-8">
+                    <svg width={svgWidth} height={svgHeight} className="mx-auto">
+                        <defs>
+                            {/* Signal glow filter */}
+                            <filter id="signalGlow">
+                                <feGaussianBlur stdDeviation="2" result="coloredBlur" />
+                                <feMerge>
+                                    <feMergeNode in="coloredBlur" />
+                                    <feMergeNode in="SourceGraphic" />
+                                </feMerge>
+                            </filter>
+                        </defs>
 
-                                    {/* Sleeper gradient */}
-                                    <linearGradient id="sleeperGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                                        <stop offset="0%" stopColor="#78716c" />
-                                        <stop offset="100%" stopColor="#57534e" />
-                                    </linearGradient>
+                        {/* Render each main track */}
+                        {mainTracks.map((track, trackIdx) => {
+                            const yPosition = 60 + trackIdx * 120;
+                            const blockWidth = 70;
 
-                                    <filter id="signalGlow">
-                                        <feGaussianBlur stdDeviation="3" result="coloredBlur" />
-                                        <feMerge>
-                                            <feMergeNode in="coloredBlur" />
-                                            <feMergeNode in="SourceGraphic" />
-                                        </feMerge>
-                                    </filter>
-                                </defs>
-
-                                {/* Render Stations at Top with connecting lines */}
-                                {stations.map((station, idx) => {
-                                    const stationX = 150 + idx * 160;
-                                    const stationY = 40;
-                                    const colors = ['#3b82f6', '#8b5cf6', '#ec4899', '#10b981', '#f59e0b', '#EA7317'];
-                                    const color = colors[idx % colors.length];
-
-                                    return (
-                                        <g key={station._id}>
-                                            {/* Vertical line connecting to tracks */}
-                                            <line
-                                                x1={stationX}
-                                                y1={stationY + 5}
-                                                x2={stationX}
-                                                y2={svgHeight - 20}
-                                                stroke={color}
-                                                strokeWidth="1.5"
-                                                strokeDasharray="3,3"
-                                                opacity="0.3"
-                                            />
-
-                                            {/* Station marker circle */}
-                                            <circle
-                                                cx={stationX}
-                                                cy={stationY}
-                                                r="12"
-                                                fill={color}
-                                                fillOpacity="0.15"
-                                                stroke={color}
-                                                strokeWidth="2"
-                                            />
-
-                                            {/* Station code text */}
-                                            <text
-                                                x={stationX}
-                                                y={stationY + 4}
-                                                textAnchor="middle"
-                                                fill={color}
-                                                fontSize="9"
-                                                fontWeight="700"
-                                            >
-                                                {station.station_code}
-                                            </text>
-                                        </g>
-                                    );
-                                })}
-
-                                {/* Render Main Tracks */}
-                                {mainTracks.map((track, trackIdx) => {
-                                    const yPosition = 100 + trackIdx * 140;
-                                    const trackLength = track.blocks.length;
-                                    const blockWidth = 45;
-                                    const railGap = 6; // Gap between dual rails
-
-                                    return (
-                                        <g key={track.id}>
-                                            {/* Track Name Label */}
-                                            <text
-                                                x="30"
-                                                y={yPosition - 30}
-                                                fill="#e2e8f0"
-                                                fontSize="12"
-                                                fontWeight="600"
-                                            >
-                                                {track.name} ({track.direction})
-                                            </text>
-
-                                            {/* Railway Sleepers (ties) - behind rails */}
-                                            {Array.from({ length: trackLength * 3 }).map((_, i) => (
-                                                <rect
-                                                    key={`sleeper-${i}`}
-                                                    x={50 + i * 15}
-                                                    y={yPosition - railGap - 2}
-                                                    width="8"
-                                                    height={railGap * 2 + 4}
-                                                    fill="url(#sleeperGradient)"
-                                                    opacity="0.6"
-                                                    rx="1"
-                                                />
-                                            ))}
-
-                                            {/* Upper Rail */}
-                                            <line
-                                                x1="50"
-                                                y1={yPosition - railGap}
-                                                x2={50 + trackLength * blockWidth}
-                                                y2={yPosition - railGap}
-                                                stroke="url(#railGradient)"
-                                                strokeWidth="3.5"
-                                                strokeLinecap="round"
-                                            />
-
-                                            {/* Upper Rail highlight */}
-                                            <line
-                                                x1="50"
-                                                y1={yPosition - railGap - 1}
-                                                x2={50 + trackLength * blockWidth}
-                                                y2={yPosition - railGap - 1}
-                                                stroke="#cbd5e1"
-                                                strokeWidth="0.5"
-                                                opacity="0.6"
-                                            />
-
-                                            {/* Lower Rail */}
-                                            <line
-                                                x1="50"
-                                                y1={yPosition + railGap}
-                                                x2={50 + trackLength * blockWidth}
-                                                y2={yPosition + railGap}
-                                                stroke="url(#railGradient)"
-                                                strokeWidth="3.5"
-                                                strokeLinecap="round"
-                                            />
-
-                                            {/* Lower Rail highlight */}
-                                            <line
-                                                x1="50"
-                                                y1={yPosition + railGap - 1}
-                                                x2={50 + trackLength * blockWidth}
-                                                y2={yPosition + railGap - 1}
-                                                stroke="#cbd5e1"
-                                                strokeWidth="0.5"
-                                                opacity="0.6"
-                                            />
-
-                                            {/* Render Blocks and Signals */}
-                                            {track.blocks.map((block, blockIdx) => {
-                                                const blockX = 50 + blockIdx * blockWidth;
-                                                const isSelected = selectedBlock?.id === block.id;
-
-                                                return (
-                                                    <g key={block.id}>
-                                                        {/* Block boundary marker */}
-                                                        <line
-                                                            x1={blockX}
-                                                            y1={yPosition - 20}
-                                                            x2={blockX}
-                                                            y2={yPosition + 20}
-                                                            stroke="#64748b"
-                                                            strokeWidth="1"
-                                                            strokeDasharray="2,2"
-                                                            opacity="0.4"
-                                                        />
-
-                                                        {/* Block ID label (below track) */}
-                                                        <text
-                                                            x={blockX + blockWidth / 2}
-                                                            y={yPosition + 30}
-                                                            textAnchor="middle"
-                                                            fill="#94a3b8"
-                                                            fontSize="8"
-                                                            fontWeight="500"
-                                                        >
-                                                            {block.block_id}
-                                                        </text>
-
-                                                        {/* Block selection highlight */}
-                                                        {isSelected && (
-                                                            <rect
-                                                                x={blockX}
-                                                                y={yPosition - 25}
-                                                                width={blockWidth}
-                                                                height="50"
-                                                                fill="#EA7317"
-                                                                opacity="0.15"
-                                                                stroke="#EA7317"
-                                                                strokeWidth="2"
-                                                                rx="4"
-                                                                className="cursor-pointer"
-                                                                onClick={() => setSelectedBlock(null)}
-                                                            />
-                                                        )}
-
-                                                        {/* Signal - positioned above track at block end */}
-                                                        {block.signal && (
-                                                            <g>
-                                                                {/* Signal pole */}
-                                                                <rect
-                                                                    x={blockX + blockWidth - 1}
-                                                                    y={yPosition - 35}
-                                                                    width="2"
-                                                                    height="35"
-                                                                    fill="#334155"
-                                                                    rx="1"
-                                                                />
-
-                                                                {/* Signal housing */}
-                                                                <rect
-                                                                    x={blockX + blockWidth - 7}
-                                                                    y={yPosition - 40}
-                                                                    width="14"
-                                                                    height="8"
-                                                                    fill="#1e293b"
-                                                                    stroke="#334155"
-                                                                    strokeWidth="1"
-                                                                    rx="2"
-                                                                />
-
-                                                                {/* Signal light with glow */}
-                                                                <circle
-                                                                    cx={blockX + blockWidth}
-                                                                    cy={yPosition - 36}
-                                                                    r="8"
-                                                                    fill={getSignalColor(block.signal.aspect)}
-                                                                    filter="url(#signalGlow)"
-                                                                    opacity="0.4"
-                                                                />
-
-                                                                {/* Signal light */}
-                                                                <circle
-                                                                    cx={blockX + blockWidth}
-                                                                    cy={yPosition - 36}
-                                                                    r="4"
-                                                                    fill={getSignalColor(block.signal.aspect)}
-                                                                    stroke="#0f172a"
-                                                                    strokeWidth="1"
-                                                                    className="cursor-pointer"
-                                                                    onClick={() => setSelectedBlock(block)}
-                                                                />
-                                                            </g>
-                                                        )}
-
-                                                        {/* Show loop connections (switches) */}
-                                                        {block.nextBlocks && block.nextBlocks.length > 1 && (
-                                                            <g>
-                                                                <circle
-                                                                    cx={blockX + blockWidth}
-                                                                    cy={yPosition}
-                                                                    r="8"
-                                                                    fill="#3b82f6"
-                                                                    fillOpacity="0.2"
-                                                                    stroke="#3b82f6"
-                                                                    strokeWidth="2"
-                                                                />
-                                                                <text
-                                                                    x={blockX + blockWidth}
-                                                                    y={yPosition + 3}
-                                                                    textAnchor="middle"
-                                                                    fill="#3b82f6"
-                                                                    fontSize="7"
-                                                                    fontWeight="700"
-                                                                >
-                                                                    SW
-                                                                </text>
-                                                            </g>
-                                                        )}
-                                                    </g>
-                                                );
-                                            })}
-                                        </g>
-                                    );
-                                })}
-
-                                {/* Render Loop Tracks */}
-                                {loopTracks.map((loopTrack, loopIdx) => {
-                                    const parentTrackIdx = mainTracks.findIndex(t => t.id === loopTrack.parentTrack);
-                                    if (parentTrackIdx === -1) return null;
-
-                                    const parentY = 100 + parentTrackIdx * 140;
-                                    const loopY = parentY + 60 + loopIdx * 20;
-
-                                    const startBlock = loopTrack.blocks[0];
-                                    const endBlock = loopTrack.blocks[loopTrack.blocks.length - 1];
-                                    const blockWidth = 45;
-                                    const startX = 50 + (startBlock.index - 1) * blockWidth;
-                                    const endX = 50 + endBlock.index * blockWidth;
-
-                                    return (
-                                        <g key={loopTrack.id}>
-                                            <path
-                                                d={`M ${startX} ${parentY} Q ${startX + 25} ${loopY - 15} ${startX + 50} ${loopY} L ${endX - 50} ${loopY} Q ${endX - 25} ${loopY - 15} ${endX} ${parentY}`}
-                                                stroke="#3b82f6"
-                                                strokeWidth="5"
-                                                fill="none"
-                                                opacity="0.7"
-                                            />
-
-                                            <text
-                                                x={(startX + endX) / 2}
-                                                y={loopY - 8}
-                                                textAnchor="middle"
-                                                fill="#3b82f6"
-                                                fontSize="10"
-                                                fontWeight="700"
-                                            >
-                                                {loopTrack.name}
-                                            </text>
-
-                                            {loopTrack.blocks.map((block) => {
-                                                if (!block.signal) return null;
-                                                const blockX = 50 + (block.index - 0.5) * blockWidth;
-
-                                                return (
-                                                    <g key={block.id}>
-                                                        <circle
-                                                            cx={blockX}
-                                                            cy={loopY}
-                                                            r="6"
-                                                            fill={getSignalColor(block.signal.aspect)}
-                                                            stroke="#FEF6E4"
-                                                            strokeWidth="1.5"
-                                                        />
-                                                    </g>
-                                                );
-                                            })}
-                                        </g>
-                                    );
-                                })}
-                            </svg>
-
-                            {/* Animated Train Markers */}
-                            {trains.map((train) => {
-                                const trainPos = calculateTrainPosition(train, tracks);
-                                if (!trainPos) return null;
-
-                                const trackY = 85 + trainPos.trackIndex * 140;
-                                const blockWidth = 45;
-
-                                return (
-                                    <div
-                                        key={train.id}
-                                        className="absolute transition-all duration-1000 ease-linear"
-                                        style={{
-                                            left: `${50 + (trainPos.position / 100) * (tracks[trainPos.trackIndex].blocks.length * blockWidth)}px`,
-                                            top: `${trackY}px`,
-                                            transform: 'translate(-50%, -50%)'
-                                        }}
+                            return (
+                                <g key={track.id}>
+                                    {/* Track name label */}
+                                    <text
+                                        x="10"
+                                        y={yPosition + 5}
+                                        fill="#ffffff"
+                                        fontSize="12"
+                                        fontWeight="600"
+                                        fontFamily="monospace"
                                     >
-                                        <div className="relative group">
-                                            <div className={`w-8 h-6 rounded-lg bg-gradient-to-r ${getTrainColor(train.status)} border ${train.status === 'RUNNING' ? 'border-green-300' : 'border-red-300'} flex items-center justify-center shadow-lg transform group-hover:scale-125 transition-transform`}>
-                                                <Train className="w-4 h-4 text-white" />
-                                            </div>
+                                        {track.name}
+                                    </text>
 
-                                            <div className="absolute -top-24 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
-                                                <div className="bg-gray-800/95 backdrop-blur-sm border-2 border-blue-500 rounded-lg p-3 shadow-xl min-w-[160px]">
-                                                    <div className="text-white text-sm font-bold mb-1">{train.name}</div>
-                                                    <div className="text-gray-300 text-xs">#{train.number}</div>
-                                                    <div className="flex items-center gap-1 mt-2">
-                                                        <Gauge className="w-4 h-4 text-green-400" />
-                                                        <span className="text-green-400 text-sm font-semibold">{train.speed_kmph.toFixed(0)} km/h</span>
-                                                    </div>
-                                                    {train.delay_min > 0 && (
-                                                        <div className="text-red-400 text-xs mt-1">Delay: {train.delay_min}min</div>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    </div>
+                                    {/* Draw blocks with colored sections */}
+                                    {track.blocks.map((block, blockIdx) => {
+                                        const blockX = 120 + blockIdx * blockWidth;
+                                        const nextBlockX = blockX + blockWidth;
+
+                                        return (
+                                            <g key={block.id}>
+                                                {/* Colored block section */}
+                                                <line
+                                                    x1={blockX}
+                                                    y1={yPosition}
+                                                    x2={nextBlockX}
+                                                    y2={yPosition}
+                                                    stroke={getBlockColor(blockIdx)}
+                                                    strokeWidth="6"
+                                                    strokeLinecap="round"
+                                                    opacity="0.9"
+                                                />
+
+                                                {/* White baseline */}
+                                                <line
+                                                    x1={blockX}
+                                                    y1={yPosition}
+                                                    x2={nextBlockX}
+                                                    y2={yPosition}
+                                                    stroke="#ffffff"
+                                                    strokeWidth="2"
+                                                    strokeLinecap="round"
+                                                />
+
+                                                {/* Block boundary marker with circle */}
+                                                <g>
+                                                    {/* Vertical tick */}
+                                                    <line
+                                                        x1={blockX}
+                                                        y1={yPosition - 8}
+                                                        x2={blockX}
+                                                        y2={yPosition + 8}
+                                                        stroke="#ffffff"
+                                                        strokeWidth="2"
+                                                    />
+
+                                                    {/* Circle marker */}
+                                                    <circle
+                                                        cx={blockX}
+                                                        cy={yPosition}
+                                                        r="4"
+                                                        fill="#000000"
+                                                        stroke="#ffffff"
+                                                        strokeWidth="2"
+                                                    />
+                                                </g>
+
+                                                {/* Block ID label */}
+                                                <text
+                                                    x={blockX + blockWidth / 2}
+                                                    y={yPosition - 15}
+                                                    textAnchor="middle"
+                                                    fill="#ffffff"
+                                                    fontSize="10"
+                                                    fontWeight="500"
+                                                    fontFamily="monospace"
+                                                >
+                                                    {block.block_id}
+                                                </text>
+
+                                                {/* Signal indicator */}
+                                                {block.signal && (
+                                                    <g>
+                                                        {/* Signal diamond shape */}
+                                                        <rect
+                                                            x={blockX - 5}
+                                                            y={yPosition - 5}
+                                                            width="10"
+                                                            height="10"
+                                                            fill={getSignalColor(block.signal.aspect)}
+                                                            stroke="#ffffff"
+                                                            strokeWidth="1.5"
+                                                            transform={`rotate(45 ${blockX} ${yPosition})`}
+                                                            filter="url(#signalGlow)"
+                                                            className="cursor-pointer"
+                                                            onClick={() => setSelectedBlock(selectedBlock?.id === block.id ? null : block)}
+                                                        />
+
+                                                        {/* Signal aspect label */}
+                                                        <text
+                                                            x={blockX}
+                                                            y={yPosition + 25}
+                                                            textAnchor="middle"
+                                                            fill={getSignalColor(block.signal.aspect)}
+                                                            fontSize="8"
+                                                            fontWeight="600"
+                                                        >
+                                                            {block.signal.aspect.charAt(0)}
+                                                        </text>
+                                                    </g>
+                                                )}
+
+                                                {/* Switch indicator (if multiple next blocks) */}
+                                                {block.nextBlocks && block.nextBlocks.length > 1 && (
+                                                    <g>
+                                                        <circle
+                                                            cx={nextBlockX}
+                                                            cy={yPosition}
+                                                            r="6"
+                                                            fill="#3b82f6"
+                                                            stroke="#ffffff"
+                                                            strokeWidth="2"
+                                                        />
+                                                        <text
+                                                            x={nextBlockX}
+                                                            y={yPosition + 3}
+                                                            textAnchor="middle"
+                                                            fill="#ffffff"
+                                                            fontSize="7"
+                                                            fontWeight="700"
+                                                        >
+                                                            P
+                                                        </text>
+                                                    </g>
+                                                )}
+                                            </g>
+                                        );
+                                    })}
+
+                                    {/* End marker for track */}
+                                    <g>
+                                        <line
+                                            x1={120 + track.blocks.length * blockWidth}
+                                            y1={yPosition - 8}
+                                            x2={120 + track.blocks.length * blockWidth}
+                                            y2={yPosition + 8}
+                                            stroke="#ffffff"
+                                            strokeWidth="2"
+                                        />
+                                        <circle
+                                            cx={120 + track.blocks.length * blockWidth}
+                                            cy={yPosition}
+                                            r="4"
+                                            fill="#000000"
+                                            stroke="#ffffff"
+                                            strokeWidth="2"
+                                        />
+                                    </g>
+                                </g>
+                            );
+                        })}
+
+                        {/* Render loop tracks as diagonal connections */}
+                        {loopTracks.map((loopTrack) => {
+                            const parentTrackIdx = mainTracks.findIndex(t => t.id === loopTrack.parentTrack);
+                            if (parentTrackIdx === -1) return null;
+
+                            const parentY = 60 + parentTrackIdx * 120;
+                            const startBlock = loopTrack.blocks[0];
+                            const endBlock = loopTrack.blocks[loopTrack.blocks.length - 1];
+                            const blockWidth = 70;
+                            const startX = 120 + (startBlock.index - 1) * blockWidth;
+                            const endX = 120 + endBlock.index * blockWidth;
+
+                            // Draw loop as diagonal line below main track
+                            const loopY = parentY + 40;
+
+                            return (
+                                <g key={loopTrack.id}>
+                                    {/* Loop path */}
+                                    <path
+                                        d={`M ${startX} ${parentY} L ${startX + 20} ${loopY} L ${endX - 20} ${loopY} L ${endX} ${parentY}`}
+                                        stroke="#3b82f6"
+                                        strokeWidth="4"
+                                        fill="none"
+                                        opacity="0.8"
+                                    />
+
+                                    {/* Loop track name */}
+                                    <text
+                                        x={(startX + endX) / 2}
+                                        y={loopY + 5}
+                                        textAnchor="middle"
+                                        fill="#3b82f6"
+                                        fontSize="10"
+                                        fontWeight="600"
+                                    >
+                                        {loopTrack.name}
+                                    </text>
+
+                                    {/* Loop signals */}
+                                    {loopTrack.blocks.filter(b => b.signal).map((block) => {
+                                        const blockX = 120 + (block.index - 0.5) * blockWidth;
+
+                                        return (
+                                            <circle
+                                                key={block.id}
+                                                cx={blockX}
+                                                cy={loopY}
+                                                r="4"
+                                                fill={getSignalColor(block.signal.aspect)}
+                                                stroke="#ffffff"
+                                                strokeWidth="1.5"
+                                                filter="url(#signalGlow)"
+                                            />
+                                        );
+                                    })}
+                                </g>
+                            );
+                        })}
+
+                        {/* Station markers */}
+                        {stations.map((station, idx) => {
+                            const stationX = 150 + idx * 200;
+                            const stationY = 30;
+
+                            return (
+                                <g key={station._id}>
+                                    {/* Station marker box */}
+                                    <rect
+                                        x={stationX - 25}
+                                        y={stationY - 12}
+                                        width="50"
+                                        height="24"
+                                        fill="#000000"
+                                        stroke="#ffffff"
+                                        strokeWidth="2"
+                                        rx="3"
+                                    />
+
+                                    {/* Station code */}
+                                    <text
+                                        x={stationX}
+                                        y={stationY + 5}
+                                        textAnchor="middle"
+                                        fill="#ffffff"
+                                        fontSize="11"
+                                        fontWeight="700"
+                                        fontFamily="monospace"
+                                    >
+                                        {station.station_code}
+                                    </text>
+                                </g>
+                            );
+                        })}
+
+                        {/* Animated train positions */}
+                        {trains.map((train) => {
+                            const trainPos = calculateTrainPosition(train, mainTracks);
+                            if (!trainPos) return null;
+
+                            const yPosition = 60 + trainPos.trackIndex * 120;
+                            const blockWidth = 70;
+                            const trainX = 120 + (trainPos.position / 100) * (mainTracks[trainPos.trackIndex].blocks.length * blockWidth);
+
+                            return (
+                                <g key={train.id} className="transition-all duration-1000">
+                                    {/* Train marker - filled circle */}
+                                    <circle
+                                        cx={trainX}
+                                        cy={yPosition}
+                                        r="7"
+                                        fill={train.status === 'RUNNING' ? '#10b981' : '#ef4444'}
+                                        stroke="#ffffff"
+                                        strokeWidth="2"
+                                        className="cursor-pointer"
+                                    >
+                                        <title>{`${train.name} (${train.number}) - ${train.speed_kmph.toFixed(0)} km/h`}</title>
+                                    </circle>
+
+                                    {/* Train number label */}
+                                    <text
+                                        x={trainX}
+                                        y={yPosition + 20}
+                                        textAnchor="middle"
+                                        fill={train.status === 'RUNNING' ? '#10b981' : '#ef4444'}
+                                        fontSize="9"
+                                        fontWeight="700"
+                                    >
+                                        {train.number}
+                                    </text>
+                                </g>
+                            );
+                        })}
+                    </svg>
+                </div>
+            </div>
+
+            {/* Status Bar */}
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+                <div className="glass-dark rounded-lg p-3">
+                    <div className="text-xs font-medium mb-1" style={{ color: 'var(--text-tertiary)' }}>Active Trains</div>
+                    <div className="text-2xl font-bold text-green-400">{runningTrains}</div>
                 </div>
 
-                {/* Status Panel - Fixed on Right */}
-                {/* <div className="w-72 flex flex-col gap-3 overflow-y-auto">
+                <div className="glass-dark rounded-lg p-3">
+                    <div className="text-xs font-medium mb-1" style={{ color: 'var(--text-tertiary)' }}>Total Trains</div>
+                    <div className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>{trains.length}</div>
+                </div>
 
-                    <div className="bg-gray-800/50 backdrop-blur-md border border-gray-700/50 rounded-lg shadow-lg p-4">
-                        <div className="flex items-center gap-2 text-green-400 mb-3">
-                            <div className="w-3 h-3 rounded-full bg-green-500 live-pulse" />
-                            <span className="text-sm font-bold">SYSTEM ACTIVE</span>
-                        </div>
-                        <div className="space-y-2.5">
-                            <div className="flex items-center justify-between gap-3">
-                                <span className="text-sm text-gray-300 font-medium">Active Trains</span>
-                                <span className="bg-green-500/20 text-green-300 border border-green-500/40 rounded px-3 py-1 text-xs font-bold">
-                                    {runningTrains}
-                                </span>
-                            </div>
-                            <div className="flex items-center justify-between gap-3">
-                                <span className="text-sm text-gray-300 font-medium">Total Trains</span>
-                                <span className="bg-blue-500/20 text-blue-300 border border-blue-500/40 rounded px-3 py-1 text-xs font-bold">
-                                    {trains.length}
-                                </span>
-                            </div>
-                            <div className="flex items-center justify-between gap-3">
-                                <span className="text-sm text-gray-300 font-medium">Total Signals</span>
-                                <span className="bg-gray-500/20 text-gray-300 border border-gray-500/40 rounded px-3 py-1 text-xs font-bold">
-                                    {totalSignals}
-                                </span>
-                            </div>
-                            <div className="h-px bg-gray-700 my-2" />
-                            <div className="flex items-center justify-between gap-3">
-                                <div className="flex items-center gap-2">
-                                    <div className="w-3 h-3 rounded-full signal-green" />
-                                    <span className="text-sm text-gray-300 font-medium">Clear</span>
-                                </div>
-                                <span className="bg-green-500/20 text-green-300 border border-green-500/40 rounded px-3 py-1 text-xs font-bold">
-                                    {greenSignals}
-                                </span>
-                            </div>
-                            <div className="flex items-center justify-between gap-3">
-                                <div className="flex items-center gap-2">
-                                    <div className="w-3 h-3 rounded-full signal-yellow" />
-                                    <span className="text-sm text-gray-300 font-medium">Caution</span>
-                                </div>
-                                <span className="bg-yellow-500/20 text-yellow-300 border border-yellow-500/40 rounded px-3 py-1 text-xs font-bold">
-                                    {yellowSignals}
-                                </span>
-                            </div>
-                            <div className="flex items-center justify-between gap-3">
-                                <div className="flex items-center gap-2">
-                                    <div className="w-3 h-3 rounded-full signal-red" />
-                                    <span className="text-sm text-gray-300 font-medium">Stop</span>
-                                </div>
-                                <span className="bg-red-500/20 text-red-300 border border-red-500/40 rounded px-3 py-1 text-xs font-bold">
-                                    {redSignals}
-                                </span>
-                            </div>
-                        </div>
+                <div className="glass-dark rounded-lg p-3">
+                    <div className="flex items-center gap-2 mb-1">
+                        <div className="w-3 h-3 rounded-full signal-green" />
+                        <div className="text-xs font-medium" style={{ color: 'var(--text-tertiary)' }}>Clear</div>
                     </div>
+                    <div className="text-2xl font-bold text-green-400">{greenSignals}</div>
+                </div>
 
-  
-                    <div className="bg-gray-800/50 backdrop-blur-md border border-gray-700/50 rounded-lg shadow-lg p-4">
-                        <h3 className="text-sm font-bold text-white mb-3 flex items-center gap-2">
-                            <Train className="w-4 h-4 text-blue-400" />
-                            Active Trains
-                        </h3>
-                        <div className="space-y-2 max-h-96 overflow-y-auto">
-                            {trains.map((train) => (
-                                <div key={train.id} className="p-2 bg-black/30 rounded-lg border border-gray-700/50 hover:border-gray-600 transition-colors">
-                                    <div className="flex items-center justify-between mb-1">
-                                        <span className="text-xs font-bold text-white">{train.name}</span>
-                                        <span className={`text-xs px-2 py-0.5 rounded ${train.status === 'RUNNING' ? 'bg-green-500/20 text-green-300' : 'bg-red-500/20 text-red-300'}`}>
-                                            {train.status}
-                                        </span>
-                                    </div>
-                                    <div className="text-xs text-gray-400">#{train.number}</div>
-                                    <div className="flex items-center gap-2 mt-1">
-                                        <Gauge className="w-3 h-3 text-gray-500" />
-                                        <span className="text-xs text-gray-300">{train.speed_kmph.toFixed(0)} km/h</span>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
+                <div className="glass-dark rounded-lg p-3">
+                    <div className="flex items-center gap-2 mb-1">
+                        <div className="w-3 h-3 rounded-full signal-yellow" />
+                        <div className="text-xs font-medium" style={{ color: 'var(--text-tertiary)' }}>Caution</div>
                     </div>
+                    <div className="text-2xl font-bold text-yellow-400">{yellowSignals}</div>
+                </div>
 
-      
-                    {selectedBlock && (
-                        <div className="bg-orange-500/10 backdrop-blur-md border border-orange-500/40 rounded-lg shadow-lg p-4">
-                            <div className="flex items-center justify-between mb-2">
-                                <h3 className="text-sm font-bold text-orange-300">Selected Block</h3>
-                                <button
-                                    onClick={() => setSelectedBlock(null)}
-                                    className="text-xs text-gray-400 hover:text-white"
-                                >
-                                    Clear
-                                </button>
-                            </div>
-                            <div className="text-white font-bold text-lg mb-1">{selectedBlock.block_id}</div>
-                            {selectedBlock.signal && (
-                                <div className="flex items-center gap-2 mt-2">
-                                    <div
-                                        className="w-3 h-3 rounded-full"
-                                        style={{ backgroundColor: getSignalColor(selectedBlock.signal.aspect) }}
-                                    />
-                                    <span className="text-xs text-gray-300">
-                                        Signal: {selectedBlock.signal.aspect}
-                                    </span>
-                                </div>
-                            )}
+                <div className="glass-dark rounded-lg p-3">
+                    <div className="flex items-center gap-2 mb-1">
+                        <div className="w-3 h-3 rounded-full signal-red" />
+                        <div className="text-xs font-medium" style={{ color: 'var(--text-tertiary)' }}>Stop</div>
+                    </div>
+                    <div className="text-2xl font-bold text-red-400">{redSignals}</div>
+                </div>
+            </div>
+
+            {/* Selected Block Info */}
+            {selectedBlock && (
+                <div
+                    className="rounded-lg p-4 animate-slide-in"
+                    style={{
+                        background: 'rgba(234, 115, 23, 0.1)',
+                        border: '1px solid var(--brand-orange)'
+                    }}
+                >
+                    <div className="flex items-center justify-between mb-2">
+                        <h3 className="text-sm font-bold" style={{ color: 'var(--brand-orange)' }}>Selected Block</h3>
+                        <button
+                            onClick={() => setSelectedBlock(null)}
+                            className="text-xs hover:underline"
+                            style={{ color: 'var(--text-tertiary)' }}
+                        >
+                            Clear
+                        </button>
+                    </div>
+                    <div className="font-bold text-lg mb-1" style={{ color: 'var(--text-primary)' }}>
+                        {selectedBlock.block_id}
+                    </div>
+                    {selectedBlock.signal && (
+                        <div className="flex items-center gap-2 mt-2">
+                            <div
+                                className="w-3 h-3 rounded-full"
+                                style={{ backgroundColor: getSignalColor(selectedBlock.signal.aspect) }}
+                            />
+                            <span className="text-xs" style={{ color: 'var(--text-secondary)' }}>
+                                Signal: {selectedBlock.signal.aspect}
+                            </span>
                         </div>
                     )}
-                </div> */}
-            </div>
+                </div>
+            )}
         </div>
     );
 }
