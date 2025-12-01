@@ -50,10 +50,17 @@ app.use("/api", broadcastRoutes);
 
 
 let userSocketmap = [];
+let sectionSocketmap = [];
+let trainSocketmap = [];
 
 // WebRTC signaling
 io.on("connection", Socket => {
    console.log("User connected:", Socket.id);
+   Socket.on("section-register", (data) => {
+      sectionSocketmap = sectionSocketmap.filter(section => section.id !== Socket.id);
+      sectionSocketmap.push({ ...data, id: Socket.id });
+      console.log("Section registered:", data.sectionId);
+   })
 
    Socket.on("register", (data) => {
       userSocketmap = userSocketmap.filter(user => user.id !== Socket.id);
@@ -119,6 +126,13 @@ io.on("connection", Socket => {
          audio: data.audio
       });
    });
+
+   Socket.on("section-data", (data , sectionId) => {
+     Socket.emit("recived-train-data", data).to(sectionId)
+   })
+   Socket.on("sendinfo-to-loco-pilot", (data ,) => {
+     Socket.emit("recived-info-to-loco-pilot", data).to()
+   })
 
    Socket.on("disconnect", () => {
       console.log("User disconnected:", Socket.id);
