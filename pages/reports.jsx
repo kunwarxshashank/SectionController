@@ -54,7 +54,7 @@ export default function ReportsPage() {
         <Layout>
             <div className="max-w-7xl mx-auto">
                 <div className="flex items-center justify-between mb-6">
-                    <h1 className="text-3xl font-bold text-white font-railway">
+                    <h1 className="text-3xl font-bold font-railway" style={{ color: 'var(--text-primary)' }}>
                         📊 Reports & Analytics
                     </h1>
                     <button className="btn-primary flex items-center space-x-2">
@@ -70,9 +70,15 @@ export default function ReportsPage() {
                             key={type}
                             onClick={() => setReportType(type)}
                             className={`px-6 py-3 rounded-lg font-medium capitalize transition-all ${reportType === type
-                                    ? 'bg-ir-orange text-white shadow-lg'
-                                    : 'glass-dark text-ir-cream hover:bg-white/10'
+                                ? 'shadow-lg'
+                                : 'glass-dark hover:bg-white/10'
                                 }`}
+                            style={reportType === type ? {
+                                background: 'var(--gradient-accent)',
+                                color: 'white'
+                            } : {
+                                color: 'var(--text-secondary)'
+                            }}
                         >
                             <Calendar className="inline mr-2" size={18} />
                             {type}
@@ -84,7 +90,7 @@ export default function ReportsPage() {
                 <div className="grid grid-cols-4 gap-6 mb-6">
                     <div className="card">
                         <p className="text-sm text-gray-400 mb-2">Total Trains</p>
-                        <p className="text-3xl font-bold text-white mb-1">156</p>
+                        <p className="text-3xl font-bold mb-1" style={{ color: 'var(--text-primary)' }}>156</p>
                         <div className="flex items-center text-green-400 text-sm">
                             <TrendingUp size={16} className="mr-1" />
                             <span>+8% from last week</span>
@@ -93,7 +99,7 @@ export default function ReportsPage() {
 
                     <div className="card">
                         <p className="text-sm text-gray-400 mb-2">Avg Delay</p>
-                        <p className="text-3xl font-bold text-white mb-1">4.2 min</p>
+                        <p className="text-3xl font-bold mb-1" style={{ color: 'var(--text-primary)' }}>4.2 min</p>
                         <div className="flex items-center text-green-400 text-sm">
                             <TrendingDown size={16} className="mr-1" />
                             <span>-12% improvement</span>
@@ -102,7 +108,7 @@ export default function ReportsPage() {
 
                     <div className="card">
                         <p className="text-sm text-gray-400 mb-2">Punctuality</p>
-                        <p className="text-3xl font-bold text-white mb-1">87%</p>
+                        <p className="text-3xl font-bold mb-1" style={{ color: 'var(--text-primary)' }}>87%</p>
                         <div className="flex items-center text-green-400 text-sm">
                             <TrendingUp size={16} className="mr-1" />
                             <span>+3% from last week</span>
@@ -111,7 +117,7 @@ export default function ReportsPage() {
 
                     <div className="card">
                         <p className="text-sm text-gray-400 mb-2">AI Actions</p>
-                        <p className="text-3xl font-bold text-white mb-1">42</p>
+                        <p className="text-3xl font-bold mb-1" style={{ color: 'var(--text-primary)' }}>42</p>
                         <div className="flex items-center text-yellow-400 text-sm">
                             <span>24 accepted, 18 overridden</span>
                         </div>
@@ -122,7 +128,7 @@ export default function ReportsPage() {
                 <div className="grid grid-cols-2 gap-6 mb-6">
                     {/* Punctuality Chart */}
                     <div className="card">
-                        <h3 className="text-xl font-semibold text-white mb-4">Punctuality Trend</h3>
+                        <h3 className="text-xl font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Punctuality Trend</h3>
                         <ResponsiveContainer width="100%" height={300}>
                             <BarChart data={punctualityData}>
                                 <CartesianGrid strokeDasharray="3 3" stroke="#333" />
@@ -141,7 +147,7 @@ export default function ReportsPage() {
 
                     {/* Throughput Chart */}
                     <div className="card">
-                        <h3 className="text-xl font-semibold text-white mb-4">Section Throughput</h3>
+                        <h3 className="text-xl font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Section Throughput</h3>
                         <ResponsiveContainer width="100%" height={300}>
                             <LineChart data={throughputData}>
                                 <CartesianGrid strokeDasharray="3 3" stroke="#333" />
@@ -161,7 +167,7 @@ export default function ReportsPage() {
                 <div className="grid grid-cols-2 gap-6">
                     {/* Train Type Distribution */}
                     <div className="card">
-                        <h3 className="text-xl font-semibold text-white mb-4">Train Type Distribution</h3>
+                        <h3 className="text-xl font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Train Type Distribution</h3>
                         <ResponsiveContainer width="100%" height={300}>
                             <PieChart>
                                 <Pie
@@ -185,7 +191,7 @@ export default function ReportsPage() {
 
                     {/* Recent Events */}
                     <div className="card">
-                        <h3 className="text-xl font-semibold text-white mb-4">Recent Events</h3>
+                        <h3 className="text-xl font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Recent Events</h3>
                         <div className="space-y-3">
                             {[
                                 { type: 'success', message: 'Train 12345 departed on time', time: '10:32 AM' },
@@ -195,11 +201,11 @@ export default function ReportsPage() {
                             ].map((event, idx) => (
                                 <div key={idx} className="flex items-start space-x-3 glass-dark p-3 rounded-lg">
                                     <div className={`w-2 h-2 rounded-full mt-1.5 ${event.type === 'success' ? 'bg-green-500' :
-                                            event.type === 'warning' ? 'bg-yellow-500' :
-                                                'bg-blue-500'
+                                        event.type === 'warning' ? 'bg-yellow-500' :
+                                            'bg-blue-500'
                                         }`}></div>
                                     <div className="flex-1">
-                                        <p className="text-sm text-white">{event.message}</p>
+                                        <p className="text-sm" style={{ color: 'var(--text-primary)' }}>{event.message}</p>
                                         <p className="text-xs text-gray-400 mt-1">{event.time}</p>
                                     </div>
                                 </div>

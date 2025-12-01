@@ -13,6 +13,7 @@ import mongoose from 'mongoose';
 const app = express();
 const server = http.createServer(app)
 
+
 const dbConnection = async () => {
    try {
       await mongoose.connect(process.env.MongoUrl)
@@ -22,6 +23,7 @@ const dbConnection = async () => {
 
    }
 }
+
 
 dbConnection()
    .then(
@@ -35,6 +37,8 @@ const io = new Server(server, {
    },
 
 });
+
+
 app.use(express.json());
 app.use(cors({
    origin: "*",
@@ -65,46 +69,75 @@ io.on("connection", Socket => {
    Socket.on("register", (data) => {
       userSocketmap = userSocketmap.filter(user => user.id !== Socket.id);
       userSocketmap.push({ ...data, id: Socket.id });
-      console.log("User registered:", data.email);
       io.emit("users-online", userSocketmap.map(u => ({ email: u.email, sectionId: u.sectionId })));
    });
+
+
 
    // WebRTC signaling events
    Socket.on("call-user", (data) => {
       const targetUser = userSocketmap.find(u => u.email === data.to);
+      console.log(`📞 [CALL] ${data.from} calling ${data.to}`)
+      console.log(`📞 [CALL] Target user found:`, targetUser ? 'YES' : 'NO')
+      console.log(`📞 [CALL] Call type: ${data.callType}`)
+
       if (targetUser) {
          io.to(targetUser.id).emit("incoming-call", {
             from: data.from,
             offer: data.offer,
             callType: data.callType
          });
+         console.log(`✅ [CALL] Sent incoming-call to ${targetUser.email}`)
+      } else {
+         console.log(`❌ [CALL] Target user not found: ${data.to}`)
       }
+
    });
 
+
+
    Socket.on("call-accepted", (data) => {
+      console.log(`✅ [ACCEPTED] Call accepted from ${data.from || 'unknown'} to ${data.to}`)
       const targetUser = userSocketmap.find(u => u.email === data.to);
       if (targetUser) {
          io.to(targetUser.id).emit("call-accepted", {
             answer: data.answer
          });
+         console.log(`✅ [ACCEPTED] Sent call-accepted to ${targetUser.email}`)
+      } else {
+         console.log(`❌ [ACCEPTED] Target user not found: ${data.to}`)
       }
    });
 
+
+
    Socket.on("ice-candidate", (data) => {
       const targetUser = userSocketmap.find(u => u.email === data.to);
+      console.log(`🧊 [ICE] Relaying ICE candidate to ${data.to}`)
       if (targetUser) {
          io.to(targetUser.id).emit("ice-candidate", {
             candidate: data.candidate
          });
+         console.log(`✅ [ICE] Sent ICE candidate to ${targetUser.email}`)
+      } else {
+         console.log(`❌ [ICE] Target user not found: ${data.to}`)
       }
    });
 
+
+
    Socket.on("end-call", (data) => {
+      console.log(`📴 [END] Call ended, notifying ${data.to}`)
       const targetUser = userSocketmap.find(u => u.email === data.to);
       if (targetUser) {
          io.to(targetUser.id).emit("call-ended");
+         console.log(`✅ [END] Sent call-ended to ${targetUser.email}`)
+      } else {
+         console.log(`❌ [END] Target user not found: ${data.to}`)
       }
    });
+
+
 
    // Radio/PTT events
    Socket.on("radio-ptt-start", (data) => {
@@ -114,11 +147,14 @@ io.on("connection", Socket => {
       });
    });
 
+
    Socket.on("radio-ptt-end", (data) => {
       Socket.broadcast.emit("radio-ptt-end", {
          from: data.from
       });
    });
+
+
 
    Socket.on("radio-audio", (data) => {
       Socket.broadcast.emit("radio-audio", {

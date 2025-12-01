@@ -128,11 +128,11 @@ export default function LogsPage() {
         <Layout>
             <div className="max-w-7xl mx-auto">
                 <div className="flex items-center justify-between mb-6">
-                    <h1 className="text-3xl font-bold text-white font-railway">
+                    <h1 className="text-3xl font-bold font-railway" style={{ color: 'var(--text-primary)' }}>
                         📜 Activity Logs
                     </h1>
                     <div className="text-sm text-gray-400">
-                        Total Logs: <span className="text-white font-semibold">{logs.length}</span>
+                        Total Logs: <span className="font-semibold" style={{ color: 'var(--text-primary)' }}>{logs.length}</span>
                     </div>
                 </div>
 
@@ -186,7 +186,7 @@ export default function LogsPage() {
                                             <th className="px-4 py-3">Performed By</th>
                                         </tr>
                                     </thead>
-                                    <tbody className="text-white">
+                                    <tbody style={{ color: 'var(--text-primary)' }}>
                                         {filteredLogs.length === 0 ? (
                                             <tr>
                                                 <td colSpan={5} className="px-4 py-12 text-center text-gray-400">
