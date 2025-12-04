@@ -11,7 +11,7 @@ export default function AIRecommendations() {
         setLoading(true);
         setError(null);
         try {
-            const sectionId = '6926a23c2b59850b5b5b28cf';
+            const sectionId = '692ea55789d2e3506f170bb5';
             const response = await fetch(`${process.env.NEXT_PUBLIC_AIENGINE}/api/orengine?sectionid=${sectionId}`);
             if (!response.ok) {
                 throw new Error(`Failed to fetch: ${response.status}`);
@@ -69,18 +69,17 @@ export default function AIRecommendations() {
 
     return (
         <div className="card h-full flex flex-col animate-fade-in">
-
             {/* Header */}
-            <div className="flex items-center justify-between mb-5">
+            <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center space-x-3">
                     <div
-                        className="p-2.5 rounded-lg relative overflow-hidden"
+                        className="p-2 rounded-lg relative overflow-hidden"
                         style={{
                             background: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)',
                             boxShadow: '0 4px 15px rgba(139, 92, 246, 0.4)'
                         }}
                     >
-                        <Sparkles size={24} style={{ color: 'var(--text-primary)' }} className="animate-pulse" />
+                        <Sparkles size={20} style={{ color: 'var(--text-primary)' }} className="animate-pulse" />
                         <div
                             className="absolute inset-0 loading-shimmer opacity-30"
                             style={{ background: 'var(--shimmer-gradient)' }}
@@ -88,7 +87,7 @@ export default function AIRecommendations() {
                     </div>
                     <div>
                         <h2
-                            className="text-l font-bold"
+                            className="text-sm font-bold"
                             style={{ color: 'var(--text-primary)' }}
                         >
                             AI Recommendations
@@ -117,53 +116,53 @@ export default function AIRecommendations() {
             </div>
 
             {/* List */}
-            <div className="flex-1 overflow-y-auto space-y-3 pr-2" style={{ maxHeight: 'calc(100vh - 250px)' }}>
+            <div className="flex-1 overflow-y-auto space-y-2 pr-2 custom-scrollbar">
                 {error && (
                     <div
-                        className="p-4 rounded-xl animate-slide-in"
+                        className="p-3 rounded-xl animate-slide-in"
                         style={{
                             background: 'rgba(239, 68, 68, 0.1)',
                             border: '1px solid rgba(239, 68, 68, 0.3)'
                         }}
                     >
-                        <div className="flex items-center space-x-2 mb-2">
-                            <AlertCircle size={20} style={{ color: '#fca5a5' }} />
+                        <div className="flex items-center space-x-2 mb-1">
+                            <AlertCircle size={16} style={{ color: '#fca5a5' }} />
                             <span
-                                className="font-bold text-sm"
+                                className="font-bold text-xs"
                                 style={{ color: '#fca5a5' }}
                             >
                                 Error loading data
                             </span>
                         </div>
-                        <p className="text-sm" style={{ color: '#fca5a5' }}>{error}</p>
+                        <p className="text-xs" style={{ color: '#fca5a5' }}>{error}</p>
                     </div>
                 )}
 
                 {loading && recommendations.length === 0 ? (
-                    <div className="text-center py-16">
-                        <div className="spinner mx-auto mb-4"></div>
+                    <div className="text-center py-12">
+                        <div className="spinner mx-auto mb-3 w-6 h-6"></div>
                         <p
-                            className="text-sm font-medium"
+                            className="text-xs font-medium"
                             style={{ color: 'var(--text-tertiary)' }}
                         >
                             Loading AI recommendations...
                         </p>
                     </div>
                 ) : recommendations.length === 0 ? (
-                    <div className="text-center py-16">
+                    <div className="text-center py-12">
                         <Zap
-                            size={64}
-                            className="mx-auto mb-4 opacity-20"
+                            size={48}
+                            className="mx-auto mb-3 opacity-20"
                             style={{ color: 'var(--text-tertiary)' }}
                         />
                         <p
-                            className="text-lg font-medium"
+                            className="text-sm font-medium"
                             style={{ color: 'var(--text-tertiary)' }}
                         >
                             No recommendations
                         </p>
                         <p
-                            className="text-sm mt-2"
+                            className="text-xs mt-1"
                             style={{ color: 'var(--text-muted)' }}
                         >
                             OR Engine is optimizing traffic
@@ -177,7 +176,7 @@ export default function AIRecommendations() {
                         return (
                             <div
                                 key={recId}
-                                className="card-hover p-4 animate-slide-in"
+                                className="card-hover p-3 animate-slide-in rounded-lg"
                                 style={{
                                     background: 'linear-gradient(135deg, rgba(234, 115, 23, 0.08) 0%, rgba(139, 92, 246, 0.08) 100%)',
                                     border: '1px solid var(--border-accent)',
@@ -185,10 +184,10 @@ export default function AIRecommendations() {
                                 }}
                             >
                                 {/* Header */}
-                                <div className="flex items-center justify-between mb-3">
+                                <div className="flex items-center justify-between mb-2">
                                     <div className="flex items-center space-x-2">
                                         <div
-                                            className="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm"
+                                            className="w-6 h-6 rounded-md flex items-center justify-center font-bold text-xs"
                                             style={{
                                                 background: 'var(--gradient-accent)',
                                                 color: 'white'
@@ -197,37 +196,37 @@ export default function AIRecommendations() {
                                             {index + 1}
                                         </div>
                                         <span
-                                            className="text-s font-bold"
+                                            className="text-xs font-bold"
                                             style={{ color: 'var(--text-primary)' }}
                                         >
                                             A.I
                                         </span>
                                     </div>
 
-                                    <span className={`badge ${rec.use_loop ? 'badge-info' : 'badge-success'}`}>
+                                    <span className={`badge text-[10px] px-1.5 py-0.5 ${rec.use_loop ? 'badge-info' : 'badge-success'}`}>
                                         {rec.use_loop ? '🔄 Loop' : '→ Direct'}
                                     </span>
                                 </div>
 
                                 {/* Instruction Box */}
                                 <div
-                                    className="rounded-lg p-3 mb-3"
+                                    className="rounded-lg p-2 mb-2"
                                     style={{
                                         background: 'var(--surface-glass)',
                                         border: '1px solid var(--border-secondary)'
                                     }}
                                 >
                                     <div
-                                        className="text-xs font-bold uppercase tracking-wider mb-2"
+                                        className="text-[10px] font-bold uppercase tracking-wider mb-1"
                                         style={{ color: 'var(--text-tertiary)' }}
                                     >
                                         AI Instruction
                                     </div>
                                     <div
-                                        className="text-sm font-medium leading-relaxed"
+                                        className="text-xs font-medium leading-relaxed"
                                         style={{
                                             color: 'var(--brand-orange)',
-                                            lineHeight: '1.6'
+                                            lineHeight: '1.5'
                                         }}
                                     >
                                         {rec.instruction}
@@ -239,7 +238,7 @@ export default function AIRecommendations() {
                                     <button
                                         onClick={() => handleAction(recId, 'accept')}
                                         disabled={isProcessing}
-                                        className="flex-1 flex items-center justify-center space-x-1.5 px-2 py-2 rounded-lg text-xs font-bold transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+                                        className="flex-1 flex items-center justify-center space-x-1 px-2 py-1.5 rounded-md text-[10px] font-bold transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
                                         style={{
                                             background: isProcessing === 'accept'
                                                 ? 'rgba(34, 197, 94, 0.3)'
@@ -251,12 +250,12 @@ export default function AIRecommendations() {
                                     >
                                         {isProcessing === 'accept' ? (
                                             <>
-                                                <div className="spinner-sm"></div>
+                                                <div className="spinner-sm w-3 h-3"></div>
                                                 <span className="hidden sm:inline">Processing...</span>
                                             </>
                                         ) : (
                                             <>
-                                                <Check size={14} />
+                                                <Check size={12} />
                                                 <span className="hidden sm:inline">Accept</span>
                                             </>
                                         )}
@@ -265,7 +264,7 @@ export default function AIRecommendations() {
                                     <button
                                         onClick={() => handleAction(recId, 'override')}
                                         disabled={isProcessing}
-                                        className="flex-1 flex items-center justify-center space-x-1.5 px-2 py-2 rounded-lg text-xs font-bold transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+                                        className="flex-1 flex items-center justify-center space-x-1 px-2 py-1.5 rounded-md text-[10px] font-bold transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
                                         style={{
                                             background: isProcessing === 'override'
                                                 ? 'rgba(234, 179, 8, 0.3)'
@@ -277,12 +276,12 @@ export default function AIRecommendations() {
                                     >
                                         {isProcessing === 'override' ? (
                                             <>
-                                                <div className="spinner-sm"></div>
+                                                <div className="spinner-sm w-3 h-3"></div>
                                                 <span className="hidden sm:inline">Processing...</span>
                                             </>
                                         ) : (
                                             <>
-                                                <AlertCircle size={14} />
+                                                <AlertCircle size={12} />
                                                 <span className="hidden sm:inline">Override</span>
                                             </>
                                         )}
@@ -291,7 +290,7 @@ export default function AIRecommendations() {
                                     <button
                                         onClick={() => handleAction(recId, 'reject')}
                                         disabled={isProcessing}
-                                        className="flex-1 flex items-center justify-center space-x-1.5 px-2 py-2 rounded-lg text-xs font-bold transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+                                        className="flex-1 flex items-center justify-center space-x-1 px-2 py-1.5 rounded-md text-[10px] font-bold transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
                                         style={{
                                             background: isProcessing === 'reject'
                                                 ? 'rgba(239, 68, 68, 0.3)'
@@ -303,12 +302,12 @@ export default function AIRecommendations() {
                                     >
                                         {isProcessing === 'reject' ? (
                                             <>
-                                                <div className="spinner-sm"></div>
+                                                <div className="spinner-sm w-3 h-3"></div>
                                                 <span className="hidden sm:inline">Processing...</span>
                                             </>
                                         ) : (
                                             <>
-                                                <X size={14} />
+                                                <X size={12} />
                                                 <span className="hidden sm:inline">Reject</span>
                                             </>
                                         )}

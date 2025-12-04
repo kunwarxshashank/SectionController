@@ -12,7 +12,7 @@ export default function TrackControl() {
     // Fetch data from API
     const fetchSectionData = async () => {
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/section/6926a23c2b59850b5b5b28cf/display`);
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/section/692ea55789d2e3506f170bb5/display`);
             if (!response.ok) throw new Error('Failed to fetch section data');
             const data = await response.json();
             setSectionData(data);
@@ -151,57 +151,26 @@ export default function TrackControl() {
     const svgHeight = mainTracks.length * 120 + 100;
 
     return (
-        <div className={`${isFullscreen ? 'fixed inset-0 z-50 p-6' : 'card h-full'} flex flex-col gap-4`}
+        <div className={`${isFullscreen ? 'fixed inset-0 z-50 p-6' : 'card h-full'} flex flex-col`}
             style={{ background: isFullscreen ? '#000000' : undefined }}>
-            {/* Header */}
-            <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                    <div
-                        className="p-2 rounded-lg"
-                        style={{
-                            background: 'var(--gradient-accent)',
-                            boxShadow: '0 4px 15px rgba(29, 46, 78, 0.3)'
-                        }}
-                    >
-                        <Train size={24} className="text-white" />
-                    </div>
-                    <div>
-                        <h2 className="text-xl font-semibold" style={{ color: 'var(--text-primary)' }}>
-                            {section?.name || 'Track Control System'}
-                        </h2>
-                        <p className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
-                            {section?.code || 'SECTION-001'} • Railway Signaling Diagram
-                        </p>
-                    </div>
-                </div>
-                <div className="flex items-center gap-4">
-                    <div className="flex items-center space-x-2 px-3 py-1 rounded-lg" style={{ background: 'rgba(34, 197, 94, 0.2)' }}>
-                        <div className="w-2 h-2 bg-green-500 rounded-full live-pulse"></div>
-                        <span className="text-xs text-green-400 font-medium">LIVE</span>
-                    </div>
-                    <div className="text-right hidden sm:block">
-                        <div className="text-xs" style={{ color: 'var(--text-tertiary)' }}>System Time</div>
-                        <div className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>
-                            {currentTime.toLocaleTimeString()}
-                        </div>
-                    </div>
-                    <button
-                        onClick={toggleFullscreen}
-                        className="p-2 rounded-lg transition-colors"
-                        style={{
-                            background: 'var(--surface-glass)',
-                            color: 'var(--text-primary)',
-                            border: '1px solid var(--border-primary)'
-                        }}
-                        title={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
-                    >
-                        {isFullscreen ? <Minimize2 className="w-5 h-5" /> : <Maximize2 className="w-5 h-5" />}
-                    </button>
-                </div>
-            </div>
 
-            {/* Main Signaling Diagram */}
-            <div className="flex-1 rounded-lg overflow-hidden" style={{ background: '#000000', border: '1px solid #333' }}>
+            {/* Main Signaling Diagram - Full Space */}
+            <div className="flex-1 rounded-lg overflow-hidden relative" style={{ background: '#000000', border: '1px solid #333' }}>
+                {/* Fullscreen Toggle Overlay */}
+                <button
+                    onClick={toggleFullscreen}
+                    className="absolute top-2 right-2 z-10 p-1.5 rounded-lg transition-colors"
+                    style={{
+                        background: 'rgba(0, 0, 0, 0.7)',
+                        color: 'var(--text-primary)',
+                        border: '1px solid var(--border-primary)',
+                        backdropFilter: 'blur(8px)'
+                    }}
+                    title={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
+                >
+                    {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+                </button>
+
                 <div className="h-full overflow-auto p-8">
                     <svg width={svgWidth} height={svgHeight} className="mx-auto">
                         <defs>
@@ -519,39 +488,49 @@ export default function TrackControl() {
             </div>
 
             {/* Status Bar */}
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-                <div className="glass-dark rounded-lg p-3">
-                    <div className="text-xs font-medium mb-1" style={{ color: 'var(--text-tertiary)' }}>Active Trains</div>
-                    <div className="text-2xl font-bold text-green-400">{runningTrains}</div>
-                </div>
-
-                <div className="glass-dark rounded-lg p-3">
-                    <div className="text-xs font-medium mb-1" style={{ color: 'var(--text-tertiary)' }}>Total Trains</div>
-                    <div className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>{trains.length}</div>
-                </div>
-
-                <div className="glass-dark rounded-lg p-3">
-                    <div className="flex items-center gap-2 mb-1">
-                        <div className="w-3 h-3 rounded-full signal-green" />
-                        <div className="text-xs font-medium" style={{ color: 'var(--text-tertiary)' }}>Clear</div>
+            <div className="grid grid-cols-5 gap-2">
+                <div className="glass-dark rounded-lg p-2">
+                    <div className="flex items-center justify-between">
+                        <div className="font-medium" style={{ color: 'var(--text-tertiary)', fontSize: '9px' }}>Active Trains</div>
+                        <div className="text-lg font-bold text-green-400">{runningTrains}</div>
                     </div>
-                    <div className="text-2xl font-bold text-green-400">{greenSignals}</div>
                 </div>
 
-                <div className="glass-dark rounded-lg p-3">
-                    <div className="flex items-center gap-2 mb-1">
-                        <div className="w-3 h-3 rounded-full signal-yellow" />
-                        <div className="text-xs font-medium" style={{ color: 'var(--text-tertiary)' }}>Caution</div>
+                <div className="glass-dark rounded-lg p-2">
+                    <div className="flex items-center justify-between">
+                        <div className="font-medium" style={{ color: 'var(--text-tertiary)', fontSize: '9px' }}>Total Trains</div>
+                        <div className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>{trains.length}</div>
                     </div>
-                    <div className="text-2xl font-bold text-yellow-400">{yellowSignals}</div>
                 </div>
 
-                <div className="glass-dark rounded-lg p-3">
-                    <div className="flex items-center gap-2 mb-1">
-                        <div className="w-3 h-3 rounded-full signal-red" />
-                        <div className="text-xs font-medium" style={{ color: 'var(--text-tertiary)' }}>Stop</div>
+                <div className="glass-dark rounded-lg p-2">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-1">
+                            <div className="w-2 h-2 rounded-full signal-green" />
+                            <div className="font-medium" style={{ color: 'var(--text-tertiary)', fontSize: '9px' }}>Clear</div>
+                        </div>
+                        <div className="text-lg font-bold text-green-400">{greenSignals}</div>
                     </div>
-                    <div className="text-2xl font-bold text-red-400">{redSignals}</div>
+                </div>
+
+                <div className="glass-dark rounded-lg p-2">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-1">
+                            <div className="w-2 h-2 rounded-full signal-yellow" />
+                            <div className="font-medium" style={{ color: 'var(--text-tertiary)', fontSize: '9px' }}>Caution</div>
+                        </div>
+                        <div className="text-lg font-bold text-yellow-400">{yellowSignals}</div>
+                    </div>
+                </div>
+
+                <div className="glass-dark rounded-lg p-2">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-1">
+                            <div className="w-2 h-2 rounded-full signal-red" />
+                            <div className="font-medium" style={{ color: 'var(--text-tertiary)', fontSize: '9px' }}>Stop</div>
+                        </div>
+                        <div className="text-lg font-bold text-red-400">{redSignals}</div>
+                    </div>
                 </div>
             </div>
 

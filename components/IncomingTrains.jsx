@@ -3,7 +3,7 @@ import { Search, Filter, Train as TrainIcon, Clock, MapPin, TrendingUp } from 'l
 import { getTrainTypeBadge, getPriorityBadge, getDelayStatus, formatTrainNumber } from '@/lib/trainUtils';
 import { format } from 'date-fns';
 
-const API_URL = 'http://localhost:5000/api/section/6926a23c2b59850b5b5b28cf/display';
+const API_URL = 'http://localhost:5000/api/section/692ea55789d2e3506f170bb5/display';
 const REFRESH_INTERVAL = 5000; // 5 seconds
 
 export default function IncomingTrains() {
@@ -122,215 +122,199 @@ export default function IncomingTrains() {
     }
 
     return (
-        <div className="card h-full flex flex-col animate-fade-in">
-            {/* Header */}
-            <div className="flex items-center justify-between mb-5">
-                <div className="flex items-center space-x-3">
+        <div className="card h-full flex flex-col animate-fade-in" style={{ padding: '12px' }}>
+            {/* Header with Search on Right */}
+            <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center space-x-1.5">
                     <div
-                        className="p-2.5 rounded-lg"
+                        className="p-1 rounded-lg"
                         style={{
                             background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
-                            boxShadow: '0 4px 15px rgba(59, 130, 246, 0.3)'
+                            boxShadow: '0 2px 8px rgba(59, 130, 246, 0.3)'
                         }}
                     >
-                        <TrainIcon size={24} style={{ color: 'var(--text-primary)' }} />
+                        <TrainIcon size={12} style={{ color: 'var(--text-primary)' }} />
                     </div>
                     <div>
                         <h2
-                            className="text-l font-bold"
+                            className="text-xs font-bold leading-tight"
                             style={{ color: 'var(--text-primary)' }}
                         >
                             Active Trains
                         </h2>
                         <p
-                            className="text-xs font-medium"
-                            style={{ color: 'var(--text-tertiary)' }}
+                            className="font-medium leading-tight"
+                            style={{ color: 'var(--text-tertiary)', fontSize: '9px' }}
                         >
-                            {filteredTrains.length} trains in section
+                            {filteredTrains.length} in section
                         </p>
                     </div>
                 </div>
-            </div>
 
-            {/* Time Filters */}
-            <div className="flex space-x-2 mb-4 justify-center">
-                {timeFilters.map((filter) => (
-                    <button
-                        key={filter.value}
-                        onClick={() => setTimeFilter(filter.value)}
-                        className="px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-300 hover:scale-105"
+                {/* Search on Right */}
+                <div className="relative" style={{ width: '140px' }}>
+                    <Search
+                        size={10}
+                        className="absolute left-1.5 top-1/2 transform -translate-y-1/2"
+                        style={{ color: 'var(--text-tertiary)' }}
+                    />
+                    <input
+                        type="text"
+                        placeholder="Search..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="w-full pl-5 pr-1.5 py-1 rounded font-medium transition-all"
                         style={{
-                            background: timeFilter === filter.value
-                                ? 'var(--gradient-accent)'
-                                : 'linear-gradient(135deg, #2C5282 0%, #1D2E4E 100%)',
-                            color: timeFilter === filter.value ? '#ffffff' : 'var(--text-secondary)',
-                            boxShadow: timeFilter === filter.value ? '0 4px 12px rgba(234, 115, 23, 0.3)' : 'none',
-                            border: `1px solid ${timeFilter === filter.value ? 'transparent' : 'var(--border-primary)'}`
+                            background: 'var(--surface-glass)',
+                            border: '1px solid var(--border-primary)',
+                            color: 'var(--text-primary)',
+                            outline: 'none',
+                            fontSize: '9px'
                         }}
-                    >
-                        {filter.label}
-                    </button>
-                ))}
+                    />
+                </div>
             </div>
 
-            {/* Search */}
-            <div className="relative mb-4">
-                <Search
-                    size={18}
-                    className="absolute left-3 top-1/2 transform -translate-y-1/2"
-                    style={{ color: 'var(--text-tertiary)' }}
-                />
-                <input
-                    type="text"
-                    placeholder="Search trains by number or name..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 rounded-lg font-medium transition-all duration-200 focus:scale-[1.02]"
-                    style={{
-                        background: 'var(--surface-glass)',
-                        border: '1px solid var(--border-primary)',
-                        color: 'var(--text-primary)',
-                        outline: 'none'
-                    }}
-                    onFocus={(e) => e.target.style.borderColor = 'var(--border-accent)'}
-                    onBlur={(e) => e.target.style.borderColor = 'var(--border-primary)'}
-                />
-            </div>
-
-            {/* Trains List */}
-            <div className="flex-1 overflow-y-auto space-y-3 pr-2" style={{ maxHeight: 'calc(100vh - 350px)' }}>
+            {/* Trains List - Horizontal Scroll */}
+            <div className="flex-1 overflow-x-auto overflow-y-hidden">
                 {filteredTrains.length === 0 ? (
-                    <div className="text-center py-16">
+                    <div className="text-center py-4">
                         <TrainIcon
-                            size={64}
-                            className="mx-auto mb-4 opacity-20"
+                            size={32}
+                            className="mx-auto mb-2 opacity-20"
                             style={{ color: 'var(--text-tertiary)' }}
                         />
                         <p
-                            className="text-lg font-medium"
+                            className="text-xs font-medium"
                             style={{ color: 'var(--text-tertiary)' }}
                         >
-                            No active trains
-                        </p>
-                        <p
-                            className="text-sm mt-2"
-                            style={{ color: 'var(--text-muted)' }}
-                        >
-                            {searchQuery ? 'Try a different search' : 'Waiting for incoming trains...'}
+                            {searchQuery ? 'No trains found' : 'No active trains'}
                         </p>
                     </div>
                 ) : (
-                    filteredTrains.map((train, index) => {
-                        const delayInfo = getDelayStatus(train.delay || 0);
+                    <div className="flex gap-2 pb-1">
+                        {filteredTrains.map((train, index) => {
+                            const delayInfo = getDelayStatus(train.delay || 0);
 
-                        return (
-                            <div
-                                key={train.train_id || index}
-                                className="card-hover p-4 animate-slide-in"
-                                style={{
-                                    background: 'var(--surface-card)',
-                                    border: '1px solid var(--border-primary)',
-                                    animationDelay: `${index * 0.05}s`
-                                }}
-                            >
-                                {/* Header Row */}
-                                <div className="flex items-start justify-between mb-3">
-                                    <div className="flex-1">
-                                        <div className="flex items-center space-x-2 mb-2">
-                                            <span
-                                                className="text-lg font-bold tracking-wide"
-                                                style={{ color: 'var(--text-primary)' }}
+                            return (
+                                <div
+                                    key={train.train_id || index}
+                                    className="card-hover animate-slide-in flex-shrink-0"
+                                    style={{
+                                        background: 'var(--surface-card)',
+                                        border: '1px solid var(--border-primary)',
+                                        animationDelay: `${index * 0.05}s`,
+                                        minWidth: '180px',
+                                        maxWidth: '180px',
+                                        padding: '8px'
+                                    }}
+                                >
+                                    {/* Compact Header */}
+                                    <div className="flex items-start justify-between mb-1">
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-center gap-0.5 mb-0.5">
+                                                <span
+                                                    className="font-bold tracking-wide truncate"
+                                                    style={{ color: 'var(--text-primary)', fontSize: '9px' }}
+                                                >
+                                                    {formatTrainNumber(train.train_number || train.train_id)}
+                                                </span>
+                                                <span className={`badge ${getTrainTypeBadge(train.train_type)}`}
+                                                    style={{ fontSize: '7px', padding: '1px 3px' }}
+                                                >
+                                                    {train.train_type?.substring(0, 3) || 'EXP'}
+                                                </span>
+                                            </div>
+                                            <p
+                                                className="font-semibold truncate"
+                                                style={{ color: 'var(--text-secondary)', fontSize: '8px' }}
+                                                title={train.train_name}
                                             >
-                                                {formatTrainNumber(train.train_number || train.train_id)}
-                                            </span>
-                                            <span className={`badge ${getTrainTypeBadge(train.train_type)}`}>
-                                                {train.train_type || 'Express'}
-                                            </span>
+                                                {train.train_name || 'Unknown Train'}
+                                            </p>
                                         </div>
-                                        <p
-                                            className="text-sm font-semibold"
-                                            style={{ color: 'var(--text-secondary)' }}
+                                        <span className={`badge ${getPriorityBadge(train.priority)}`}
+                                            style={{ fontSize: '7px', padding: '1px 3px' }}
                                         >
-                                            {train.train_name || 'Unknown Train'}
-                                        </p>
-                                    </div>
-                                    <span className={`badge ${getPriorityBadge(train.priority)}`}>
-                                        {train.priority || 'Medium'}
-                                    </span>
-                                </div>
-
-                                {/* Info Grid */}
-                                <div className="space-y-2">
-                                    <div
-                                        className="flex items-center justify-between px-3 py-2 rounded-lg"
-                                        style={{ background: 'var(--surface-glass)' }}
-                                    >
-                                        <div className="flex items-center space-x-2">
-                                            <MapPin size={16} style={{ color: 'var(--brand-orange)' }} />
-                                            <span
-                                                className="text-xs font-medium"
-                                                style={{ color: 'var(--text-tertiary)' }}
-                                            >
-                                                Location
-                                            </span>
-                                        </div>
-                                        <span
-                                            className="text-sm font-bold"
-                                            style={{ color: 'var(--text-primary)' }}
-                                        >
-                                            {train.current_station || train.currentBlock || 'Unknown'}
+                                            {train.priority?.substring(0, 1) || 'M'}
                                         </span>
                                     </div>
 
-                                    <div
-                                        className="flex items-center justify-between px-3 py-2 rounded-lg"
-                                        style={{ background: 'var(--surface-glass)' }}
-                                    >
-                                        <div className="flex items-center space-x-2">
-                                            <TrendingUp size={16} style={{ color: delayInfo.color === 'green' ? '#22c55e' : delayInfo.color === 'yellow' ? '#eab308' : '#ef4444' }} />
-                                            <span
-                                                className="text-xs font-medium"
-                                                style={{ color: 'var(--text-tertiary)' }}
-                                            >
-                                                Status
-                                            </span>
-                                        </div>
-                                        <span
-                                            className="text-sm font-bold"
-                                            style={{
-                                                color: delayInfo.color === 'green' ? '#86efac' : delayInfo.color === 'yellow' ? '#fde047' : '#fca5a5'
-                                            }}
-                                        >
-                                            {delayInfo.status}
-                                        </span>
-                                    </div>
-
-                                    {train.speed && (
+                                    {/* Ultra Compact Info */}
+                                    <div className="space-y-0.5">
                                         <div
-                                            className="flex items-center justify-between px-3 py-2 rounded-lg"
+                                            className="flex items-center justify-between px-1 py-0.5 rounded"
                                             style={{ background: 'var(--surface-glass)' }}
                                         >
-                                            <div className="flex items-center space-x-2">
-                                                <Clock size={16} style={{ color: 'var(--brand-blue)' }} />
+                                            <div className="flex items-center gap-0.5">
+                                                <MapPin size={8} style={{ color: 'var(--brand-orange)' }} />
                                                 <span
-                                                    className="text-xs font-medium"
-                                                    style={{ color: 'var(--text-tertiary)' }}
+                                                    className="font-medium"
+                                                    style={{ color: 'var(--text-tertiary)', fontSize: '8px' }}
                                                 >
-                                                    Speed
+                                                    Loc
                                                 </span>
                                             </div>
                                             <span
-                                                className="text-sm font-bold font-mono"
-                                                style={{ color: 'var(--text-primary)' }}
+                                                className="font-bold truncate ml-1"
+                                                style={{ color: 'var(--text-primary)', fontSize: '8px' }}
+                                                title={train.current_station || train.currentBlock}
                                             >
-                                                {train.speed.toFixed(1)} km/h
+                                                {(train.current_station || train.currentBlock || 'Unknown').substring(0, 10)}
                                             </span>
                                         </div>
-                                    )}
+
+                                        <div
+                                            className="flex items-center justify-between px-1 py-0.5 rounded"
+                                            style={{ background: 'var(--surface-glass)' }}
+                                        >
+                                            <div className="flex items-center gap-0.5">
+                                                <TrendingUp size={8} style={{ color: delayInfo.color === 'green' ? '#22c55e' : delayInfo.color === 'yellow' ? '#eab308' : '#ef4444' }} />
+                                                <span
+                                                    className="font-medium"
+                                                    style={{ color: 'var(--text-tertiary)', fontSize: '8px' }}
+                                                >
+                                                    Status
+                                                </span>
+                                            </div>
+                                            <span
+                                                className="font-bold"
+                                                style={{
+                                                    color: delayInfo.color === 'green' ? '#86efac' : delayInfo.color === 'yellow' ? '#fde047' : '#fca5a5',
+                                                    fontSize: '8px'
+                                                }}
+                                            >
+                                                {delayInfo.status}
+                                            </span>
+                                        </div>
+
+                                        {train.speed && (
+                                            <div
+                                                className="flex items-center justify-between px-1 py-0.5 rounded"
+                                                style={{ background: 'var(--surface-glass)' }}
+                                            >
+                                                <div className="flex items-center gap-0.5">
+                                                    <Clock size={8} style={{ color: 'var(--brand-blue)' }} />
+                                                    <span
+                                                        className="font-medium"
+                                                        style={{ color: 'var(--text-tertiary)', fontSize: '8px' }}
+                                                    >
+                                                        Speed
+                                                    </span>
+                                                </div>
+                                                <span
+                                                    className="font-bold font-mono"
+                                                    style={{ color: 'var(--text-primary)', fontSize: '8px' }}
+                                                >
+                                                    {train.speed.toFixed(0)} km/h
+                                                </span>
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
-                            </div>
-                        );
-                    })
+                            );
+                        })}
+                    </div>
                 )}
             </div>
         </div>

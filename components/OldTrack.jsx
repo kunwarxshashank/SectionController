@@ -12,7 +12,7 @@ export default function TrackControl() {
     // Fetch data from API
     const fetchSectionData = async () => {
         try {
-            const response = await fetch('http://localhost:5000/api/section/6926a23c2b59850b5b5b28cf/display');
+            const response = await fetch('http://localhost:5000/api/section/692ea55789d2e3506f170bb5/display');
             if (!response.ok) throw new Error('Failed to fetch section data');
             const data = await response.json();
             setSectionData(data);

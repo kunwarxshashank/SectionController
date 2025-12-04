@@ -7,6 +7,7 @@ import Layout from '@/components/Layout';
 import IncomingTrains from '@/components/IncomingTrains';
 import TrackControl from '@/components/TrackControl';
 import AIRecommendations from '@/components/AIRecommendations';
+import Broadcast from '@/components/Broadcast';
 import { format } from 'date-fns';
 import { Clock, AlertCircle, Wifi, WifiOff, Activity, Zap } from 'lucide-react';
 import { useState } from 'react';
@@ -170,20 +171,68 @@ export default function HomePage() {
             </div> */}
 
             {/* Main Dashboard Grid */}
-            <div className="grid grid-cols-12 gap-6" style={{ minHeight: 'calc(100vh - 350px)' }}>
-                {/* Left Panel - Incoming Trains */}
-                <div className="col-span-3 animate-slide-in" style={{ animationDelay: '0.1s' }}>
-                    <IncomingTrains />
-                </div>
+            <div
+                className="grid gap-4"
+                style={{
+                    height: 'calc(100vh - 120px)',
+                    gridTemplateColumns: '75% 25%',
+                    gridTemplateRows: 'auto 1fr auto'
+                }}
+            >
 
-                {/* Center Panel - Track Control */}
-                <div className="col-span-6 animate-slide-in" style={{ animationDelay: '0.2s' }}>
+                {/* Left Column - Track Control (spans full height) */}
+                <div
+                    className="animate-slide-in"
+                    style={{
+                        gridRow: '1 / 3',
+                        gridColumn: '1',
+                        animationDelay: '0.1s',
+                        minHeight: 0
+                    }}
+                >
                     <TrackControl />
                 </div>
 
-                {/* Right Panel - AI Recommendations */}
-                <div className="col-span-3 animate-slide-in" style={{ animationDelay: '0.3s' }}>
+
+                {/* Top Right - Broadcast */}
+                <div
+                    className="animate-slide-in"
+                    style={{
+                        gridRow: '1',
+                        gridColumn: '2',
+                        animationDelay: '0.2s'
+                    }}
+                >
+                    <Broadcast />
+                </div>
+
+
+
+                {/* Middle Right - AI Recommendations */}
+                <div
+                    className="animate-slide-in"
+                    style={{
+                        gridRow: '2 / 4',
+                        gridColumn: '2',
+                        animationDelay: '0.3s',
+                        minHeight: 0
+                    }}
+                >
                     <AIRecommendations />
+                </div>
+
+
+                {/* Bottom - Incoming Trains (horizontal, 75% width) */}
+                <div
+                    className="animate-slide-in"
+                    style={{
+                        gridRow: '3',
+                        gridColumn: '1',
+                        animationDelay: '0.4s',
+                        maxHeight: '180px'
+                    }}
+                >
+                    <IncomingTrains />
                 </div>
             </div>
         </Layout>

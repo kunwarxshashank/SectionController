@@ -1,5 +1,14 @@
-import { createContext, useContext, useState, useEffect } from 'react';
-import { login as loginFn, logout as logoutFn, getAdminData, isAuthenticated } from '../lib/auth';
+import { createContext, useContext, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+    initializeAuth,
+    setCredentials,
+    clearCredentials,
+    selectCurrentAdmin,
+    selectIsAuthenticated,
+    selectAuthLoading
+} from '@/store/slices/authSlice';
+import { loginApi } from '../lib/api';
 
 const AuthContext = createContext();
 
@@ -12,42 +21,39 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }) => {
-    const [admin, setAdmin] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [authenticated, setAuthenticated] = useState(false);
+    const dispatch = useDispatch();
+    const admin = useSelector(selectCurrentAdmin);
+    const authenticated = useSelector(selectIsAuthenticated);
+    const loading = useSelector(selectAuthLoading);
 
     useEffect(() => {
-        // Check authentication status on mount
-        const checkAuth = () => {
-            const isAuth = isAuthenticated();
-            setAuthenticated(isAuth);
-
-            if (isAuth) {
-                const adminData = getAdminData();
-                setAdmin(adminData);
-            }
-
-            setLoading(false);
-        };
-
-        checkAuth();
-    }, []);
+        // Initialize auth state from localStorage on mount
+        dispatch(initializeAuth());
+    }, [dispatch]);
 
     const login = async (email, password) => {
-        const result = await loginFn(email, password);
+        try {
+            const response = await loginApi(email, password);
+            const { accessToken, refreshToken, admin: adminData } = response;
 
-        if (result.success) {
-            setAdmin(result.admin);
-            setAuthenticated(true);
+            // Store in Redux (which also persists to localStorage)
+            dispatch(setCredentials({ admin: adminData, accessToken, refreshToken }));
+
+            return { success: true, admin: adminData };
+        } catch (error) {
+            return {
+                success: false,
+                error: error.response?.data?.msg || 'Login failed',
+            };
         }
-
-        return result;
     };
 
     const logout = () => {
-        logoutFn();
-        setAdmin(null);
-        setAuthenticated(false);
+        dispatch(clearCredentials());
+
+        if (typeof window !== 'undefined') {
+            window.location.href = '/login';
+        }
     };
 
     const value = {
