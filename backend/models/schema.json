@@ -1,0 +1,201 @@
+{
+    "station": [
+        {
+            "stationId": "vidisha",
+            "stationName": "Vidisha",
+            "totalTracks": []
+        },
+        {
+            "stationId": "sorai",
+            "stationName": "sorai",
+            "totalTracks": []
+        },
+        {
+            "stationId": "sumer",
+            "stationName": "sumer",
+            "totalTracks": []
+        },
+        {
+            "stationId": "gulabganj",
+            "stationName": "gulabganj",
+            "totalTracks": []
+        },
+        {
+            "stationId": "pabai",
+            "stationName": "pabai",
+            "totalTracks": []
+        },
+        {
+            "stationId": "ganjbasoda",
+            "stationName": "ganjbasoda",
+            "totalTracks": []
+        }
+    ],
+    "trains": [
+        {
+            "traindId": "",
+            "trainName": "",
+            "trainType": "",
+            "trainCategory": "",
+            "basePriority": "",
+            "trainPassenger": "",
+            "trainPriority": "",
+            "traincapacity": "",
+            "currentEdge": "",
+            "isEmergency": false,
+            "PAD": [],
+            "PDD": [],
+            "ACP": [],
+            "axle": "",
+            "schedule": {
+                "vidisha": {
+                    "scheduledArrival": "",
+                    "scheduledDeparture": "",
+                    "actualArrival": "",
+                    "actualDeparture": "",
+                    "expectedDeparture": ""
+                },
+                "sorai": {
+                    "scheduledArrival": "",
+                    "scheduledDeparture": "",
+                    "actualArrival": "",
+                    "actualDeparture": "",
+                    "expectedDeparture": ""
+                },
+                "sumer": {
+                    "scheduledArrival": "",
+                    "scheduledDeparture": "",
+                    "actualArrival": "",
+                    "actualDeparture": "",
+                    "expectedDeparture": ""
+                },
+                "gulabganj": {
+                    "scheduledArrival": "",
+                    "scheduledDeparture": "",
+                    "actualArrival": "",
+                    "actualDeparture": "",
+                    "expectedDeparture": ""
+                },
+                "pabai": {
+                    "scheduledArrival": "",
+                    "scheduledDeparture": "",
+                    "actualArrival": "",
+                    "actualDeparture": "",
+                    "expectedDeparture": ""
+                },
+                "ganjbasoda": {
+                    "scheduledArrival": "",
+                    "scheduledDeparture": "",
+                    "actualArrival": "",
+                    "actualDeparture": "",
+                    "expectedDeparture": ""
+                }
+            }
+        }
+    ],
+    "tracks": [
+        {
+            "UP_MAIN": [
+                {
+                    "edgeId": "UP_EDGE_01",
+                    "startNode": "UP_MAIN_01",
+                    "endNode": "UP_MAIN_02",
+                    "nodeType": "station/etc",
+                    "signal": "r/y/g",
+                    "direction": "UP",
+                    "maxspeed": "",
+                    "crossing": "",
+                    "restrictions": ""
+                },
+                {
+                    "edgeId": "UP_EDGE_02",
+                    "startNode": "UP_MAIN_02",
+                    "endNode": "UP_MAIN_03",
+                    "nodeType": "station/etc",
+                    "signal": "r/y/g",
+                    "stream": "",
+                    "direction": "UP",
+                    "maxspeed": "",
+                    "crossing": "",
+                    "restrictions": ""
+                }
+            ],
+            "MID_MAIN": [
+                {
+                    "edgeId": "MID_EDGE_01",
+                    "startNode": "MID_MAIN_01",
+                    "endNode": "MID_MAIN_02",
+                    "edgeType": "platform/crossover/yard/mainline/loopline",
+                    "stream": "up/down/bidirectional",
+                    "signal": "r/y/g",
+                    "direction": "UP",
+                    "maxspeed": "",
+                    "crossing": "",
+                    "restrictions": ""
+                },
+                {
+                    "edgeId": "MID_EDGE_02",
+                    "startNode": "MID_MAIN_02",
+                    "endNode": "MID_MAIN_03",
+                    "edgeType": "platform/crossover/yard/mainline/loopline",
+                    "stream": "up/down/bidirectional",
+                    "signal": "r/y/g",
+                    "direction": "UP",
+                    "maxspeed": "",
+                    "crossing": "",
+                    "restrictions": ""
+                }
+            ],
+            "LOW_MAIN": [
+                {
+                    "edgeId": "LOW_EDGE_01",
+                    "startNode": "LOW_MAIN_01",
+                    "endNode": "LOW_MAIN_02",
+                    "edgeType": "platform/crossover/yard/mainline/loopline",
+                    "stream": "up/down/bidirectional",
+                    "signal": "r/y/g",
+                    "direction": "UP",
+                    "maxspeed": "",
+                    "crossing": "",
+                    "restrictions": ""
+                },
+                {
+                    "edgeId": "LOW_EDGE_02",
+                    "startNode": "LOW_MAIN_02",
+                    "endNode": "LOW_MAIN_03",
+                    "edgeType": "platform/crossover/yard/mainline/loopline",
+                    "stream": "up/down/bidirectional",
+                    "signal": "r/y/g",
+                    "direction": "UP",
+                    "maxspeed": "",
+                    "crossing": "",
+                    "restrictions": ""
+                }
+            ]
+        }
+    ],
+    "cautionNotes": [
+        {
+            "cautionId": "",
+            "cautionNumber": "",
+            "cautionName": "",
+            "cautionDescription": "",
+            "sourceStation": "",
+            "destinationStation": "",
+            "affectedEdges": []
+        }
+    ],
+    "locopilot": [
+        {
+            "locopilotId": "",
+            "locopilotName": "",
+            "dutyStartTime": "",
+            "dutyEndTime": "",
+            "overtime": "",
+            "currentTrain": "",
+            "compatibleTrains": "",
+            "startingStation": "",
+            "endingStation": ""
+        }
+    ]
+}

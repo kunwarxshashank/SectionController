@@ -140,11 +140,11 @@ export default function BroadcastPage() {
 
     // Initialize peer connection
     const createPeerConnection = () => {
-        const pc = new RTCPeerConnection(iceServers);
+        const pc = new RTCPeerConnection();
 
         pc.onicecandidate = (event) => {
             if (event.candidate && socket && activeCall) {
-                console.log('Sending ICE candidate to:', activeCall.email);
+             console.log('Sending ICE candidate to:', activeCall.email);
                 socket.emit('ice-candidate', {
                     to: activeCall.email,
                     candidate: event.candidate
@@ -167,10 +167,7 @@ export default function BroadcastPage() {
             }
 
             // Set remote stream to video element for video calls
-            if (remoteVideoRef.current) {
-                remoteVideoRef.current.srcObject = remoteStream;
-                console.log('✅ Set remote stream to video element');
-            }
+            
         };
 
         pc.oniceconnectionstatechange = () => {
@@ -212,8 +209,9 @@ export default function BroadcastPage() {
                 },
                 video: videoCall
             });
-
-            console.log('🎤 Got local stream with tracks:', stream.getTracks().map(t => ({ kind: t.kind, enabled: t.enabled })));
+            if(stream){
+                console.log('🎤 Got local stream with tracks:', stream.getTracks().map(t => ({ kind: t.kind, enabled: t.enabled })));
+            }
 
             localStream.current = stream;
             if (localVideoRef.current && videoCall) {
@@ -221,7 +219,7 @@ export default function BroadcastPage() {
             }
 
             // Create peer connection
-            peerConnection.current = createPeerConnection();
+            peerConnection.current = await createPeerConnection();
 
             // Add tracks to peer connection
             stream.getTracks().forEach(track => {
