@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 const TracksSchema = new mongoose.Schema({
   sectionId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -17,4 +18,6 @@ const TracksSchema = new mongoose.Schema({
   ]
 });
 
-export default mongoose.model("Tracks", TracksSchema);
+const Tracks = mongoose.model("Tracks", TracksSchema);
+export default Tracks
+

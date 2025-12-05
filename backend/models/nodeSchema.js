@@ -1,3 +1,5 @@
+import mongoose from "mongoose";
+
 const NodeSchema = new mongoose.Schema({
   nodeId: String,
   nodeType: {
@@ -18,7 +20,9 @@ const NodeSchema = new mongoose.Schema({
       "loopEnd",
       "loopCorner",
       "turningPoint",
-      "junction"
+      "junction",
+      "yard"
+
     ]
   },
   x: Number,
@@ -47,4 +51,5 @@ const NodeSchema = new mongoose.Schema({
     ]
   }
 });
-export default mongoose.model("Node", NodeSchema);
+ const Node = mongoose.model("Node", NodeSchema);
+ export default Node 

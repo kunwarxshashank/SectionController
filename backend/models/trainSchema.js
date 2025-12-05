@@ -112,4 +112,5 @@ expectedDeparture:[
   }
 });
 
-export default mongoose.model("Train", TrainSchema);
+const Train  =  mongoose.model("Train", TrainSchema);
+export default Train

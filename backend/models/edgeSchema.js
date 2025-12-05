@@ -1,3 +1,5 @@
+import mongoose from "mongoose";
+
 const EdgeSchema = new mongoose.Schema({
   edgeId: String,
   startNode: String,
@@ -5,9 +7,11 @@ const EdgeSchema = new mongoose.Schema({
   edgeType: String,
   stream: { type: String, enum: ["UP", "DN", "BIDIRECTIONAL"] },
   signal: String,
-  direction: { type: String, enum: ["UP", "DN"] },
+  direction: { type: String, enum: ["UP" , "DN" , "BIDIRECTIONAL"] },
   maxspeed: String,
   crossing: { type: Boolean, default: false },
   restrictions: String
 });
-export default mongoose.model("Edge", EdgeSchema);
+
+const Edge = mongoose.model("Edge", EdgeSchema);
+export default Edge

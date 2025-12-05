@@ -47,4 +47,6 @@ const LocoPilotSchema = new mongoose.Schema({
 
 }, { timestamps: true });
 
-export default mongoose.model("LocoPilot", LocoPilotSchema);
+
+const LocoPilot  = mongoose.model("LocoPilot", LocoPilotSchema);
+export default LocoPilot

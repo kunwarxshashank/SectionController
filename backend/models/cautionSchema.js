@@ -32,5 +32,5 @@ const CautionSchema = new mongoose.Schema({
 });
 
 
-
-export default mongoose.model("Caution", CautionSchema);
+const Caution = mongoose.model("Caution", CautionSchema);
+export default Caution;

@@ -1,3 +1,5 @@
+import mongoose from "mongoose";
+
 const SectionSchema = new mongoose.Schema({
   section_id: String,
   name: String,
@@ -16,4 +18,6 @@ const SectionSchema = new mongoose.Schema({
     }
   ]
 });
-export default mongoose.model("Section", SectionSchema);
+
+const Section =  mongoose.model("Section", SectionSchema);
+export default Section ;

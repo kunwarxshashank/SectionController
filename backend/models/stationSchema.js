@@ -1,3 +1,5 @@
+import mongoose from "mongoose";
+
 const StationSchema = new mongoose.Schema({
   stationId: String,
   stationName: String,
@@ -33,4 +35,5 @@ const StationSchema = new mongoose.Schema({
   ]
 });
 
-export default mongoose.model("Station", StationSchema);
+const Station = mongoose.model("Station", StationSchema);
+export default Station
