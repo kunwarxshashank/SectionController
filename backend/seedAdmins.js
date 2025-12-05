@@ -2,7 +2,7 @@
 
 import mongoose from "mongoose";
 import Admin from "./models/adminSchema.js";       // Make sure file name matches
-import Section from "./models/sectionSchema.js";   // Updated name
+// Updated name
 import { config as configDotenv } from "dotenv"
 configDotenv()
 
@@ -14,15 +14,10 @@ async function seedAdmins() {
     console.log("Connected to DB");
 
     // Find the large section that was created earlier
-    const section = await Section.findOne({ section_id: "SEC_LARGE_01" });
 
-    if (!section) {
-      console.log("❌ ERROR: Section SEC_LARGE_01 not found!");
-      console.log("➡️ Run seedLargeSection.js first.");
-      process.exit();
-    }
 
-    console.log("Using section:", section.name);
+
+
 
     // -----------------------------------------
     // DELETE OLD ADMINS
@@ -36,21 +31,39 @@ async function seedAdmins() {
     // -----------------------------------------
     const adminsToCreate = [
       {
-        email: "admin1@section.com",
+        email: "bhs@section.com",
         password: "123456",
-        sectionId: section._id,
+        stationId: "bhs",
         twoFa: false
       },
       {
-        email: "admin2@section.com",
+        email: "sori@section.com",
         password: "123456",
-        sectionId: section._id,
+        stationId: "sori",
         twoFa: false
       },
       {
-        email: "admin3@section.com",
+        email: "sumr@section.com",
         password: "123456",
-        sectionId: section._id,
+        stationId: "sumr",
+        twoFa: false
+      },
+      {
+        email: "glg@section.com",
+        password: "123456",
+        stationId: "glg",
+        twoFa: false
+      },
+      {
+        email: "pai@section.com",
+        password: "123456",
+        stationId: "pai",
+        twoFa: false
+      },
+      {
+        email: "bsq@section.com",
+        password: "123456",
+        stationId: "bsq",
         twoFa: false
       }
     ];

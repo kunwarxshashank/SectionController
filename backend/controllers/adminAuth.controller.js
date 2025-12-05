@@ -15,6 +15,7 @@ export const loginAdmin = async (req, res) => {
     }
 
     const { id, password } = req.body;
+    console.log(id, password);
 
     if (!id || !password) {
       return res.status(400).json({ msg: "ID and password are required" });
@@ -90,7 +91,7 @@ export const loginAdmin = async (req, res) => {
 
     // ====== STATION ADMIN LOGIN ======
     if (!isSectionAdmin) {
-      const station = await Station.findById(admin.stationId)
+      const station = await Station.findOne({ stationId: admin.stationId })
         .populate({
           path: "totalTracks",
           populate: {

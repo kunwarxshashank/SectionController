@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
-import { useAuth } from '@/context/AuthContext';
+import { useSelector } from 'react-redux';
+import { selectIsAuthenticated, selectAuthLoading } from '@/store/slices/adminSlice';
 import Layout from '@/components/Layout';
 import { FlaskConical, Play, Pause, RotateCcw, Settings, Zap } from 'lucide-react';
 
 export default function TestCasePage() {
     const router = useRouter();
-    const { authenticated, loading } = useAuth();
+    const authenticated = useSelector(selectIsAuthenticated);
+    const loading = useSelector(selectAuthLoading);
     const [selectedScenario, setSelectedScenario] = useState(null);
     const [simulationRunning, setSimulationRunning] = useState(false);
     const [simulationSpeed, setSimulationSpeed] = useState(1);

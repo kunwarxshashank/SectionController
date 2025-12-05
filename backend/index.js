@@ -4,10 +4,11 @@ import express from 'express'
 import http from 'http'
 import { Server } from 'socket.io'
 import cors from 'cors'
-import sectionRoutes from "./routes/section.routes.js";
+//import sectionRoutes from "./routes/section.routes.js";
 import adminRoutes from "./routes/admin.routes.js";
 import logRoutes from "./routes/log.routes.js";
 import broadcastRoutes from "./routes/broadcast.routes.js";
+import callLogRoutes from "./routes/callLog.routes.js";
 import mongoose from 'mongoose';
 
 const app = express();
@@ -47,10 +48,11 @@ app.use(cors({
 })
 )
 
-app.use("/api", sectionRoutes);
+//app.use("/api", sectionRoutes);
 app.use("/api", adminRoutes);
 app.use("/api", logRoutes);
 app.use("/api", broadcastRoutes);
+app.use("/api", callLogRoutes);
 
 
 let userSocketmap = [];
@@ -101,11 +103,14 @@ io.on("connection", Socket => {
       const targetUser = userSocketmap.find(u => u.email === data.to);
       if (targetUser) {
          io.to(targetUser.id).emit("call-accepted", {
-            answer: data.answer
+            answer: data.answer,
+            from: data.from
          });
-         console.log(`✅ [ACCEPTED] Sent call-accepted to ${targetUser.email}`)
+         console.log(`✅ [ACCEPTED] Sent call-accepted with answer to ${targetUser.email}`)
       } else {
          console.log(`❌ [ACCEPTED] Target user not found: ${data.to}`)
+         // Also log the current users for debugging
+         console.log(`📋 [DEBUG] Available users:`, userSocketmap.map(u => u.email))
       }
    });
 
@@ -137,38 +142,6 @@ io.on("connection", Socket => {
       }
    });
 
-
-
-   // Radio/PTT events
-   Socket.on("radio-ptt-start", (data) => {
-      Socket.broadcast.emit("radio-ptt-start", {
-         from: data.from,
-         channel: data.channel
-      });
-   });
-
-
-   Socket.on("radio-ptt-end", (data) => {
-      Socket.broadcast.emit("radio-ptt-end", {
-         from: data.from
-      });
-   });
-
-
-
-   Socket.on("radio-audio", (data) => {
-      Socket.broadcast.emit("radio-audio", {
-         from: data.from,
-         audio: data.audio
-      });
-   });
-
-   Socket.on("section-data", (data , sectionId) => {
-     Socket.emit("recived-train-data", data).to(sectionId)
-   })
-   Socket.on("sendinfo-to-loco-pilot", (data ,) => {
-     Socket.emit("recived-info-to-loco-pilot", data).to()
-   })
 
    Socket.on("disconnect", () => {
       console.log("User disconnected:", Socket.id);

@@ -1,14 +1,17 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
-import { useAuth } from '@/context/AuthContext';
+import { useSelector } from 'react-redux';
+import { selectAdmin, selectIsAuthenticated, selectAuthLoading } from '@/store/slices/adminSlice';
 import Layout from '@/components/Layout';
-import { Phone, Radio as RadioIcon, MessageSquare, PhoneOff, Mic, MicOff, Video, VideoOff, Volume2 } from 'lucide-react';
+import { Phone, PhoneOff, Mic, MicOff, FileText } from 'lucide-react';
 import io from 'socket.io-client';
+import { useCallTranscription } from '@/lib/useCallTranscription';
 
 export default function BroadcastPage() {
     const router = useRouter();
-    const { authenticated, loading, admin } = useAuth();
-    const [activeTab, setActiveTab] = useState('hotline');
+    const authenticated = useSelector(selectIsAuthenticated);
+    const loading = useSelector(selectAuthLoading);
+    const admin = useSelector(selectAdmin);
     const [admins, setAdmins] = useState([]);
     const [onlineUsers, setOnlineUsers] = useState([]);
     const [socket, setSocket] = useState(null);
@@ -18,21 +21,22 @@ export default function BroadcastPage() {
     const [incomingCall, setIncomingCall] = useState(null);
     const [callStatus, setCallStatus] = useState(''); // idle, calling, ringing, connected
     const [isMuted, setIsMuted] = useState(false);
-    const [isVideoEnabled, setIsVideoEnabled] = useState(false);
+    const [currentCallType, setCurrentCallType] = useState(null); // 'outgoing' or 'incoming'
 
-    // Radio state
-    const [isPTT, setIsPTT] = useState(false);
-    const [radioChannel, setRadioChannel] = useState(1);
-    const [activeRadioUser, setActiveRadioUser] = useState(null);
+    // Speech recognition / transcription
+    const {
+        isTranscribing,
+        isSupported: transcriptionSupported,
+        transcript,
+        startTranscription,
+        stopTranscription,
+        saveCallLog
+    } = useCallTranscription();
 
     // WebRTC refs
-    const localVideoRef = useRef(null);
-    const remoteVideoRef = useRef(null);
     const remoteAudioRef = useRef(null);
     const peerConnection = useRef(null);
     const localStream = useRef(null);
-    const radioStreamRef = useRef(null);
-    const mediaRecorderRef = useRef(null);
     const iceCandidateBuffer = useRef([]);
 
     // ICE servers configuration
@@ -66,25 +70,6 @@ export default function BroadcastPage() {
             newSocket.on('ice-candidate', handleIceCandidate);
             newSocket.on('call-ended', handleCallEnded);
 
-            // Radio events
-            newSocket.on('radio-ptt-start', (data) => {
-                setActiveRadioUser(data.from);
-            });
-
-            newSocket.on('radio-ptt-end', () => {
-                setActiveRadioUser(null);
-            });
-
-            newSocket.on('radio-audio', async (data) => {
-                // Play received radio audio
-                if (radioStreamRef.current) {
-                    const audioBlob = new Blob([data.audio], { type: 'audio/webm' });
-                    const audioUrl = URL.createObjectURL(audioBlob);
-                    const audio = new Audio(audioUrl);
-                    audio.play();
-                }
-            });
-
             return () => {
                 newSocket.disconnect();
             };
@@ -111,7 +96,13 @@ export default function BroadcastPage() {
         }
     }, [callStatus, activeCall]);
 
-
+    // Start transcription when call connects
+    useEffect(() => {
+        if (callStatus === 'connected' && !isTranscribing && transcriptionSupported) {
+            console.log('🎙️ Starting transcription for connected call');
+            startTranscription();
+        }
+    }, [callStatus, isTranscribing, transcriptionSupported, startTranscription]);
 
     // Fetch admins list
     useEffect(() => {
@@ -137,16 +128,18 @@ export default function BroadcastPage() {
         }
     };
 
-
     // Initialize peer connection
     const createPeerConnection = () => {
         const pc = new RTCPeerConnection();
 
+        // Store target email for ICE candidates
+        pc._targetEmail = null;
+
         pc.onicecandidate = (event) => {
-            if (event.candidate && socket && activeCall) {
-             console.log('Sending ICE candidate to:', activeCall.email);
+            if (event.candidate && socket && pc._targetEmail) {
+                console.log('Sending ICE candidate to:', pc._targetEmail);
                 socket.emit('ice-candidate', {
-                    to: activeCall.email,
+                    to: pc._targetEmail,
                     candidate: event.candidate
                 });
             } else if (!event.candidate) {
@@ -160,14 +153,13 @@ export default function BroadcastPage() {
 
             console.log('Remote stream tracks:', remoteStream.getTracks().map(t => ({ kind: t.kind, enabled: t.enabled, readyState: t.readyState })));
 
-            // Set remote stream to audio element for audio-only calls
+            // Set remote stream to audio element for audio calls
             if (remoteAudioRef.current) {
                 remoteAudioRef.current.srcObject = remoteStream;
                 console.log('✅ Set remote stream to audio element');
+                // Ensure audio plays
+                remoteAudioRef.current.play().catch(e => console.log('▶️ Auto-play blocked:', e.message));
             }
-
-            // Set remote stream to video element for video calls
-            
         };
 
         pc.oniceconnectionstatechange = () => {
@@ -190,47 +182,48 @@ export default function BroadcastPage() {
         return pc;
     };
 
-
-    // Start call
-    const startCall = async (targetAdmin, videoCall = false) => {
+    // Start call (audio only)
+    const startCall = async (targetAdmin) => {
         try {
-            console.log('📞 Starting call to:', targetAdmin.email, 'Video:', videoCall);
+            console.log('📞 Starting audio call to:', targetAdmin.email);
             setActiveCall(targetAdmin);
+            setCurrentCallType('outgoing');
             setCallStatus('calling');
-            setIsVideoEnabled(videoCall);
             iceCandidateBuffer.current = [];
 
-            // Get user media
+            // Get user media (audio only)
             const stream = await navigator.mediaDevices.getUserMedia({
                 audio: {
                     echoCancellation: true,
                     noiseSuppression: true,
                     autoGainControl: true
                 },
-                video: videoCall
+                video: false
             });
-            if(stream){
-                console.log('🎤 Got local stream with tracks:', stream.getTracks().map(t => ({ kind: t.kind, enabled: t.enabled })));
+
+            if (stream) {
+                console.log("GOT THE STREAM...")
             }
+
+            console.log('🎤 Got local stream with tracks:', stream.getTracks().map(t => ({ kind: t.kind, enabled: t.enabled })));
 
             localStream.current = stream;
-            if (localVideoRef.current && videoCall) {
-                localVideoRef.current.srcObject = stream;
-            }
 
             // Create peer connection
-            peerConnection.current = await createPeerConnection();
+            peerConnection.current = createPeerConnection();
+            // Set target email for ICE candidates
+            peerConnection.current._targetEmail = targetAdmin.email;
 
             // Add tracks to peer connection
             stream.getTracks().forEach(track => {
-                const sender = peerConnection.current.addTrack(track, stream);
+                peerConnection.current.addTrack(track, stream);
                 console.log('➕ Added track to peer connection:', track.kind);
             });
 
             // Create offer
             const offer = await peerConnection.current.createOffer({
                 offerToReceiveAudio: true,
-                offerToReceiveVideo: videoCall
+                offerToReceiveVideo: false
             });
             console.log('📤 Created offer:', offer.type);
             await peerConnection.current.setLocalDescription(offer);
@@ -240,17 +233,16 @@ export default function BroadcastPage() {
                 from: admin.email,
                 to: targetAdmin.email,
                 offer: offer,
-                callType: videoCall ? 'video' : 'audio'
+                callType: 'audio'
             });
 
         } catch (error) {
             console.error('❌ Error starting call:', error);
-            alert('Could not start call. Please check permissions.');
+            alert('Could not start call. Please check microphone permissions.');
             setActiveCall(null);
             setCallStatus('');
         }
     };
-
 
     // Handle incoming call
     const handleIncomingCall = async (data) => {
@@ -262,38 +254,35 @@ export default function BroadcastPage() {
         setCallStatus('ringing');
     };
 
-
-    // Accept call
+    // Accept call (audio only)
     const acceptCall = async () => {
         try {
-            console.log('📞 Accepting call from:', incomingCall.from);
-            const isVideo = incomingCall.callType === 'video';
-            setIsVideoEnabled(isVideo);
+            const callerEmail = incomingCall.from;
+            console.log('📞 Accepting call from:', callerEmail);
             iceCandidateBuffer.current = [];
 
-            // Get user media
+            // Get user media (audio only)
             const stream = await navigator.mediaDevices.getUserMedia({
                 audio: {
                     echoCancellation: true,
                     noiseSuppression: true,
                     autoGainControl: true
                 },
-                video: isVideo
+                video: false
             });
 
             console.log('🎤 Got local stream with tracks:', stream.getTracks().map(t => ({ kind: t.kind, enabled: t.enabled })));
 
             localStream.current = stream;
-            if (localVideoRef.current && isVideo) {
-                localVideoRef.current.srcObject = stream;
-            }
 
             // Create peer connection
             peerConnection.current = createPeerConnection();
+            // Set target email for ICE candidates
+            peerConnection.current._targetEmail = callerEmail;
 
-            // Add tracks
+            // Add tracks BEFORE setting remote description
             stream.getTracks().forEach(track => {
-                const sender = peerConnection.current.addTrack(track, stream);
+                peerConnection.current.addTrack(track, stream);
                 console.log('➕ Added track to peer connection:', track.kind);
             });
 
@@ -303,10 +292,15 @@ export default function BroadcastPage() {
                 new RTCSessionDescription(incomingCall.offer)
             );
 
-            // Process buffered ICE candidates
+            // Process buffered ICE candidates after setting remote description
             console.log('Processing buffered ICE candidates:', iceCandidateBuffer.current.length);
             for (const candidate of iceCandidateBuffer.current) {
-                await peerConnection.current.addIceCandidate(new RTCIceCandidate(candidate));
+                try {
+                    await peerConnection.current.addIceCandidate(new RTCIceCandidate(candidate));
+                    console.log('✅ Added buffered ICE candidate');
+                } catch (e) {
+                    console.error('❌ Failed to add buffered ICE candidate:', e);
+                }
             }
             iceCandidateBuffer.current = [];
 
@@ -317,21 +311,29 @@ export default function BroadcastPage() {
 
             // Send answer
             socket.emit('call-accepted', {
-                to: incomingCall.from,
+                to: callerEmail,
+                from: admin.email,
                 answer: answer
             });
 
-            setActiveCall({ email: incomingCall.from });
+            // Set activeCall with the caller's email
+            setActiveCall({ email: callerEmail });
             setIncomingCall(null);
             setCallStatus('connected');
+            setCurrentCallType('incoming');
+
+            // Ensure remote audio plays after a short delay
+            setTimeout(() => {
+                if (remoteAudioRef.current && remoteAudioRef.current.srcObject) {
+                    remoteAudioRef.current.play().catch(e => console.log('▶️ Play retry:', e.message));
+                }
+            }, 500);
 
         } catch (error) {
             console.error('❌ Error accepting call:', error);
             rejectCall();
         }
     };
-
-
 
     // Reject call
     const rejectCall = () => {
@@ -341,7 +343,6 @@ export default function BroadcastPage() {
         setIncomingCall(null);
         setCallStatus('');
     };
-
 
     // Handle call accepted
     const handleCallAccepted = async (data) => {
@@ -364,8 +365,6 @@ export default function BroadcastPage() {
         }
     };
 
-
-
     // Handle ICE candidate
     const handleIceCandidate = async (data) => {
         try {
@@ -385,7 +384,23 @@ export default function BroadcastPage() {
     };
 
     // End call
-    const endCall = () => {
+    const endCall = async () => {
+        // Stop transcription and save if active
+        if (isTranscribing && activeCall) {
+            const transcriptData = stopTranscription();
+            if (transcriptData && admin) {
+                await saveCallLog(
+                    {
+                        ...transcriptData,
+                        calleeName: activeCall.email,
+                        calleeSectionId: activeCall.sectionId || null,
+                        callType: currentCallType || 'outgoing'
+                    },
+                    admin
+                );
+            }
+        }
+
         if (activeCall) {
             socket?.emit('end-call', { to: activeCall.email });
         }
@@ -403,7 +418,7 @@ export default function BroadcastPage() {
         setActiveCall(null);
         setCallStatus('');
         setIsMuted(false);
-        setIsVideoEnabled(false);
+        setCurrentCallType(null);
     };
 
     // Handle call ended
@@ -420,62 +435,6 @@ export default function BroadcastPage() {
                 setIsMuted(!audioTrack.enabled);
             }
         }
-    };
-
-    // Toggle video
-    const toggleVideo = () => {
-        if (localStream.current) {
-            const videoTrack = localStream.current.getVideoTracks()[0];
-            if (videoTrack) {
-                videoTrack.enabled = !videoTrack.enabled;
-                setIsVideoEnabled(videoTrack.enabled);
-            }
-        }
-    };
-
-    // Radio PTT functions
-    const startPTT = async () => {
-        try {
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            radioStreamRef.current = stream;
-
-            const mediaRecorder = new MediaRecorder(stream);
-            mediaRecorderRef.current = mediaRecorder;
-
-            const audioChunks = [];
-
-            mediaRecorder.ondataavailable = (event) => {
-                audioChunks.push(event.data);
-            };
-
-            mediaRecorder.onstop = () => {
-                const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-                socket.emit('radio-audio', {
-                    from: admin.email,
-                    audio: audioBlob
-                });
-                stream.getTracks().forEach(track => track.stop());
-                radioStreamRef.current = null;
-            };
-
-            mediaRecorder.start();
-            setIsPTT(true);
-
-            socket.emit('radio-ptt-start', {
-                from: admin.email,
-                channel: radioChannel
-            });
-        } catch (error) {
-            console.error('Error starting PTT:', error);
-        }
-    };
-
-    const endPTT = () => {
-        if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
-            mediaRecorderRef.current.stop();
-        }
-        setIsPTT(false);
-        socket?.emit('radio-ptt-end', { from: admin.email });
     };
 
     if (loading) {
@@ -495,44 +454,8 @@ export default function BroadcastPage() {
         <Layout>
             <div className="max-w-7xl mx-auto">
                 <h1 className="text-3xl font-bold mb-6 font-railway" style={{ color: 'var(--text-primary)' }}>
-                    📡 Broadcast & Communication
+                    📞 Hotline Communication
                 </h1>
-
-                {/* Tabs */}
-                <div className="flex space-x-4 mb-6">
-                    <button
-                        onClick={() => setActiveTab('hotline')}
-                        className={`flex items-center space-x-2 px-6 py-3 rounded-lg font-medium transition-all ${activeTab === 'hotline'
-                            ? 'shadow-lg'
-                            : 'glass-dark hover:bg-white/10'
-                            }`}
-                        style={activeTab === 'hotline' ? {
-                            background: 'var(--gradient-accent)',
-                            color: 'white'
-                        } : {
-                            color: 'var(--text-secondary)'
-                        }}
-                    >
-                        <Phone size={20} />
-                        <span>Hotline</span>
-                    </button>
-                    <button
-                        onClick={() => setActiveTab('radio')}
-                        className={`flex items-center space-x-2 px-6 py-3 rounded-lg font-medium transition-all ${activeTab === 'radio'
-                            ? 'shadow-lg'
-                            : 'glass-dark hover:bg-white/10'
-                            }`}
-                        style={activeTab === 'radio' ? {
-                            background: 'var(--gradient-accent)',
-                            color: 'white'
-                        } : {
-                            color: 'var(--text-secondary)'
-                        }}
-                    >
-                        <RadioIcon size={20} />
-                        <span>Radio</span>
-                    </button>
-                </div>
 
                 {/* Incoming Call Modal */}
                 {incomingCall && (
@@ -542,9 +465,7 @@ export default function BroadcastPage() {
                                 <Phone size={64} className="text-green-500 mx-auto mb-4 animate-pulse" />
                                 <h2 className="text-2xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>Incoming Call</h2>
                                 <p className="text-gray-300">{incomingCall.from}</p>
-                                <p className="text-sm text-gray-400 mt-2">
-                                    {incomingCall.callType === 'video' ? 'Video Call' : 'Audio Call'}
-                                </p>
+                                <p className="text-sm text-gray-400 mt-2">Audio Call</p>
                             </div>
                             <div className="flex gap-4">
                                 <button
@@ -568,179 +489,99 @@ export default function BroadcastPage() {
                     {/* Main Panel */}
                     <div className="col-span-8">
                         <div className="card">
-                            {activeTab === 'hotline' && (
+                            <h2 className="text-xl font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Section Controllers Directory</h2>
+
+                            {activeCall ? (
                                 <div>
-                                    <h2 className="text-xl font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Section Controllers Directory</h2>
-
-                                    {activeCall ? (
-                                        <div>
-                                            {/* Active Call UI */}
-                                            <div className="glass-orange p-6 rounded-xl mb-4">
-                                                <div className="flex items-center justify-between mb-4">
-                                                    <div>
-                                                        <h3 className="text-2xl font-bold mb-1" style={{ color: 'var(--text-primary)' }}>
-                                                            {activeCall.email}
-                                                        </h3>
-                                                        <div className="flex items-center space-x-2">
-                                                            <div className="w-3 h-3 bg-green-500 rounded-full live-pulse"></div>
-                                                            <span className="text-sm text-green-300">
-                                                                {callStatus === 'connected' ? 'Connected' : 'Connecting...'}
-                                                            </span>
-                                                        </div>
-                                                    </div>
+                                    {/* Active Call UI */}
+                                    <div className="glass-orange p-6 rounded-xl mb-4">
+                                        <div className="flex items-center justify-between mb-4">
+                                            <div>
+                                                <h3 className="text-2xl font-bold mb-1" style={{ color: 'var(--text-primary)' }}>
+                                                    {activeCall.email}
+                                                </h3>
+                                                <div className="flex items-center space-x-2">
+                                                    <div className="w-3 h-3 bg-green-500 rounded-full live-pulse"></div>
+                                                    <span className="text-sm text-green-300">
+                                                        {callStatus === 'connected' ? 'Connected' : 'Connecting...'}
+                                                    </span>
                                                 </div>
+                                            </div>
+                                        </div>
 
-                                                {/* Video containers */}
-                                                {isVideoEnabled && (
-                                                    <div className="grid grid-cols-2 gap-4 mb-4">
-                                                        <div className="relative bg-black rounded-lg overflow-hidden aspect-video">
-                                                            <video
-                                                                ref={remoteVideoRef}
-                                                                autoPlay
-                                                                playsInline
-                                                                className="w-full h-full object-cover"
-                                                            />
-                                                            <div className="absolute bottom-2 left-2 bg-black/50 px-2 py-1 rounded text-white text-sm">
-                                                                Remote
-                                                            </div>
-                                                        </div>
-                                                        <div className="relative bg-black rounded-lg overflow-hidden aspect-video">
-                                                            <video
-                                                                ref={localVideoRef}
-                                                                autoPlay
-                                                                playsInline
-                                                                muted
-                                                                className="w-full h-full object-cover"
-                                                            />
-                                                            <div className="absolute bottom-2 left-2 bg-black/50 px-2 py-1 rounded text-white text-sm">
-                                                                You
-                                                            </div>
-                                                        </div>
+                                        {/* Audio call indicator */}
+                                        <div className="flex items-center justify-center mb-4">
+                                            <div className="w-24 h-24 bg-green-500/20 rounded-full flex items-center justify-center">
+                                                <Phone size={48} className="text-green-400" />
+                                            </div>
+                                        </div>
+
+                                        {/* Transcription indicator */}
+                                        {transcriptionSupported && (
+                                            <div className="mb-4">
+                                                <div className={`flex items-center justify-center gap-2 px-4 py-2 rounded-lg ${isTranscribing ? 'bg-red-500/20' : 'bg-gray-500/20'}`}>
+                                                    <FileText size={16} className={isTranscribing ? 'text-red-400' : 'text-gray-400'} />
+                                                    <span className={`text-sm ${isTranscribing ? 'text-red-300' : 'text-gray-400'}`}>
+                                                        {isTranscribing ? '🔴 Recording Transcript...' : 'Transcript Ready'}
+                                                    </span>
+                                                </div>
+                                                {isTranscribing && transcript && (
+                                                    <div className="mt-2 p-3 bg-black/30 rounded-lg max-h-24 overflow-y-auto">
+                                                        <p className="text-xs text-gray-300 italic">
+                                                            "{transcript.slice(-150)}{transcript.length > 150 ? '...' : ''}"
+                                                        </p>
                                                     </div>
                                                 )}
-
-                                                {/* Call controls */}
-                                                <div className="flex items-center justify-center gap-4">
-                                                    <button
-                                                        onClick={toggleMute}
-                                                        className={`p-4 rounded-full transition-all ${isMuted ? 'bg-red-500' : 'bg-white/20 hover:bg-white/30'
-                                                            }`}
-                                                    >
-                                                        {isMuted ? <MicOff size={24} className="text-white" /> : <Mic size={24} className="text-white" />}
-                                                    </button>
-                                                    {isVideoEnabled && (
-                                                        <button
-                                                            onClick={toggleVideo}
-                                                            className="p-4 rounded-full bg-white/20 hover:bg-white/30 transition-all"
-                                                        >
-                                                            {isVideoEnabled ? <Video size={24} className="text-white" /> : <VideoOff size={24} className="text-white" />}
-                                                        </button>
-                                                    )}
-
-                                                    <button
-                                                        onClick={endCall}
-                                                        className="px-6 py-4 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-full transition-all flex items-center gap-2"
-                                                    >
-                                                        <PhoneOff size={24} />
-                                                        End Call
-                                                    </button>
-                                                </div>
                                             </div>
-                                        </div>
-                                    ) : (
-                                        <div className="grid grid-cols-2 gap-4">
-                                            {admins.map((adminItem) => {
-                                                const isOnline = onlineUsers.some(u => u.email === adminItem.email);
-                                                return (
-                                                    <div key={adminItem._id} className="card-hover border border-white/10">
-                                                        <div className="flex items-center justify-between mb-2">
-                                                            <div>
-                                                                <h3 className="text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>{adminItem.email}</h3>
-                                                                <p className="text-sm text-gray-400">Section: {adminItem.sectionId}</p>
-                                                            </div>
-                                                            <span className={`badge ${isOnline ? 'badge-low' : 'badge-medium'}`}>
-                                                                {isOnline ? 'online' : 'offline'}
-                                                            </span>
-                                                        </div>
-                                                        <div className="flex gap-2">
-                                                            <button
-                                                                onClick={() => startCall(adminItem, false)}
-                                                                disabled={!isOnline}
-                                                                className="flex-1 px-4 py-2 bg-green-500 hover:bg-green-600 disabled:bg-gray-500 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-all flex items-center justify-center space-x-2"
-                                                            >
-                                                                <Phone size={18} />
-                                                                <span>Audio</span>
-                                                            </button>
-                                                            <button
-                                                                onClick={() => startCall(adminItem, true)}
-                                                                disabled={!isOnline}
-                                                                className="flex-1 px-4 py-2 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-500 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-all flex items-center justify-center space-x-2"
-                                                            >
-                                                                <Video size={18} />
-                                                                <span>Video</span>
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                );
-                                            })}
-                                        </div>
-                                    )}
-                                </div>
-                            )}
+                                        )}
 
-                            {activeTab === 'radio' && (
-                                <div>
-                                    <h2 className="text-xl font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Radio Communication</h2>
-
-                                    <div className="glass-dark p-6 rounded-xl mb-4">
-                                        <div className="text-center mb-6">
-                                            <div className="inline-flex items-center justify-center w-24 h-24 bg-blue-500/20 rounded-full mb-4">
-                                                <RadioIcon size={48} className="text-blue-400" />
-                                            </div>
-                                            <h3 className="text-xl font-semibold text-white mb-2">Channel {radioChannel} - Main</h3>
-                                            <p className="text-sm text-gray-400">Push and hold to talk</p>
-                                            {activeRadioUser && (
-                                                <div className="mt-4 flex items-center justify-center gap-2">
-                                                    <Volume2 size={20} className="text-green-500 animate-pulse" />
-                                                    <span className="text-green-400 font-medium">{activeRadioUser} is speaking</span>
-                                                </div>
-                                            )}
-                                        </div>
-
-                                        <button
-                                            onMouseDown={startPTT}
-                                            onMouseUp={endPTT}
-                                            onTouchStart={startPTT}
-                                            onTouchEnd={endPTT}
-                                            className={`w-full py-4 font-bold text-lg rounded-xl transition select-none ${isPTT
-                                                ? 'bg-red-500 text-white scale-95'
-                                                : 'bg-blue-500 hover:bg-blue-600 text-white'
-                                                }`}
-                                        >
-                                            {isPTT ? '🔴 TRANSMITTING...' : '🎙️ PRESS TO TALK'}
-                                        </button>
-                                    </div>
-
-                                    <div className="grid grid-cols-4 gap-2">
-                                        {[1, 2, 3, 4].map((ch) => (
+                                        {/* Call controls */}
+                                        <div className="flex items-center justify-center gap-4">
                                             <button
-                                                key={ch}
-                                                onClick={() => setRadioChannel(ch)}
-                                                className={`px-4 py-2 rounded-lg transition-all font-medium ${radioChannel === ch
-                                                    ? 'text-white'
-                                                    : 'hover:bg-white/10'
-                                                    }`}
-                                                style={radioChannel === ch ? {
-                                                    background: 'var(--gradient-accent)',
-                                                    color: 'white'
-                                                } : {
-                                                    color: 'var(--text-primary)'
-                                                }}
+                                                onClick={toggleMute}
+                                                className={`p-4 rounded-full transition-all ${isMuted ? 'bg-red-500' : 'bg-white/20 hover:bg-white/30'}`}
                                             >
-                                                CH {ch}
+                                                {isMuted ? <MicOff size={24} className="text-white" /> : <Mic size={24} className="text-white" />}
                                             </button>
-                                        ))}
+
+                                            <button
+                                                onClick={endCall}
+                                                className="px-6 py-4 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-full transition-all flex items-center gap-2"
+                                            >
+                                                <PhoneOff size={24} />
+                                                End Call
+                                            </button>
+                                        </div>
                                     </div>
+                                </div>
+                            ) : (
+                                <div className="grid grid-cols-2 gap-4">
+                                    {admins.map((adminItem) => {
+                                        const isOnline = onlineUsers.some(u => u.email === adminItem.email);
+                                        return (
+                                            <div key={adminItem._id} className="card-hover border border-white/10">
+                                                <div className="flex items-center justify-between mb-2">
+                                                    <div>
+                                                        <h3 className="text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>{adminItem.email}</h3>
+                                                        <p className="text-sm text-gray-400">Section: {adminItem.sectionId}</p>
+                                                    </div>
+                                                    <span className={`badge ${isOnline ? 'badge-low' : 'badge-medium'}`}>
+                                                        {isOnline ? 'online' : 'offline'}
+                                                    </span>
+                                                </div>
+                                                <div className="flex gap-2">
+                                                    <button
+                                                        onClick={() => startCall(adminItem)}
+                                                        disabled={!isOnline}
+                                                        className="flex-1 px-4 py-2 bg-green-500 hover:bg-green-600 disabled:bg-gray-500 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-all flex items-center justify-center space-x-2"
+                                                    >
+                                                        <Phone size={18} />
+                                                        <span>Call</span>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
                                 </div>
                             )}
                         </div>

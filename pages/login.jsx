@@ -1,18 +1,26 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { useAuth } from '@/context/AuthContext';
+import { useDispatch, useSelector } from 'react-redux';
 import { useTheme } from '@/context/ThemeContext';
-import { Train, Lock, Mail, Shield } from 'lucide-react';
+import { Train, Lock, Shield, User } from 'lucide-react';
+import { loginApi } from '@/lib/api';
+import {
+    setCredentials,
+    selectIsAuthenticated,
+    selectAuthLoading
+} from '@/store/slices/adminSlice';
 
 export default function Login() {
-    const [email, setEmail] = useState('');
+    const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
 
     const router = useRouter();
-    const { login, authenticated } = useAuth();
+    const dispatch = useDispatch();
     const { theme } = useTheme();
+    const authenticated = useSelector(selectIsAuthenticated);
+    const authLoading = useSelector(selectAuthLoading);
 
     useEffect(() => {
         if (authenticated) {
@@ -24,22 +32,44 @@ export default function Login() {
         e.preventDefault();
         setError('');
 
-        if (!email || !password) {
-            setError('Please enter both email and password');
+        if (!username || !password) {
+            setError('Please enter both username and password');
             return;
         }
 
         setLoading(true);
 
-        const result = await login(email, password);
+        try {
+            const response = await loginApi(username, password);
+            const { accessToken, refreshToken, admin } = response;
 
-        if (result.success) {
+            // Store in Redux (which also persists to localStorage)
+            dispatch(setCredentials({ admin, accessToken, refreshToken }));
+
             router.push('/home');
-        } else {
-            setError(result.error || 'Login failed. Please try again.');
+        } catch (err) {
+            setError(err.response?.data?.msg || 'Login failed. Please try again.');
             setLoading(false);
         }
     };
+
+    // Show loading while checking auth state
+    if (authLoading) {
+        return (
+            <div
+                className="min-h-screen flex flex-col items-center justify-center"
+                style={{ background: 'var(--gradient-primary)' }}
+            >
+                <div className="spinner mb-4"></div>
+                <p
+                    className="text-lg font-semibold animate-pulse"
+                    style={{ color: 'var(--text-secondary)' }}
+                >
+                    Loading...
+                </p>
+            </div>
+        );
+    }
 
     return (
         <div
@@ -134,21 +164,21 @@ export default function Login() {
                     <form onSubmit={handleSubmit} className="space-y-5">
                         <div>
                             <label
-                                htmlFor="email"
+                                htmlFor="text"
                                 className="block text-xs font-bold uppercase tracking-wider mb-2"
                                 style={{ color: 'var(--text-secondary)' }}
                             >
-                                Email Address
+                                Enter Your User ID
                             </label>
                             <div className="relative">
                                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <Mail size={18} style={{ color: 'var(--text-tertiary)' }} />
+                                    <User size={18} style={{ color: 'var(--text-tertiary)' }} />
                                 </div>
                                 <input
-                                    id="email"
-                                    type="email"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
+                                    id="text"
+                                    type="text"
+                                    value={username}
+                                    onChange={(e) => setUsername(e.target.value)}
                                     className="w-full pl-10 pr-4 py-3 rounded-lg font-medium transition-all duration-200"
                                     style={{
                                         background: 'var(--surface-glass)',
@@ -156,9 +186,8 @@ export default function Login() {
                                         color: 'var(--text-primary)',
                                         outline: 'none'
                                     }}
-                                    placeholder="admin@railway.gov.in"
+                                    placeholder="Enter Your ID."
                                     disabled={loading}
-                                    autoComplete="email"
                                     onFocus={(e) => e.target.style.borderColor = 'var(--border-accent)'}
                                     onBlur={(e) => e.target.style.borderColor = 'var(--border-primary)'}
                                 />

@@ -14,93 +14,93 @@ const TrainSchema = new mongoose.Schema({
     enum: ["local", "express", "special"],
     default: "local"
   },
-  averageSpeed:{
+  averageSpeed: {
     type: Number,
     default: 0
   },
-  maxSpeed:{
+  maxSpeed: {
     type: Number,
     default: 0
   },
 
- scheduleTime: [
-  {
-    arrivalTime: { type: Date },
-    departureTime: { type: Date },
-    station: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Station"
+  scheduleTime: [
+    {
+      arrivalTime: { type: Date },
+      departureTime: { type: Date },
+      station: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Station"
+      }
     }
-  }
-],
+  ],
 
-actualTime: [
-  {
-    arrivalTime: { type: Date },
-    departureTime: { type: Date },
-    station: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Station"
+  actualTime: [
+    {
+      arrivalTime: { type: Date },
+      departureTime: { type: Date },
+      station: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Station"
+      }
     }
-  }
-],
-expectedDeparture:[
-  {
-  arrivalTime: { type: Date },
-    departureTime: { type: Date },
-    station: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Station"
+  ],
+  expectedDeparture: [
+    {
+      arrivalTime: { type: Date },
+      departureTime: { type: Date },
+      station: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Station"
+      }
     }
-  }  
-],
+  ],
 
- category:{
-   type: String,
-   enum: ["diesel", "electric"],
-   default: "electric"
- },
+  category: {
+    type: String,
+    enum: ["diesel", "electric"],
+    default: "electric"
+  },
 
   direction: {
     type: String,
     enum: ["UP", "DN"],
     required: true
   },
-  current_edge:{
+  current_edge: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Edge",
     default: null
   },
 
-  Axels:{
+  Axels: {
     type: Number,
     default: 0
   },
 
-  current_Speed:{
+  current_Speed: {
     type: Number,
     default: 0
   },
 
-  current_stream:{
-    type:String,
+  current_stream: {
+    type: String,
     enum: ["UP", "DN"],
     default: "UP"
   },
 
-  isEmergency:{
+  isEmergency: {
     type: Boolean,
     default: false
   },
-  PAD:{
+  PAD: {
     type: Number,
     default: 0
   },
-  PDD:{
+  PDD: {
     type: Number,
     default: 0
   },
-  locoPilot:{
+  locoPilot: {
     type: Boolean,
     default: false
   },

@@ -4,7 +4,7 @@ import mongoose from "mongoose";
 import Section from "./models/sectionSchema.js";
 import Station from "./models/stationSchema.js";
 import Track from "./models/trackSchema.js";
-import Block from "./models/blockSchema.js";
+
 import Signal from "./models/signalSchema.js";
 import Train from "./models/trainSchema.js";
 import { config as configDotenv } from "dotenv"
@@ -193,7 +193,7 @@ async function seed() {
 
     for (let loopIdx of LOOP_INDICES) {
       // safety: ensure loopIdx is within 0..TOTAL_BLOCKS-2 (so mainNext exists)
-      
+
       if (loopIdx < 0 || loopIdx >= TOTAL_BLOCKS - 1) continue;
 
       const loopTrack = await Track.create({

@@ -1,6 +1,6 @@
 {
   "section": {
-    "id": "69254bb8ccf236facdea754e",
+    "id": "6926a08ebf1e4e18ef66b101",
     "name": "Shahpura - Habibganj (Short) Section",
     "coordinates": [
       23.35,
@@ -9,7 +9,7 @@
   },
   "stations": [
     {
-      "id": "69254bb8ccf236facdea7548",
+      "id": "6926a08ebf1e4e18ef66b0fb",
       "name": "Shahpura Road",
       "code": "SPR",
       "position": [
@@ -18,7 +18,7 @@
       ]
     },
     {
-      "id": "69254bb8ccf236facdea7549",
+      "id": "6926a08ebf1e4e18ef66b0fc",
       "name": "Sehore",
       "code": "SEH",
       "position": [
@@ -27,7 +27,7 @@
       ]
     },
     {
-      "id": "69254bb8ccf236facdea754a",
+      "id": "6926a08ebf1e4e18ef66b0fd",
       "name": "Bairagarh",
       "code": "BIH",
       "position": [
@@ -36,7 +36,7 @@
       ]
     },
     {
-      "id": "69254bb8ccf236facdea754b",
+      "id": "6926a08ebf1e4e18ef66b0fe",
       "name": "Bhopal Jn",
       "code": "BPL",
       "position": [
@@ -45,7 +45,7 @@
       ]
     },
     {
-      "id": "69254bb8ccf236facdea754c",
+      "id": "6926a08ebf1e4e18ef66b0ff",
       "name": "Habibganj",
       "code": "HBJ",
       "position": [
@@ -56,7 +56,7 @@
   ],
   "tracks": [
     {
-      "id": "69254bb8ccf236facdea7550",
+      "id": "6926a08ebf1e4e18ef66b103",
       "track_id": "UP_MAIN_L01",
       "name": "UP_MAIN",
       "type": "MAIN",
@@ -65,7 +65,7 @@
       "parentTrack": null,
       "blocks": [
         {
-          "id": "69254bb8ccf236facdea7557",
+          "id": "6926a08ebf1e4e18ef66b10a",
           "block_id": "UP_BLK_1",
           "index": 1,
           "length_m": 2000,
@@ -75,7 +75,7 @@
           "trackDirection": "UP",
           "headwaySeconds": 120,
           "nextBlocks": [
-            "69254bb8ccf236facdea755f"
+            "6926a08ebf1e4e18ef66b112"
           ],
           "prevBlocks": [],
           "geometry": {
@@ -92,7 +92,7 @@
             ]
           },
           "signal": {
-            "id": "69254bb8ccf236facdea7555",
+            "id": "6926a08ebf1e4e18ef66b108",
             "aspect": "GREEN",
             "position": [
               77.4445,
@@ -101,7 +101,7 @@
           }
         },
         {
-          "id": "69254bb8ccf236facdea755f",
+          "id": "6926a08ebf1e4e18ef66b112",
           "block_id": "UP_BLK_2",
           "index": 2,
           "length_m": 2000,
@@ -111,10 +111,10 @@
           "trackDirection": "UP",
           "headwaySeconds": 120,
           "nextBlocks": [
-            "69254bb8ccf236facdea7567"
+            "6926a08ebf1e4e18ef66b11a"
           ],
           "prevBlocks": [
-            "69254bb8ccf236facdea7557"
+            "6926a08ebf1e4e18ef66b10a"
           ],
           "geometry": {
             "type": "LineString",
@@ -130,7 +130,7 @@
             ]
           },
           "signal": {
-            "id": "69254bb8ccf236facdea755d",
+            "id": "6926a08ebf1e4e18ef66b110",
             "aspect": "GREEN",
             "position": [
               77.4445,
@@ -139,7 +139,7 @@
           }
         },
         {
-          "id": "69254bb8ccf236facdea7567",
+          "id": "6926a08ebf1e4e18ef66b11a",
           "block_id": "UP_BLK_3",
           "index": 3,
           "length_m": 2000,
@@ -149,10 +149,10 @@
           "trackDirection": "UP",
           "headwaySeconds": 120,
           "nextBlocks": [
-            "69254bb8ccf236facdea756f"
+            "6926a08ebf1e4e18ef66b122"
           ],
           "prevBlocks": [
-            "69254bb8ccf236facdea755f"
+            "6926a08ebf1e4e18ef66b112"
           ],
           "geometry": {
             "type": "LineString",
@@ -168,7 +168,7 @@
             ]
           },
           "signal": {
-            "id": "69254bb8ccf236facdea7565",
+            "id": "6926a08ebf1e4e18ef66b118",
             "aspect": "GREEN",
             "position": [
               77.4445,
@@ -177,7 +177,7 @@
           }
         },
         {
-          "id": "69254bb8ccf236facdea756f",
+          "id": "6926a08ebf1e4e18ef66b122",
           "block_id": "UP_BLK_4",
           "index": 4,
           "length_m": 2000,
@@ -187,10 +187,10 @@
           "trackDirection": "UP",
           "headwaySeconds": 120,
           "nextBlocks": [
-            "69254bb8ccf236facdea7577"
+            "6926a08ebf1e4e18ef66b12a"
           ],
           "prevBlocks": [
-            "69254bb8ccf236facdea7567"
+            "6926a08ebf1e4e18ef66b11a"
           ],
           "geometry": {
             "type": "LineString",
@@ -206,7 +206,7 @@
             ]
           },
           "signal": {
-            "id": "69254bb8ccf236facdea756d",
+            "id": "6926a08ebf1e4e18ef66b120",
             "aspect": "GREEN",
             "position": [
               77.4445,
@@ -215,7 +215,7 @@
           }
         },
         {
-          "id": "69254bb8ccf236facdea7577",
+          "id": "6926a08ebf1e4e18ef66b12a",
           "block_id": "UP_BLK_5",
           "index": 5,
           "length_m": 2000,
@@ -225,11 +225,11 @@
           "trackDirection": "UP",
           "headwaySeconds": 120,
           "nextBlocks": [
-            "69254bb8ccf236facdea757f",
-            "69254bb9ccf236facdea7623"
+            "6926a08ebf1e4e18ef66b132",
+            "6926a08ebf1e4e18ef66b1d6"
           ],
           "prevBlocks": [
-            "69254bb8ccf236facdea756f"
+            "6926a08ebf1e4e18ef66b122"
           ],
           "geometry": {
             "type": "LineString",
@@ -245,7 +245,7 @@
             ]
           },
           "signal": {
-            "id": "69254bb8ccf236facdea7575",
+            "id": "6926a08ebf1e4e18ef66b128",
             "aspect": "GREEN",
             "position": [
               77.4445,
@@ -254,7 +254,7 @@
           }
         },
         {
-          "id": "69254bb8ccf236facdea757f",
+          "id": "6926a08ebf1e4e18ef66b132",
           "block_id": "UP_BLK_6",
           "index": 6,
           "length_m": 2000,
@@ -264,11 +264,11 @@
           "trackDirection": "UP",
           "headwaySeconds": 120,
           "nextBlocks": [
-            "69254bb8ccf236facdea7587"
+            "6926a08ebf1e4e18ef66b13a"
           ],
           "prevBlocks": [
-            "69254bb8ccf236facdea7577",
-            "69254bb9ccf236facdea7627"
+            "6926a08ebf1e4e18ef66b12a",
+            "6926a08ebf1e4e18ef66b1da"
           ],
           "geometry": {
             "type": "LineString",
@@ -284,7 +284,7 @@
             ]
           },
           "signal": {
-            "id": "69254bb8ccf236facdea757d",
+            "id": "6926a08ebf1e4e18ef66b130",
             "aspect": "GREEN",
             "position": [
               77.4445,
@@ -293,7 +293,7 @@
           }
         },
         {
-          "id": "69254bb8ccf236facdea7587",
+          "id": "6926a08ebf1e4e18ef66b13a",
           "block_id": "UP_BLK_7",
           "index": 7,
           "length_m": 2000,
@@ -303,10 +303,10 @@
           "trackDirection": "UP",
           "headwaySeconds": 120,
           "nextBlocks": [
-            "69254bb8ccf236facdea758f"
+            "6926a08ebf1e4e18ef66b142"
           ],
           "prevBlocks": [
-            "69254bb8ccf236facdea757f"
+            "6926a08ebf1e4e18ef66b132"
           ],
           "geometry": {
             "type": "LineString",
@@ -322,7 +322,7 @@
             ]
           },
           "signal": {
-            "id": "69254bb8ccf236facdea7585",
+            "id": "6926a08ebf1e4e18ef66b138",
             "aspect": "GREEN",
             "position": [
               77.4445,
@@ -331,7 +331,7 @@
           }
         },
         {
-          "id": "69254bb8ccf236facdea758f",
+          "id": "6926a08ebf1e4e18ef66b142",
           "block_id": "UP_BLK_8",
           "index": 8,
           "length_m": 2000,
@@ -341,10 +341,10 @@
           "trackDirection": "UP",
           "headwaySeconds": 120,
           "nextBlocks": [
-            "69254bb8ccf236facdea7597"
+            "6926a08ebf1e4e18ef66b14a"
           ],
           "prevBlocks": [
-            "69254bb8ccf236facdea7587"
+            "6926a08ebf1e4e18ef66b13a"
           ],
           "geometry": {
             "type": "LineString",
@@ -360,7 +360,7 @@
             ]
           },
           "signal": {
-            "id": "69254bb8ccf236facdea758d",
+            "id": "6926a08ebf1e4e18ef66b140",
             "aspect": "GREEN",
             "position": [
               77.4445,
@@ -369,7 +369,7 @@
           }
         },
         {
-          "id": "69254bb8ccf236facdea7597",
+          "id": "6926a08ebf1e4e18ef66b14a",
           "block_id": "UP_BLK_9",
           "index": 9,
           "length_m": 2000,
@@ -379,10 +379,10 @@
           "trackDirection": "UP",
           "headwaySeconds": 120,
           "nextBlocks": [
-            "69254bb8ccf236facdea759f"
+            "6926a08ebf1e4e18ef66b152"
           ],
           "prevBlocks": [
-            "69254bb8ccf236facdea758f"
+            "6926a08ebf1e4e18ef66b142"
           ],
           "geometry": {
             "type": "LineString",
@@ -398,7 +398,7 @@
             ]
           },
           "signal": {
-            "id": "69254bb8ccf236facdea7595",
+            "id": "6926a08ebf1e4e18ef66b148",
             "aspect": "GREEN",
             "position": [
               77.4445,
@@ -407,7 +407,7 @@
           }
         },
         {
-          "id": "69254bb8ccf236facdea759f",
+          "id": "6926a08ebf1e4e18ef66b152",
           "block_id": "UP_BLK_10",
           "index": 10,
           "length_m": 2000,
@@ -417,10 +417,10 @@
           "trackDirection": "UP",
           "headwaySeconds": 120,
           "nextBlocks": [
-            "69254bb8ccf236facdea75a7"
+            "6926a08ebf1e4e18ef66b15a"
           ],
           "prevBlocks": [
-            "69254bb8ccf236facdea7597"
+            "6926a08ebf1e4e18ef66b14a"
           ],
           "geometry": {
             "type": "LineString",
@@ -436,7 +436,7 @@
             ]
           },
           "signal": {
-            "id": "69254bb8ccf236facdea759d",
+            "id": "6926a08ebf1e4e18ef66b150",
             "aspect": "GREEN",
             "position": [
               77.4445,
@@ -445,7 +445,7 @@
           }
         },
         {
-          "id": "69254bb8ccf236facdea75a7",
+          "id": "6926a08ebf1e4e18ef66b15a",
           "block_id": "UP_BLK_11",
           "index": 11,
           "length_m": 2000,
@@ -455,11 +455,11 @@
           "trackDirection": "UP",
           "headwaySeconds": 120,
           "nextBlocks": [
-            "69254bb9ccf236facdea75af",
-            "69254bb9ccf236facdea7633"
+            "6926a08ebf1e4e18ef66b162",
+            "6926a08ebf1e4e18ef66b1e6"
           ],
           "prevBlocks": [
-            "69254bb8ccf236facdea759f"
+            "6926a08ebf1e4e18ef66b152"
           ],
           "geometry": {
             "type": "LineString",
@@ -475,7 +475,7 @@
             ]
           },
           "signal": {
-            "id": "69254bb8ccf236facdea75a5",
+            "id": "6926a08ebf1e4e18ef66b158",
             "aspect": "GREEN",
             "position": [
               77.4445,
@@ -484,7 +484,7 @@
           }
         },
         {
-          "id": "69254bb9ccf236facdea75af",
+          "id": "6926a08ebf1e4e18ef66b162",
           "block_id": "UP_BLK_12",
           "index": 12,
           "length_m": 2000,
@@ -494,11 +494,11 @@
           "trackDirection": "UP",
           "headwaySeconds": 120,
           "nextBlocks": [
-            "69254bb9ccf236facdea75b7"
+            "6926a08ebf1e4e18ef66b16a"
           ],
           "prevBlocks": [
-            "69254bb8ccf236facdea75a7",
-            "69254bb9ccf236facdea7637"
+            "6926a08ebf1e4e18ef66b15a",
+            "6926a08ebf1e4e18ef66b1ea"
           ],
           "geometry": {
             "type": "LineString",
@@ -514,7 +514,7 @@
             ]
           },
           "signal": {
-            "id": "69254bb9ccf236facdea75ad",
+            "id": "6926a08ebf1e4e18ef66b160",
             "aspect": "GREEN",
             "position": [
               77.4445,
@@ -523,7 +523,7 @@
           }
         },
         {
-          "id": "69254bb9ccf236facdea75b7",
+          "id": "6926a08ebf1e4e18ef66b16a",
           "block_id": "UP_BLK_13",
           "index": 13,
           "length_m": 2000,
@@ -533,10 +533,10 @@
           "trackDirection": "UP",
           "headwaySeconds": 120,
           "nextBlocks": [
-            "69254bb9ccf236facdea75bf"
+            "6926a08ebf1e4e18ef66b172"
           ],
           "prevBlocks": [
-            "69254bb9ccf236facdea75af"
+            "6926a08ebf1e4e18ef66b162"
           ],
           "geometry": {
             "type": "LineString",
@@ -552,7 +552,7 @@
             ]
           },
           "signal": {
-            "id": "69254bb9ccf236facdea75b5",
+            "id": "6926a08ebf1e4e18ef66b168",
             "aspect": "GREEN",
             "position": [
               77.4445,
@@ -561,7 +561,7 @@
           }
         },
         {
-          "id": "69254bb9ccf236facdea75bf",
+          "id": "6926a08ebf1e4e18ef66b172",
           "block_id": "UP_BLK_14",
           "index": 14,
           "length_m": 2000,
@@ -571,10 +571,10 @@
           "trackDirection": "UP",
           "headwaySeconds": 120,
           "nextBlocks": [
-            "69254bb9ccf236facdea75c7"
+            "6926a08ebf1e4e18ef66b17a"
           ],
           "prevBlocks": [
-            "69254bb9ccf236facdea75b7"
+            "6926a08ebf1e4e18ef66b16a"
           ],
           "geometry": {
             "type": "LineString",
@@ -590,7 +590,7 @@
             ]
           },
           "signal": {
-            "id": "69254bb9ccf236facdea75bd",
+            "id": "6926a08ebf1e4e18ef66b170",
             "aspect": "GREEN",
             "position": [
               77.4445,
@@ -599,7 +599,7 @@
           }
         },
         {
-          "id": "69254bb9ccf236facdea75c7",
+          "id": "6926a08ebf1e4e18ef66b17a",
           "block_id": "UP_BLK_15",
           "index": 15,
           "length_m": 2000,
@@ -609,10 +609,10 @@
           "trackDirection": "UP",
           "headwaySeconds": 120,
           "nextBlocks": [
-            "69254bb9ccf236facdea75cf"
+            "6926a08ebf1e4e18ef66b182"
           ],
           "prevBlocks": [
-            "69254bb9ccf236facdea75bf"
+            "6926a08ebf1e4e18ef66b172"
           ],
           "geometry": {
             "type": "LineString",
@@ -628,7 +628,7 @@
             ]
           },
           "signal": {
-            "id": "69254bb9ccf236facdea75c5",
+            "id": "6926a08ebf1e4e18ef66b178",
             "aspect": "GREEN",
             "position": [
               77.4445,
@@ -637,7 +637,7 @@
           }
         },
         {
-          "id": "69254bb9ccf236facdea75cf",
+          "id": "6926a08ebf1e4e18ef66b182",
           "block_id": "UP_BLK_16",
           "index": 16,
           "length_m": 2000,
@@ -647,10 +647,10 @@
           "trackDirection": "UP",
           "headwaySeconds": 120,
           "nextBlocks": [
-            "69254bb9ccf236facdea75d7"
+            "6926a08ebf1e4e18ef66b18a"
           ],
           "prevBlocks": [
-            "69254bb9ccf236facdea75c7"
+            "6926a08ebf1e4e18ef66b17a"
           ],
           "geometry": {
             "type": "LineString",
@@ -666,7 +666,7 @@
             ]
           },
           "signal": {
-            "id": "69254bb9ccf236facdea75cd",
+            "id": "6926a08ebf1e4e18ef66b180",
             "aspect": "GREEN",
             "position": [
               77.4445,
@@ -675,7 +675,7 @@
           }
         },
         {
-          "id": "69254bb9ccf236facdea75d7",
+          "id": "6926a08ebf1e4e18ef66b18a",
           "block_id": "UP_BLK_17",
           "index": 17,
           "length_m": 2000,
@@ -685,11 +685,11 @@
           "trackDirection": "UP",
           "headwaySeconds": 120,
           "nextBlocks": [
-            "69254bb9ccf236facdea75df",
-            "69254bb9ccf236facdea7643"
+            "6926a08ebf1e4e18ef66b192",
+            "6926a08ebf1e4e18ef66b1f6"
           ],
           "prevBlocks": [
-            "69254bb9ccf236facdea75cf"
+            "6926a08ebf1e4e18ef66b182"
           ],
           "geometry": {
             "type": "LineString",
@@ -705,7 +705,7 @@
             ]
           },
           "signal": {
-            "id": "69254bb9ccf236facdea75d5",
+            "id": "6926a08ebf1e4e18ef66b188",
             "aspect": "GREEN",
             "position": [
               77.4445,
@@ -714,7 +714,7 @@
           }
         },
         {
-          "id": "69254bb9ccf236facdea75df",
+          "id": "6926a08ebf1e4e18ef66b192",
           "block_id": "UP_BLK_18",
           "index": 18,
           "length_m": 2000,
@@ -724,11 +724,11 @@
           "trackDirection": "UP",
           "headwaySeconds": 120,
           "nextBlocks": [
-            "69254bb9ccf236facdea75e7"
+            "6926a08ebf1e4e18ef66b19a"
           ],
           "prevBlocks": [
-            "69254bb9ccf236facdea75d7",
-            "69254bb9ccf236facdea7647"
+            "6926a08ebf1e4e18ef66b18a",
+            "6926a08ebf1e4e18ef66b1fa"
           ],
           "geometry": {
             "type": "LineString",
@@ -744,7 +744,7 @@
             ]
           },
           "signal": {
-            "id": "69254bb9ccf236facdea75dd",
+            "id": "6926a08ebf1e4e18ef66b190",
             "aspect": "GREEN",
             "position": [
               77.4445,
@@ -753,7 +753,7 @@
           }
         },
         {
-          "id": "69254bb9ccf236facdea75e7",
+          "id": "6926a08ebf1e4e18ef66b19a",
           "block_id": "UP_BLK_19",
           "index": 19,
           "length_m": 2000,
@@ -763,10 +763,10 @@
           "trackDirection": "UP",
           "headwaySeconds": 120,
           "nextBlocks": [
-            "69254bb9ccf236facdea75ef"
+            "6926a08ebf1e4e18ef66b1a2"
           ],
           "prevBlocks": [
-            "69254bb9ccf236facdea75df"
+            "6926a08ebf1e4e18ef66b192"
           ],
           "geometry": {
             "type": "LineString",
@@ -782,7 +782,7 @@
             ]
           },
           "signal": {
-            "id": "69254bb9ccf236facdea75e5",
+            "id": "6926a08ebf1e4e18ef66b198",
             "aspect": "GREEN",
             "position": [
               77.4445,
@@ -791,7 +791,7 @@
           }
         },
         {
-          "id": "69254bb9ccf236facdea75ef",
+          "id": "6926a08ebf1e4e18ef66b1a2",
           "block_id": "UP_BLK_20",
           "index": 20,
           "length_m": 2000,
@@ -802,7 +802,7 @@
           "headwaySeconds": 120,
           "nextBlocks": [],
           "prevBlocks": [
-            "69254bb9ccf236facdea75e7"
+            "6926a08ebf1e4e18ef66b19a"
           ],
           "geometry": {
             "type": "LineString",
@@ -818,7 +818,7 @@
             ]
           },
           "signal": {
-            "id": "69254bb9ccf236facdea75ed",
+            "id": "6926a08ebf1e4e18ef66b1a0",
             "aspect": "GREEN",
             "position": [
               77.4445,
@@ -829,7 +829,7 @@
       ]
     },
     {
-      "id": "69254bb8ccf236facdea7552",
+      "id": "6926a08ebf1e4e18ef66b105",
       "track_id": "DOWN_MAIN_L01",
       "name": "DOWN_MAIN",
       "type": "MAIN",
@@ -838,7 +838,7 @@
       "parentTrack": null,
       "blocks": [
         {
-          "id": "69254bb8ccf236facdea755b",
+          "id": "6926a08ebf1e4e18ef66b10e",
           "block_id": "DN_BLK_1",
           "index": 1,
           "length_m": 2000,
@@ -848,7 +848,7 @@
           "trackDirection": "DOWN",
           "headwaySeconds": 120,
           "nextBlocks": [
-            "69254bb8ccf236facdea7563"
+            "6926a08ebf1e4e18ef66b116"
           ],
           "prevBlocks": [],
           "geometry": {
@@ -865,7 +865,7 @@
             ]
           },
           "signal": {
-            "id": "69254bb8ccf236facdea7559",
+            "id": "6926a08ebf1e4e18ef66b10c",
             "aspect": "GREEN",
             "position": [
               77.81,
@@ -874,7 +874,7 @@
           }
         },
         {
-          "id": "69254bb8ccf236facdea7563",
+          "id": "6926a08ebf1e4e18ef66b116",
           "block_id": "DN_BLK_2",
           "index": 2,
           "length_m": 2000,
@@ -884,10 +884,10 @@
           "trackDirection": "DOWN",
           "headwaySeconds": 120,
           "nextBlocks": [
-            "69254bb8ccf236facdea756b"
+            "6926a08ebf1e4e18ef66b11e"
           ],
           "prevBlocks": [
-            "69254bb8ccf236facdea755b"
+            "6926a08ebf1e4e18ef66b10e"
           ],
           "geometry": {
             "type": "LineString",
@@ -903,7 +903,7 @@
             ]
           },
           "signal": {
-            "id": "69254bb8ccf236facdea7561",
+            "id": "6926a08ebf1e4e18ef66b114",
             "aspect": "GREEN",
             "position": [
               77.81,
@@ -912,7 +912,7 @@
           }
         },
         {
-          "id": "69254bb8ccf236facdea756b",
+          "id": "6926a08ebf1e4e18ef66b11e",
           "block_id": "DN_BLK_3",
           "index": 3,
           "length_m": 2000,
@@ -922,10 +922,10 @@
           "trackDirection": "DOWN",
           "headwaySeconds": 120,
           "nextBlocks": [
-            "69254bb8ccf236facdea7573"
+            "6926a08ebf1e4e18ef66b126"
           ],
           "prevBlocks": [
-            "69254bb8ccf236facdea7563"
+            "6926a08ebf1e4e18ef66b116"
           ],
           "geometry": {
             "type": "LineString",
@@ -941,7 +941,7 @@
             ]
           },
           "signal": {
-            "id": "69254bb8ccf236facdea7569",
+            "id": "6926a08ebf1e4e18ef66b11c",
             "aspect": "GREEN",
             "position": [
               77.81,
@@ -950,7 +950,7 @@
           }
         },
         {
-          "id": "69254bb8ccf236facdea7573",
+          "id": "6926a08ebf1e4e18ef66b126",
           "block_id": "DN_BLK_4",
           "index": 4,
           "length_m": 2000,
@@ -960,10 +960,10 @@
           "trackDirection": "DOWN",
           "headwaySeconds": 120,
           "nextBlocks": [
-            "69254bb8ccf236facdea757b"
+            "6926a08ebf1e4e18ef66b12e"
           ],
           "prevBlocks": [
-            "69254bb8ccf236facdea756b"
+            "6926a08ebf1e4e18ef66b11e"
           ],
           "geometry": {
             "type": "LineString",
@@ -979,7 +979,7 @@
             ]
           },
           "signal": {
-            "id": "69254bb8ccf236facdea7571",
+            "id": "6926a08ebf1e4e18ef66b124",
             "aspect": "GREEN",
             "position": [
               77.81,
@@ -988,7 +988,7 @@
           }
         },
         {
-          "id": "69254bb8ccf236facdea757b",
+          "id": "6926a08ebf1e4e18ef66b12e",
           "block_id": "DN_BLK_5",
           "index": 5,
           "length_m": 2000,
@@ -998,10 +998,10 @@
           "trackDirection": "DOWN",
           "headwaySeconds": 120,
           "nextBlocks": [
-            "69254bb8ccf236facdea7583"
+            "6926a08ebf1e4e18ef66b136"
           ],
           "prevBlocks": [
-            "69254bb8ccf236facdea7573"
+            "6926a08ebf1e4e18ef66b126"
           ],
           "geometry": {
             "type": "LineString",
@@ -1017,7 +1017,7 @@
             ]
           },
           "signal": {
-            "id": "69254bb8ccf236facdea7579",
+            "id": "6926a08ebf1e4e18ef66b12c",
             "aspect": "GREEN",
             "position": [
               77.81,
@@ -1026,7 +1026,7 @@
           }
         },
         {
-          "id": "69254bb8ccf236facdea7583",
+          "id": "6926a08ebf1e4e18ef66b136",
           "block_id": "DN_BLK_6",
           "index": 6,
           "length_m": 2000,
@@ -1036,10 +1036,10 @@
           "trackDirection": "DOWN",
           "headwaySeconds": 120,
           "nextBlocks": [
-            "69254bb8ccf236facdea758b"
+            "6926a08ebf1e4e18ef66b13e"
           ],
           "prevBlocks": [
-            "69254bb8ccf236facdea757b"
+            "6926a08ebf1e4e18ef66b12e"
           ],
           "geometry": {
             "type": "LineString",
@@ -1055,7 +1055,7 @@
             ]
           },
           "signal": {
-            "id": "69254bb8ccf236facdea7581",
+            "id": "6926a08ebf1e4e18ef66b134",
             "aspect": "GREEN",
             "position": [
               77.81,
@@ -1064,7 +1064,7 @@
           }
         },
         {
-          "id": "69254bb8ccf236facdea758b",
+          "id": "6926a08ebf1e4e18ef66b13e",
           "block_id": "DN_BLK_7",
           "index": 7,
           "length_m": 2000,
@@ -1074,10 +1074,10 @@
           "trackDirection": "DOWN",
           "headwaySeconds": 120,
           "nextBlocks": [
-            "69254bb8ccf236facdea7593"
+            "6926a08ebf1e4e18ef66b146"
           ],
           "prevBlocks": [
-            "69254bb8ccf236facdea7583"
+            "6926a08ebf1e4e18ef66b136"
           ],
           "geometry": {
             "type": "LineString",
@@ -1093,7 +1093,7 @@
             ]
           },
           "signal": {
-            "id": "69254bb8ccf236facdea7589",
+            "id": "6926a08ebf1e4e18ef66b13c",
             "aspect": "GREEN",
             "position": [
               77.81,
@@ -1102,7 +1102,7 @@
           }
         },
         {
-          "id": "69254bb8ccf236facdea7593",
+          "id": "6926a08ebf1e4e18ef66b146",
           "block_id": "DN_BLK_8",
           "index": 8,
           "length_m": 2000,
@@ -1112,10 +1112,10 @@
           "trackDirection": "DOWN",
           "headwaySeconds": 120,
           "nextBlocks": [
-            "69254bb8ccf236facdea759b"
+            "6926a08ebf1e4e18ef66b14e"
           ],
           "prevBlocks": [
-            "69254bb8ccf236facdea758b"
+            "6926a08ebf1e4e18ef66b13e"
           ],
           "geometry": {
             "type": "LineString",
@@ -1131,7 +1131,7 @@
             ]
           },
           "signal": {
-            "id": "69254bb8ccf236facdea7591",
+            "id": "6926a08ebf1e4e18ef66b144",
             "aspect": "GREEN",
             "position": [
               77.81,
@@ -1140,7 +1140,7 @@
           }
         },
         {
-          "id": "69254bb8ccf236facdea759b",
+          "id": "6926a08ebf1e4e18ef66b14e",
           "block_id": "DN_BLK_9",
           "index": 9,
           "length_m": 2000,
@@ -1150,10 +1150,10 @@
           "trackDirection": "DOWN",
           "headwaySeconds": 120,
           "nextBlocks": [
-            "69254bb8ccf236facdea75a3"
+            "6926a08ebf1e4e18ef66b156"
           ],
           "prevBlocks": [
-            "69254bb8ccf236facdea7593"
+            "6926a08ebf1e4e18ef66b146"
           ],
           "geometry": {
             "type": "LineString",
@@ -1169,7 +1169,7 @@
             ]
           },
           "signal": {
-            "id": "69254bb8ccf236facdea7599",
+            "id": "6926a08ebf1e4e18ef66b14c",
             "aspect": "GREEN",
             "position": [
               77.81,
@@ -1178,7 +1178,7 @@
           }
         },
         {
-          "id": "69254bb8ccf236facdea75a3",
+          "id": "6926a08ebf1e4e18ef66b156",
           "block_id": "DN_BLK_10",
           "index": 10,
           "length_m": 2000,
@@ -1188,10 +1188,10 @@
           "trackDirection": "DOWN",
           "headwaySeconds": 120,
           "nextBlocks": [
-            "69254bb9ccf236facdea75ab"
+            "6926a08ebf1e4e18ef66b15e"
           ],
           "prevBlocks": [
-            "69254bb8ccf236facdea759b"
+            "6926a08ebf1e4e18ef66b14e"
           ],
           "geometry": {
             "type": "LineString",
@@ -1207,7 +1207,7 @@
             ]
           },
           "signal": {
-            "id": "69254bb8ccf236facdea75a1",
+            "id": "6926a08ebf1e4e18ef66b154",
             "aspect": "GREEN",
             "position": [
               77.81,
@@ -1216,7 +1216,7 @@
           }
         },
         {
-          "id": "69254bb9ccf236facdea75ab",
+          "id": "6926a08ebf1e4e18ef66b15e",
           "block_id": "DN_BLK_11",
           "index": 11,
           "length_m": 2000,
@@ -1226,10 +1226,10 @@
           "trackDirection": "DOWN",
           "headwaySeconds": 120,
           "nextBlocks": [
-            "69254bb9ccf236facdea75b3"
+            "6926a08ebf1e4e18ef66b166"
           ],
           "prevBlocks": [
-            "69254bb8ccf236facdea75a3"
+            "6926a08ebf1e4e18ef66b156"
           ],
           "geometry": {
             "type": "LineString",
@@ -1245,7 +1245,7 @@
             ]
           },
           "signal": {
-            "id": "69254bb8ccf236facdea75a9",
+            "id": "6926a08ebf1e4e18ef66b15c",
             "aspect": "GREEN",
             "position": [
               77.81,
@@ -1254,7 +1254,7 @@
           }
         },
         {
-          "id": "69254bb9ccf236facdea75b3",
+          "id": "6926a08ebf1e4e18ef66b166",
           "block_id": "DN_BLK_12",
           "index": 12,
           "length_m": 2000,
@@ -1264,10 +1264,10 @@
           "trackDirection": "DOWN",
           "headwaySeconds": 120,
           "nextBlocks": [
-            "69254bb9ccf236facdea75bb"
+            "6926a08ebf1e4e18ef66b16e"
           ],
           "prevBlocks": [
-            "69254bb9ccf236facdea75ab"
+            "6926a08ebf1e4e18ef66b15e"
           ],
           "geometry": {
             "type": "LineString",
@@ -1283,7 +1283,7 @@
             ]
           },
           "signal": {
-            "id": "69254bb9ccf236facdea75b1",
+            "id": "6926a08ebf1e4e18ef66b164",
             "aspect": "GREEN",
             "position": [
               77.81,
@@ -1292,7 +1292,7 @@
           }
         },
         {
-          "id": "69254bb9ccf236facdea75bb",
+          "id": "6926a08ebf1e4e18ef66b16e",
           "block_id": "DN_BLK_13",
           "index": 13,
           "length_m": 2000,
@@ -1302,10 +1302,10 @@
           "trackDirection": "DOWN",
           "headwaySeconds": 120,
           "nextBlocks": [
-            "69254bb9ccf236facdea75c3"
+            "6926a08ebf1e4e18ef66b176"
           ],
           "prevBlocks": [
-            "69254bb9ccf236facdea75b3"
+            "6926a08ebf1e4e18ef66b166"
           ],
           "geometry": {
             "type": "LineString",
@@ -1321,7 +1321,7 @@
             ]
           },
           "signal": {
-            "id": "69254bb9ccf236facdea75b9",
+            "id": "6926a08ebf1e4e18ef66b16c",
             "aspect": "GREEN",
             "position": [
               77.81,
@@ -1330,7 +1330,7 @@
           }
         },
         {
-          "id": "69254bb9ccf236facdea75c3",
+          "id": "6926a08ebf1e4e18ef66b176",
           "block_id": "DN_BLK_14",
           "index": 14,
           "length_m": 2000,
@@ -1340,10 +1340,10 @@
           "trackDirection": "DOWN",
           "headwaySeconds": 120,
           "nextBlocks": [
-            "69254bb9ccf236facdea75cb"
+            "6926a08ebf1e4e18ef66b17e"
           ],
           "prevBlocks": [
-            "69254bb9ccf236facdea75bb"
+            "6926a08ebf1e4e18ef66b16e"
           ],
           "geometry": {
             "type": "LineString",
@@ -1359,7 +1359,7 @@
             ]
           },
           "signal": {
-            "id": "69254bb9ccf236facdea75c1",
+            "id": "6926a08ebf1e4e18ef66b174",
             "aspect": "GREEN",
             "position": [
               77.81,
@@ -1368,7 +1368,7 @@
           }
         },
         {
-          "id": "69254bb9ccf236facdea75cb",
+          "id": "6926a08ebf1e4e18ef66b17e",
           "block_id": "DN_BLK_15",
           "index": 15,
           "length_m": 2000,
@@ -1378,10 +1378,10 @@
           "trackDirection": "DOWN",
           "headwaySeconds": 120,
           "nextBlocks": [
-            "69254bb9ccf236facdea75d3"
+            "6926a08ebf1e4e18ef66b186"
           ],
           "prevBlocks": [
-            "69254bb9ccf236facdea75c3"
+            "6926a08ebf1e4e18ef66b176"
           ],
           "geometry": {
             "type": "LineString",
@@ -1397,7 +1397,7 @@
             ]
           },
           "signal": {
-            "id": "69254bb9ccf236facdea75c9",
+            "id": "6926a08ebf1e4e18ef66b17c",
             "aspect": "GREEN",
             "position": [
               77.81,
@@ -1406,7 +1406,7 @@
           }
         },
         {
-          "id": "69254bb9ccf236facdea75d3",
+          "id": "6926a08ebf1e4e18ef66b186",
           "block_id": "DN_BLK_16",
           "index": 16,
           "length_m": 2000,
@@ -1416,10 +1416,10 @@
           "trackDirection": "DOWN",
           "headwaySeconds": 120,
           "nextBlocks": [
-            "69254bb9ccf236facdea75db"
+            "6926a08ebf1e4e18ef66b18e"
           ],
           "prevBlocks": [
-            "69254bb9ccf236facdea75cb"
+            "6926a08ebf1e4e18ef66b17e"
           ],
           "geometry": {
             "type": "LineString",
@@ -1435,7 +1435,7 @@
             ]
           },
           "signal": {
-            "id": "69254bb9ccf236facdea75d1",
+            "id": "6926a08ebf1e4e18ef66b184",
             "aspect": "GREEN",
             "position": [
               77.81,
@@ -1444,7 +1444,7 @@
           }
         },
         {
-          "id": "69254bb9ccf236facdea75db",
+          "id": "6926a08ebf1e4e18ef66b18e",
           "block_id": "DN_BLK_17",
           "index": 17,
           "length_m": 2000,
@@ -1454,10 +1454,10 @@
           "trackDirection": "DOWN",
           "headwaySeconds": 120,
           "nextBlocks": [
-            "69254bb9ccf236facdea75e3"
+            "6926a08ebf1e4e18ef66b196"
           ],
           "prevBlocks": [
-            "69254bb9ccf236facdea75d3"
+            "6926a08ebf1e4e18ef66b186"
           ],
           "geometry": {
             "type": "LineString",
@@ -1473,7 +1473,7 @@
             ]
           },
           "signal": {
-            "id": "69254bb9ccf236facdea75d9",
+            "id": "6926a08ebf1e4e18ef66b18c",
             "aspect": "GREEN",
             "position": [
               77.81,
@@ -1482,7 +1482,7 @@
           }
         },
         {
-          "id": "69254bb9ccf236facdea75e3",
+          "id": "6926a08ebf1e4e18ef66b196",
           "block_id": "DN_BLK_18",
           "index": 18,
           "length_m": 2000,
@@ -1492,10 +1492,10 @@
           "trackDirection": "DOWN",
           "headwaySeconds": 120,
           "nextBlocks": [
-            "69254bb9ccf236facdea75eb"
+            "6926a08ebf1e4e18ef66b19e"
           ],
           "prevBlocks": [
-            "69254bb9ccf236facdea75db"
+            "6926a08ebf1e4e18ef66b18e"
           ],
           "geometry": {
             "type": "LineString",
@@ -1511,7 +1511,7 @@
             ]
           },
           "signal": {
-            "id": "69254bb9ccf236facdea75e1",
+            "id": "6926a08ebf1e4e18ef66b194",
             "aspect": "GREEN",
             "position": [
               77.81,
@@ -1520,7 +1520,7 @@
           }
         },
         {
-          "id": "69254bb9ccf236facdea75eb",
+          "id": "6926a08ebf1e4e18ef66b19e",
           "block_id": "DN_BLK_19",
           "index": 19,
           "length_m": 2000,
@@ -1530,10 +1530,10 @@
           "trackDirection": "DOWN",
           "headwaySeconds": 120,
           "nextBlocks": [
-            "69254bb9ccf236facdea75f3"
+            "6926a08ebf1e4e18ef66b1a6"
           ],
           "prevBlocks": [
-            "69254bb9ccf236facdea75e3"
+            "6926a08ebf1e4e18ef66b196"
           ],
           "geometry": {
             "type": "LineString",
@@ -1549,7 +1549,7 @@
             ]
           },
           "signal": {
-            "id": "69254bb9ccf236facdea75e9",
+            "id": "6926a08ebf1e4e18ef66b19c",
             "aspect": "GREEN",
             "position": [
               77.81,
@@ -1558,7 +1558,7 @@
           }
         },
         {
-          "id": "69254bb9ccf236facdea75f3",
+          "id": "6926a08ebf1e4e18ef66b1a6",
           "block_id": "DN_BLK_20",
           "index": 20,
           "length_m": 2000,
@@ -1569,7 +1569,7 @@
           "headwaySeconds": 120,
           "nextBlocks": [],
           "prevBlocks": [
-            "69254bb9ccf236facdea75eb"
+            "6926a08ebf1e4e18ef66b19e"
           ],
           "geometry": {
             "type": "LineString",
@@ -1585,7 +1585,7 @@
             ]
           },
           "signal": {
-            "id": "69254bb9ccf236facdea75f1",
+            "id": "6926a08ebf1e4e18ef66b1a4",
             "aspect": "GREEN",
             "position": [
               77.81,
@@ -1596,29 +1596,29 @@
       ]
     },
     {
-      "id": "69254bb9ccf236facdea761f",
+      "id": "6926a08ebf1e4e18ef66b1d2",
       "track_id": "UP_LOOP_AT_5",
       "name": "UP_LOOP_5",
       "type": "LOOP",
       "direction": "UP",
       "isLoop": true,
-      "parentTrack": "69254bb8ccf236facdea7550",
+      "parentTrack": "6926a08ebf1e4e18ef66b103",
       "blocks": [
         {
-          "id": "69254bb9ccf236facdea7623",
+          "id": "6926a08ebf1e4e18ef66b1d6",
           "block_id": "UP_LOOP_5_A",
           "index": 5,
           "length_m": 1000,
           "max_speed_kmph": 50,
           "blockType": "LOOP",
-          "loopId": "69254bb9ccf236facdea761f",
+          "loopId": "6926a08ebf1e4e18ef66b1d2",
           "trackDirection": "UP",
           "headwaySeconds": 120,
           "nextBlocks": [
-            "69254bb9ccf236facdea7627"
+            "6926a08ebf1e4e18ef66b1da"
           ],
           "prevBlocks": [
-            "69254bb8ccf236facdea7577"
+            "6926a08ebf1e4e18ef66b12a"
           ],
           "geometry": {
             "type": "LineString",
@@ -1634,7 +1634,7 @@
             ]
           },
           "signal": {
-            "id": "69254bb9ccf236facdea7621",
+            "id": "6926a08ebf1e4e18ef66b1d4",
             "aspect": "GREEN",
             "position": [
               77.4445,
@@ -1643,20 +1643,20 @@
           }
         },
         {
-          "id": "69254bb9ccf236facdea7627",
+          "id": "6926a08ebf1e4e18ef66b1da",
           "block_id": "UP_LOOP_5_B",
           "index": 6,
           "length_m": 1000,
           "max_speed_kmph": 50,
           "blockType": "LOOP",
-          "loopId": "69254bb9ccf236facdea761f",
+          "loopId": "6926a08ebf1e4e18ef66b1d2",
           "trackDirection": "UP",
           "headwaySeconds": 120,
           "nextBlocks": [
-            "69254bb8ccf236facdea757f"
+            "6926a08ebf1e4e18ef66b132"
           ],
           "prevBlocks": [
-            "69254bb9ccf236facdea7623"
+            "6926a08ebf1e4e18ef66b1d6"
           ],
           "geometry": {
             "type": "LineString",
@@ -1672,7 +1672,7 @@
             ]
           },
           "signal": {
-            "id": "69254bb9ccf236facdea7625",
+            "id": "6926a08ebf1e4e18ef66b1d8",
             "aspect": "GREEN",
             "position": [
               77.4445,
@@ -1683,29 +1683,29 @@
       ]
     },
     {
-      "id": "69254bb9ccf236facdea762f",
+      "id": "6926a08ebf1e4e18ef66b1e2",
       "track_id": "UP_LOOP_AT_11",
       "name": "UP_LOOP_11",
       "type": "LOOP",
       "direction": "UP",
       "isLoop": true,
-      "parentTrack": "69254bb8ccf236facdea7550",
+      "parentTrack": "6926a08ebf1e4e18ef66b103",
       "blocks": [
         {
-          "id": "69254bb9ccf236facdea7633",
+          "id": "6926a08ebf1e4e18ef66b1e6",
           "block_id": "UP_LOOP_11_A",
           "index": 11,
           "length_m": 1000,
           "max_speed_kmph": 50,
           "blockType": "LOOP",
-          "loopId": "69254bb9ccf236facdea762f",
+          "loopId": "6926a08ebf1e4e18ef66b1e2",
           "trackDirection": "UP",
           "headwaySeconds": 120,
           "nextBlocks": [
-            "69254bb9ccf236facdea7637"
+            "6926a08ebf1e4e18ef66b1ea"
           ],
           "prevBlocks": [
-            "69254bb8ccf236facdea75a7"
+            "6926a08ebf1e4e18ef66b15a"
           ],
           "geometry": {
             "type": "LineString",
@@ -1721,7 +1721,7 @@
             ]
           },
           "signal": {
-            "id": "69254bb9ccf236facdea7631",
+            "id": "6926a08ebf1e4e18ef66b1e4",
             "aspect": "GREEN",
             "position": [
               77.4445,
@@ -1730,20 +1730,20 @@
           }
         },
         {
-          "id": "69254bb9ccf236facdea7637",
+          "id": "6926a08ebf1e4e18ef66b1ea",
           "block_id": "UP_LOOP_11_B",
           "index": 12,
           "length_m": 1000,
           "max_speed_kmph": 50,
           "blockType": "LOOP",
-          "loopId": "69254bb9ccf236facdea762f",
+          "loopId": "6926a08ebf1e4e18ef66b1e2",
           "trackDirection": "UP",
           "headwaySeconds": 120,
           "nextBlocks": [
-            "69254bb9ccf236facdea75af"
+            "6926a08ebf1e4e18ef66b162"
           ],
           "prevBlocks": [
-            "69254bb9ccf236facdea7633"
+            "6926a08ebf1e4e18ef66b1e6"
           ],
           "geometry": {
             "type": "LineString",
@@ -1759,7 +1759,7 @@
             ]
           },
           "signal": {
-            "id": "69254bb9ccf236facdea7635",
+            "id": "6926a08ebf1e4e18ef66b1e8",
             "aspect": "GREEN",
             "position": [
               77.4445,
@@ -1770,29 +1770,29 @@
       ]
     },
     {
-      "id": "69254bb9ccf236facdea763f",
+      "id": "6926a08ebf1e4e18ef66b1f2",
       "track_id": "UP_LOOP_AT_17",
       "name": "UP_LOOP_17",
       "type": "LOOP",
       "direction": "UP",
       "isLoop": true,
-      "parentTrack": "69254bb8ccf236facdea7550",
+      "parentTrack": "6926a08ebf1e4e18ef66b103",
       "blocks": [
         {
-          "id": "69254bb9ccf236facdea7643",
+          "id": "6926a08ebf1e4e18ef66b1f6",
           "block_id": "UP_LOOP_17_A",
           "index": 17,
           "length_m": 1000,
           "max_speed_kmph": 50,
           "blockType": "LOOP",
-          "loopId": "69254bb9ccf236facdea763f",
+          "loopId": "6926a08ebf1e4e18ef66b1f2",
           "trackDirection": "UP",
           "headwaySeconds": 120,
           "nextBlocks": [
-            "69254bb9ccf236facdea7647"
+            "6926a08ebf1e4e18ef66b1fa"
           ],
           "prevBlocks": [
-            "69254bb9ccf236facdea75d7"
+            "6926a08ebf1e4e18ef66b18a"
           ],
           "geometry": {
             "type": "LineString",
@@ -1808,7 +1808,7 @@
             ]
           },
           "signal": {
-            "id": "69254bb9ccf236facdea7641",
+            "id": "6926a08ebf1e4e18ef66b1f4",
             "aspect": "GREEN",
             "position": [
               77.4445,
@@ -1817,20 +1817,20 @@
           }
         },
         {
-          "id": "69254bb9ccf236facdea7647",
+          "id": "6926a08ebf1e4e18ef66b1fa",
           "block_id": "UP_LOOP_17_B",
           "index": 18,
           "length_m": 1000,
           "max_speed_kmph": 50,
           "blockType": "LOOP",
-          "loopId": "69254bb9ccf236facdea763f",
+          "loopId": "6926a08ebf1e4e18ef66b1f2",
           "trackDirection": "UP",
           "headwaySeconds": 120,
           "nextBlocks": [
-            "69254bb9ccf236facdea75df"
+            "6926a08ebf1e4e18ef66b192"
           ],
           "prevBlocks": [
-            "69254bb9ccf236facdea7643"
+            "6926a08ebf1e4e18ef66b1f6"
           ],
           "geometry": {
             "type": "LineString",
@@ -1846,7 +1846,7 @@
             ]
           },
           "signal": {
-            "id": "69254bb9ccf236facdea7645",
+            "id": "6926a08ebf1e4e18ef66b1f8",
             "aspect": "GREEN",
             "position": [
               77.4445,
@@ -1859,36 +1859,15 @@
   ],
   "trains": [
     {
-      "id": "69254bb9ccf236facdea7650",
+      "id": "6926a08ebf1e4e18ef66b203",
       "name": "Bhopal Express",
       "number": "12156",
       "type": "EXPRESS",
       "priority": 10,
-      "delay_min": 4,
-      "current_block": "69254bb8ccf236facdea7557",
-      "offset_m": 583,
-      "speed_kmph": 75.03928278118472,
-      "direction": "UP",
-      "lat": null,
-      "lon": null,
-      "status": "RUNNING",
-      "perf": {
-        "maxSpeedKmph": 100,
-        "accelMps2": 0.6,
-        "decelMps2": 0.7,
-        "lengthM": 200
-      }
-    },
-    {
-      "id": "69254bb9ccf236facdea7652",
-      "name": "Shatabdi Express",
-      "number": "12002",
-      "type": "EXPRESS",
-      "priority": 12,
-      "delay_min": 13,
-      "current_block": "69254bb8ccf236facdea75a3",
-      "offset_m": 1380,
-      "speed_kmph": 49.22622334378032,
+      "delay_min": 2,
+      "current_block": "6926a08ebf1e4e18ef66b15e",
+      "offset_m": 1328,
+      "speed_kmph": 47.89798719454224,
       "direction": "DOWN",
       "lat": null,
       "lon": null,
@@ -1901,15 +1880,36 @@
       }
     },
     {
-      "id": "69254bb9ccf236facdea7654",
+      "id": "6926a08ebf1e4e18ef66b205",
+      "name": "Shatabdi Express",
+      "number": "12002",
+      "type": "EXPRESS",
+      "priority": 12,
+      "delay_min": 17,
+      "current_block": "6926a08ebf1e4e18ef66b132",
+      "offset_m": 1674,
+      "speed_kmph": 32.85505784407128,
+      "direction": "UP",
+      "lat": null,
+      "lon": null,
+      "status": "RUNNING",
+      "perf": {
+        "maxSpeedKmph": 100,
+        "accelMps2": 0.6,
+        "decelMps2": 0.7,
+        "lengthM": 200
+      }
+    },
+    {
+      "id": "6926a08ebf1e4e18ef66b207",
       "name": "Narmada Express",
       "number": "18234",
       "type": "EXPRESS",
       "priority": 10,
       "delay_min": 4,
-      "current_block": "69254bb9ccf236facdea75cf",
-      "offset_m": 1734,
-      "speed_kmph": 65.20537783602025,
+      "current_block": "6926a08ebf1e4e18ef66b192",
+      "offset_m": 1922,
+      "speed_kmph": 56.56906185490064,
       "direction": "UP",
       "lat": null,
       "lon": null,
@@ -1922,15 +1922,15 @@
       }
     },
     {
-      "id": "69254bb9ccf236facdea7656",
+      "id": "6926a08ebf1e4e18ef66b209",
       "name": "Rajdhani Express",
       "number": "12434",
       "type": "EXPRESS",
       "priority": 12,
-      "delay_min": 26,
-      "current_block": "69254bb8ccf236facdea7577",
-      "offset_m": 542,
-      "speed_kmph": 106.21700698200979,
+      "delay_min": 22,
+      "current_block": "6926a08ebf1e4e18ef66b19a",
+      "offset_m": 1952,
+      "speed_kmph": 91.85174561938831,
       "direction": "UP",
       "lat": null,
       "lon": null,
@@ -1943,204 +1943,15 @@
       }
     },
     {
-      "id": "69254bb9ccf236facdea7658",
+      "id": "6926a08ebf1e4e18ef66b20b",
       "name": "Jabalpur Intercity",
       "number": "12198",
       "type": "EXPRESS",
       "priority": 3,
-      "delay_min": 5,
-      "current_block": "69254bb8ccf236facdea757f",
-      "offset_m": 1088,
-      "speed_kmph": 64.71970629886174,
-      "direction": "UP",
-      "lat": null,
-      "lon": null,
-      "status": "RUNNING",
-      "perf": {
-        "maxSpeedKmph": 100,
-        "accelMps2": 0.6,
-        "decelMps2": 0.7,
-        "lengthM": 200
-      }
-    },
-    {
-      "id": "69254bb9ccf236facdea765a",
-      "name": "Freight Coal A1",
-      "number": "FRE001",
-      "type": "FREIGHT",
-      "priority": 3,
-      "delay_min": 3,
-      "current_block": "69254bb8ccf236facdea7577",
-      "offset_m": 147,
-      "speed_kmph": 54.74632118060755,
-      "direction": "UP",
-      "lat": null,
-      "lon": null,
-      "status": "RUNNING",
-      "perf": {
-        "maxSpeedKmph": 100,
-        "accelMps2": 0.6,
-        "decelMps2": 0.7,
-        "lengthM": 200
-      }
-    },
-    {
-      "id": "69254bb9ccf236facdea765c",
-      "name": "Freight Grain B4",
-      "number": "FRE002",
-      "type": "FREIGHT",
-      "priority": 3,
-      "delay_min": 3,
-      "current_block": "69254bb8ccf236facdea7597",
-      "offset_m": 897,
-      "speed_kmph": 97.40901215249593,
-      "direction": "UP",
-      "lat": null,
-      "lon": null,
-      "status": "RUNNING",
-      "perf": {
-        "maxSpeedKmph": 100,
-        "accelMps2": 0.6,
-        "decelMps2": 0.7,
-        "lengthM": 200
-      }
-    },
-    {
-      "id": "69254bb9ccf236facdea765e",
-      "name": "Goods Long C7",
-      "number": "FRE003",
-      "type": "FREIGHT",
-      "priority": 3,
-      "delay_min": 4,
-      "current_block": "69254bb8ccf236facdea755f",
-      "offset_m": 313,
-      "speed_kmph": 85.08775095935152,
-      "direction": "UP",
-      "lat": null,
-      "lon": null,
-      "status": "RUNNING",
-      "perf": {
-        "maxSpeedKmph": 100,
-        "accelMps2": 0.6,
-        "decelMps2": 0.7,
-        "lengthM": 200
-      }
-    },
-    {
-      "id": "69254bb9ccf236facdea7660",
-      "name": "Passenger Shuttle",
-      "number": "PSG01",
-      "type": "FREIGHT",
-      "priority": 3,
-      "delay_min": 3,
-      "current_block": "69254bb8ccf236facdea7587",
-      "offset_m": 581,
-      "speed_kmph": 49.07569867444014,
-      "direction": "UP",
-      "lat": null,
-      "lon": null,
-      "status": "RUNNING",
-      "perf": {
-        "maxSpeedKmph": 100,
-        "accelMps2": 0.6,
-        "decelMps2": 0.7,
-        "lengthM": 200
-      }
-    },
-    {
-      "id": "69254bb9ccf236facdea7662",
-      "name": "MEMU Local",
-      "number": "MEMU09",
-      "type": "FREIGHT",
-      "priority": 3,
-      "delay_min": 5,
-      "current_block": "69254bb8ccf236facdea7567",
-      "offset_m": 338,
-      "speed_kmph": 73.8904982248806,
-      "direction": "UP",
-      "lat": null,
-      "lon": null,
-      "status": "RUNNING",
-      "perf": {
-        "maxSpeedKmph": 100,
-        "accelMps2": 0.6,
-        "decelMps2": 0.7,
-        "lengthM": 200
-      }
-    },
-    {
-      "id": "69254bb9ccf236facdea7664",
-      "name": "Mail Express",
-      "number": "MAIL77",
-      "type": "FREIGHT",
-      "priority": 3,
-      "delay_min": 1,
-      "current_block": "69254bb8ccf236facdea759f",
-      "offset_m": 183,
-      "speed_kmph": 58.21992345053799,
-      "direction": "UP",
-      "lat": null,
-      "lon": null,
-      "status": "RUNNING",
-      "perf": {
-        "maxSpeedKmph": 100,
-        "accelMps2": 0.6,
-        "decelMps2": 0.7,
-        "lengthM": 200
-      }
-    },
-    {
-      "id": "69254bb9ccf236facdea7666",
-      "name": "SuperFast",
-      "number": "SF090",
-      "type": "FREIGHT",
-      "priority": 3,
       "delay_min": 2,
-      "current_block": "69254bb9ccf236facdea75df",
-      "offset_m": 16,
-      "speed_kmph": 30.755962506906158,
-      "direction": "UP",
-      "lat": null,
-      "lon": null,
-      "status": "RUNNING",
-      "perf": {
-        "maxSpeedKmph": 100,
-        "accelMps2": 0.6,
-        "decelMps2": 0.7,
-        "lengthM": 200
-      }
-    },
-    {
-      "id": "69254bb9ccf236facdea7668",
-      "name": "Special Super",
-      "number": "SP001",
-      "type": "EXPRESS",
-      "priority": 3,
-      "delay_min": 5,
-      "current_block": "69254bb9ccf236facdea75ef",
-      "offset_m": 0,
-      "speed_kmph": 59.256178971819025,
-      "direction": "UP",
-      "lat": null,
-      "lon": null,
-      "status": "RUNNING",
-      "perf": {
-        "maxSpeedKmph": 100,
-        "accelMps2": 0.6,
-        "decelMps2": 0.7,
-        "lengthM": 200
-      }
-    },
-    {
-      "id": "69254bb9ccf236facdea766a",
-      "name": "HighPrio Extra",
-      "number": "HP100",
-      "type": "EXPRESS",
-      "priority": 15,
-      "delay_min": 18,
-      "current_block": "69254bb9ccf236facdea75b3",
-      "offset_m": 772,
-      "speed_kmph": 72.4631383986655,
+      "current_block": "6926a08ebf1e4e18ef66b11e",
+      "offset_m": 1471,
+      "speed_kmph": 54.869104478906436,
       "direction": "DOWN",
       "lat": null,
       "lon": null,
@@ -2153,15 +1964,204 @@
       }
     },
     {
-      "id": "69254bb9ccf236facdea766c",
+      "id": "6926a08ebf1e4e18ef66b20d",
+      "name": "Freight Coal A1",
+      "number": "FRE001",
+      "type": "FREIGHT",
+      "priority": 3,
+      "delay_min": 2,
+      "current_block": "6926a08ebf1e4e18ef66b1a2",
+      "offset_m": 1689,
+      "speed_kmph": 30.378089014905942,
+      "direction": "UP",
+      "lat": null,
+      "lon": null,
+      "status": "RUNNING",
+      "perf": {
+        "maxSpeedKmph": 100,
+        "accelMps2": 0.6,
+        "decelMps2": 0.7,
+        "lengthM": 200
+      }
+    },
+    {
+      "id": "6926a08ebf1e4e18ef66b20f",
+      "name": "Freight Grain B4",
+      "number": "FRE002",
+      "type": "FREIGHT",
+      "priority": 3,
+      "delay_min": 5,
+      "current_block": "6926a08ebf1e4e18ef66b19e",
+      "offset_m": 642,
+      "speed_kmph": 35.48042950281862,
+      "direction": "DOWN",
+      "lat": null,
+      "lon": null,
+      "status": "RUNNING",
+      "perf": {
+        "maxSpeedKmph": 100,
+        "accelMps2": 0.6,
+        "decelMps2": 0.7,
+        "lengthM": 200
+      }
+    },
+    {
+      "id": "6926a08ebf1e4e18ef66b211",
+      "name": "Goods Long C7",
+      "number": "FRE003",
+      "type": "FREIGHT",
+      "priority": 3,
+      "delay_min": 2,
+      "current_block": "6926a08ebf1e4e18ef66b15a",
+      "offset_m": 1747,
+      "speed_kmph": 32.47129126720132,
+      "direction": "UP",
+      "lat": null,
+      "lon": null,
+      "status": "RUNNING",
+      "perf": {
+        "maxSpeedKmph": 100,
+        "accelMps2": 0.6,
+        "decelMps2": 0.7,
+        "lengthM": 200
+      }
+    },
+    {
+      "id": "6926a08ebf1e4e18ef66b213",
+      "name": "Passenger Shuttle",
+      "number": "PSG01",
+      "type": "FREIGHT",
+      "priority": 3,
+      "delay_min": 2,
+      "current_block": "6926a08ebf1e4e18ef66b12e",
+      "offset_m": 97,
+      "speed_kmph": 92.21518102545899,
+      "direction": "DOWN",
+      "lat": null,
+      "lon": null,
+      "status": "RUNNING",
+      "perf": {
+        "maxSpeedKmph": 100,
+        "accelMps2": 0.6,
+        "decelMps2": 0.7,
+        "lengthM": 200
+      }
+    },
+    {
+      "id": "6926a08ebf1e4e18ef66b215",
+      "name": "MEMU Local",
+      "number": "MEMU09",
+      "type": "FREIGHT",
+      "priority": 3,
+      "delay_min": 1,
+      "current_block": "6926a08ebf1e4e18ef66b186",
+      "offset_m": 778,
+      "speed_kmph": 37.66400544904327,
+      "direction": "DOWN",
+      "lat": null,
+      "lon": null,
+      "status": "RUNNING",
+      "perf": {
+        "maxSpeedKmph": 100,
+        "accelMps2": 0.6,
+        "decelMps2": 0.7,
+        "lengthM": 200
+      }
+    },
+    {
+      "id": "6926a08ebf1e4e18ef66b217",
+      "name": "Mail Express",
+      "number": "MAIL77",
+      "type": "FREIGHT",
+      "priority": 3,
+      "delay_min": 0,
+      "current_block": "6926a08ebf1e4e18ef66b13a",
+      "offset_m": 1728,
+      "speed_kmph": 73.9220948275475,
+      "direction": "UP",
+      "lat": null,
+      "lon": null,
+      "status": "RUNNING",
+      "perf": {
+        "maxSpeedKmph": 100,
+        "accelMps2": 0.6,
+        "decelMps2": 0.7,
+        "lengthM": 200
+      }
+    },
+    {
+      "id": "6926a08ebf1e4e18ef66b219",
+      "name": "SuperFast",
+      "number": "SF090",
+      "type": "FREIGHT",
+      "priority": 3,
+      "delay_min": 3,
+      "current_block": "6926a08ebf1e4e18ef66b172",
+      "offset_m": 1335,
+      "speed_kmph": 101.87556053692359,
+      "direction": "UP",
+      "lat": null,
+      "lon": null,
+      "status": "RUNNING",
+      "perf": {
+        "maxSpeedKmph": 100,
+        "accelMps2": 0.6,
+        "decelMps2": 0.7,
+        "lengthM": 200
+      }
+    },
+    {
+      "id": "6926a08ebf1e4e18ef66b21b",
+      "name": "Special Super",
+      "number": "SP001",
+      "type": "EXPRESS",
+      "priority": 3,
+      "delay_min": 5,
+      "current_block": "6926a08ebf1e4e18ef66b19a",
+      "offset_m": 1468,
+      "speed_kmph": 49.89692098530382,
+      "direction": "UP",
+      "lat": null,
+      "lon": null,
+      "status": "RUNNING",
+      "perf": {
+        "maxSpeedKmph": 100,
+        "accelMps2": 0.6,
+        "decelMps2": 0.7,
+        "lengthM": 200
+      }
+    },
+    {
+      "id": "6926a08ebf1e4e18ef66b21d",
+      "name": "HighPrio Extra",
+      "number": "HP100",
+      "type": "EXPRESS",
+      "priority": 15,
+      "delay_min": 18,
+      "current_block": "6926a08ebf1e4e18ef66b16a",
+      "offset_m": 1246,
+      "speed_kmph": 31.27356282417086,
+      "direction": "UP",
+      "lat": null,
+      "lon": null,
+      "status": "RUNNING",
+      "perf": {
+        "maxSpeedKmph": 100,
+        "accelMps2": 0.6,
+        "decelMps2": 0.7,
+        "lengthM": 200
+      }
+    },
+    {
+      "id": "6926a08ebf1e4e18ef66b21f",
       "name": "Late Freight",
       "number": "LF200",
       "type": "EXPRESS",
       "priority": 2,
       "delay_min": 25,
-      "current_block": "69254bb8ccf236facdea7593",
-      "offset_m": 74,
-      "speed_kmph": 72.18852053005963,
+      "current_block": "6926a08ebf1e4e18ef66b146",
+      "offset_m": 1389,
+      "speed_kmph": 71.5272159078747,
       "direction": "DOWN",
       "lat": null,
       "lon": null,
