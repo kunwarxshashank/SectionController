@@ -4,7 +4,7 @@ import mongoose from "mongoose";
 import Section from "./models/sectionSchema.js";
 import Station from "./models/stationSchema.js";
 import Track from "./models/trackSchema.js";
-import Block from "./models/blockSchema.js";
+
 import Signal from "./models/signalSchema.js";
 import Train from "./models/trainSchema.js";
 import { config as configDotenv } from "dotenv"
@@ -48,7 +48,7 @@ async function seed() {
 
     // loop positions (0-based index of main block after which loop diverts)
     // choose a few positions evenly spaced
-    const LOOP_INDICES = [4, 10, 16];
+    const LOOP_INDICES = [4, 10, 16, 20];
 
     // ------------------------------
     // CREATE STATIONS
@@ -62,7 +62,7 @@ async function seed() {
     // CREATE SECTION
     // ------------------------------
     const section = await Section.create({
-      section_id: "SEC_LARGE_01",
+      section_id: "secid",
       name: "Shahpura - Habibganj (Short) Section",
       coordinates: [23.350, 77.500],
       stations: stationDocs.map(s => s._id),
@@ -193,6 +193,7 @@ async function seed() {
 
     for (let loopIdx of LOOP_INDICES) {
       // safety: ensure loopIdx is within 0..TOTAL_BLOCKS-2 (so mainNext exists)
+
       if (loopIdx < 0 || loopIdx >= TOTAL_BLOCKS - 1) continue;
 
       const loopTrack = await Track.create({

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { useAuth } from '@/context/AuthContext';
 import { useDispatch, useSelector } from 'react-redux';
+import { selectAdmin, selectIsAuthenticated, selectAuthLoading } from '@/store/slices/adminSlice';
 import { setCallLogs, setLoading as setCallLogsLoading, selectCallLogs, selectCallLogsLoading } from '@/store/slices/callLogsSlice';
 import Layout from '@/components/Layout';
 import { ScrollText, Search, Filter, ChevronLeft, ChevronRight, Phone, PhoneIncoming, PhoneOutgoing, Clock, FileText, ChevronDown, ChevronUp, Brain } from 'lucide-react';
@@ -10,7 +10,9 @@ import { format } from 'date-fns';
 export default function LogsPage() {
     const router = useRouter();
     const dispatch = useDispatch();
-    const { authenticated, loading, admin } = useAuth();
+    const authenticated = useSelector(selectIsAuthenticated);
+    const loading = useSelector(selectAuthLoading);
+    const admin = useSelector(selectAdmin);
     const [activeTab, setActiveTab] = useState('activity');
 
     // Activity logs state

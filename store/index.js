@@ -2,30 +2,28 @@ import { useDispatch, useSelector } from 'react-redux';
 
 // Auth hooks
 export {
-    selectCurrentAdmin,
-    selectIsAuthenticated,
-    selectAuthLoading,
-    selectAccessToken
+  selectCurrentAdmin,
+  selectIsAuthenticated,
+  selectAuthLoading,
+  selectAccessToken
 } from './slices/authSlice';
 
 // Call logs hooks
 export {
-    selectCallLogs,
-    selectCallLogsLoading,
-    selectCallLogsPagination
+  selectCallLogs,
+  selectCallLogsLoading,
+  selectCallLogsPagination
 } from './slices/callLogsSlice';
 
 // Call hooks
 export {
-    selectOnlineUsers,
-    selectActiveCall,
-    selectIncomingCall,
-    selectCallStatus,
-    selectIsMuted
+  selectOnlineUsers,
+  selectActiveCall,
+  selectIncomingCall,
+  selectCallStatus,
+  selectIsMuted
 } from './slices/callSlice';
 
-// Admins hooks
-export { selectAdmins, selectAdminsLoading } from './slices/adminsSlice';
 
 // Export store and dispatch for direct usage
 export { store, dispatch, getState } from './store';
@@ -34,7 +32,9 @@ export { store, dispatch, getState } from './store';
 export * from './slices/authSlice';
 export * from './slices/callLogsSlice';
 export * from './slices/callSlice';
-export * from './slices/adminsSlice';
+export * from './slices/adminSlice';
+export * from './slices/sectionSlice';
+export * from './slices/stationSlice'
 
 // Custom typed hooks (useful for TypeScript)
 export const useAppDispatch = () => useDispatch();

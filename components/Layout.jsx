@@ -1,5 +1,6 @@
 import { useRouter } from 'next/router';
-import { useAuth } from '@/context/AuthContext';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectAdmin, clearCredentials } from '@/store/slices/adminSlice';
 import { useTheme } from '@/context/ThemeContext';
 import { Home, Radio, FileText, ScrollText, FlaskConical, LogOut, Train } from 'lucide-react';
 import Link from 'next/link';
@@ -7,7 +8,8 @@ import ThemeToggle from './ui/ThemeToggle';
 
 export default function Layout({ children }) {
     const router = useRouter();
-    const { logout, admin } = useAuth();
+    const dispatch = useDispatch();
+    const admin = useSelector(selectAdmin);
     const { theme } = useTheme();
     const currentPath = router.pathname;
 
@@ -20,7 +22,8 @@ export default function Layout({ children }) {
 
     const handleLogout = () => {
         if (confirm('Are you sure you want to logout?')) {
-            logout();
+            dispatch(clearCredentials());
+            router.push('/login');
         }
     };
 

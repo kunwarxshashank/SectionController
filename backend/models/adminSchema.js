@@ -6,8 +6,18 @@ import jwt from "jsonwebtoken";
 
 const AdminSchema = new mongoose.Schema({
   sectionId: {
+    type:String ,
+    
+    
+  },
+  stationId:{
     type: String,
-    required: true
+    
+    
+  },
+  isAdmin:{
+    type: Boolean,
+    default: false
   },
 
   email: {

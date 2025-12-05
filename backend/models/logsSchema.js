@@ -1,5 +1,3 @@
-
-
 import mongoose from "mongoose";
 
 const LogSchema = new mongoose.Schema(
@@ -29,7 +27,7 @@ const LogSchema = new mongoose.Schema(
         "SYSTEM_SUGGESTION",
         "SYSTEM_OVERRIDE"
       ],
-      
+
     },
 
     performedBy: {
@@ -50,7 +48,7 @@ const LogSchema = new mongoose.Schema(
 
     message: {
       type: String,
-      
+
     }
   },
   {

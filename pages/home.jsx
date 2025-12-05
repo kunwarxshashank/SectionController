@@ -1,7 +1,8 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { useAuth } from '@/context/AuthContext';
+import { useSelector } from 'react-redux';
+import { selectAdmin, selectIsAuthenticated, selectAuthLoading } from '@/store/slices/adminSlice';
 import { useWebSocket } from '@/context/WebSocketContext';
 import Layout from '@/components/Layout';
 import IncomingTrains from '@/components/IncomingTrains';
@@ -14,7 +15,9 @@ import { useState } from 'react';
 
 export default function HomePage() {
     const router = useRouter();
-    const { authenticated, loading, admin } = useAuth();
+    const authenticated = useSelector(selectIsAuthenticated);
+    const loading = useSelector(selectAuthLoading);
+    const admin = useSelector(selectAdmin);
     const { connected, subscribeToSection, sectionMetadata } = useWebSocket();
     const [currentTime, setCurrentTime] = useState(new Date());
 

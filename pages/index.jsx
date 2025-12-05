@@ -1,10 +1,12 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { useAuth } from '@/context/AuthContext';
+import { useSelector } from 'react-redux';
+import { selectIsAuthenticated, selectAuthLoading } from '@/store/slices/adminSlice';
 
 export default function Home() {
     const router = useRouter();
-    const { authenticated, loading } = useAuth();
+    const authenticated = useSelector(selectIsAuthenticated);
+    const loading = useSelector(selectAuthLoading);
 
     useEffect(() => {
         if (!loading) {

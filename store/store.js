@@ -1,15 +1,17 @@
 import { configureStore } from '@reduxjs/toolkit';
-import authReducer from './slices/authSlice';
 import callLogsReducer from './slices/callLogsSlice';
 import callReducer from './slices/callSlice';
-import adminsReducer from './slices/adminsSlice';
+import adminReducer from "./slices/adminSlice";
+import sectionReducer from "./slices/sectionSlice";
+import stationReducer from "./slices/stationSlice";
 
 export const store = configureStore({
     reducer: {
-        auth: authReducer,
         callLogs: callLogsReducer,
         call: callReducer,
-        admins: adminsReducer,
+        admin: adminReducer,
+        section: sectionReducer,
+        station: stationReducer,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({

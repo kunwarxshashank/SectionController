@@ -4,7 +4,7 @@ import express from 'express'
 import http from 'http'
 import { Server } from 'socket.io'
 import cors from 'cors'
-import sectionRoutes from "./routes/section.routes.js";
+//import sectionRoutes from "./routes/section.routes.js";
 import adminRoutes from "./routes/admin.routes.js";
 import logRoutes from "./routes/log.routes.js";
 import broadcastRoutes from "./routes/broadcast.routes.js";
@@ -48,7 +48,7 @@ app.use(cors({
 })
 )
 
-app.use("/api", sectionRoutes);
+//app.use("/api", sectionRoutes);
 app.use("/api", adminRoutes);
 app.use("/api", logRoutes);
 app.use("/api", broadcastRoutes);
@@ -56,10 +56,17 @@ app.use("/api", callLogRoutes);
 
 
 let userSocketmap = [];
+let sectionSocketmap = [];
+let trainSocketmap = [];
 
 // WebRTC signaling
 io.on("connection", Socket => {
    console.log("User connected:", Socket.id);
+   Socket.on("section-register", (data) => {
+      sectionSocketmap = sectionSocketmap.filter(section => section.id !== Socket.id);
+      sectionSocketmap.push({ ...data, id: Socket.id });
+      console.log("Section registered:", data.sectionId);
+   })
 
    Socket.on("register", (data) => {
       userSocketmap = userSocketmap.filter(user => user.id !== Socket.id);

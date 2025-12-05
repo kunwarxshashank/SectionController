@@ -1,13 +1,15 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
-import { useAuth } from '@/context/AuthContext';
+import { useSelector } from 'react-redux';
+import { selectIsAuthenticated, selectAuthLoading } from '@/store/slices/adminSlice';
 import Layout from '@/components/Layout';
 import { FileText, Download, Calendar, TrendingUp, TrendingDown } from 'lucide-react';
 import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 export default function ReportsPage() {
     const router = useRouter();
-    const { authenticated, loading } = useAuth();
+    const authenticated = useSelector(selectIsAuthenticated);
+    const loading = useSelector(selectAuthLoading);
     const [reportType, setReportType] = useState('daily');
 
     // Mock data for charts

@@ -2,12 +2,10 @@
 
 import Section from "../models/sectionSchema.js";
 import Track from "../models/trackSchema.js";
-import Block from "../models/blockSchema.js";
-import Signal from "../models/signalSchema.js";
 import Station from "../models/stationSchema.js";
 import Train from "../models/trainSchema.js";
 
-export const getSectionDisplay = async (req, res) => {
+/*export const getSectionDisplay = async (req, res) => {
   try {
     console.log(`Api calls: `, req.params.id)
     const sectionId = req.params.id;
@@ -217,3 +215,11 @@ export const exportSectionData = async (req, res) => {
     res.status(500).json({ msg: "Server error" });
   }
 };
+
+
+*/
+// controllers/topologyController.js
+
+/**
+ * Generate topology JSON compatible with the Vidisha A* simulator
+ */

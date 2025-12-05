@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
-import { useAuth } from '@/context/AuthContext';
+import { useSelector } from 'react-redux';
+import { selectAdmin, selectIsAuthenticated, selectAuthLoading } from '@/store/slices/adminSlice';
 import Layout from '@/components/Layout';
 import { Phone, PhoneOff, Mic, MicOff, FileText } from 'lucide-react';
 import io from 'socket.io-client';
@@ -8,7 +9,9 @@ import { useCallTranscription } from '@/lib/useCallTranscription';
 
 export default function BroadcastPage() {
     const router = useRouter();
-    const { authenticated, loading, admin } = useAuth();
+    const authenticated = useSelector(selectIsAuthenticated);
+    const loading = useSelector(selectAuthLoading);
+    const admin = useSelector(selectAdmin);
     const [admins, setAdmins] = useState([]);
     const [onlineUsers, setOnlineUsers] = useState([]);
     const [socket, setSocket] = useState(null);
@@ -127,7 +130,7 @@ export default function BroadcastPage() {
 
     // Initialize peer connection
     const createPeerConnection = () => {
-        const pc = new RTCPeerConnection(iceServers);
+        const pc = new RTCPeerConnection();
 
         // Store target email for ICE candidates
         pc._targetEmail = null;

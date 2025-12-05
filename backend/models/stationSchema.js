@@ -1,18 +1,38 @@
 import mongoose from "mongoose";
 
 const StationSchema = new mongoose.Schema({
-  station_code: String,
-  name: String,
-  position: {
-    type: [Number],
-    index: '2dsphere'
+  stationId: String,
+  stationName: String,
+
+  sectionId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Section"
   },
 
-  platforms: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Platform'
-  }]
-});
-const Station = mongoose.model("Station" , StationSchema)
+  totalTracks: {
+    type: Map,
+    of: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Edge"
+      }
+    ],
+    default: {}
+  },
 
-export default Station
+  nodes: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Node"
+    }
+  ],
+
+  locoPilot: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "LocoPilot"
+    }
+  ]
+});
+
+export default mongoose.model("Station", StationSchema);
