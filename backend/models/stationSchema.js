@@ -27,6 +27,13 @@ const StationSchema = new mongoose.Schema({
     }
   ],
 
+  edges: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Edge"
+    }
+  ],
+
   locoPilot: [
     {
       type: mongoose.Schema.Types.ObjectId,

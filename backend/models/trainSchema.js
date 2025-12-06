@@ -57,13 +57,11 @@ const TrainSchema = new mongoose.Schema({
 
   category: {
     type: String,
-    enum: ["diesel", "electric"],
     default: "electric"
   },
 
   direction: {
     type: String,
-    enum: ["UP", "DN"],
     required: true
   },
   current_edge: {
@@ -84,8 +82,6 @@ const TrainSchema = new mongoose.Schema({
 
   current_stream: {
     type: String,
-    enum: ["UP", "DN"],
-    default: "UP"
   },
 
   isEmergency: {
@@ -93,11 +89,11 @@ const TrainSchema = new mongoose.Schema({
     default: false
   },
   PAD: {
-    type: Number,
+    type: Array,
     default: 0
   },
   PDD: {
-    type: Number,
+    type: Array,
     default: 0
   },
   locoPilot: {

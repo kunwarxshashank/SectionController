@@ -5,13 +5,15 @@ import { Provider, useDispatch } from 'react-redux';
 import { store } from '@/store/store';
 import { useEffect } from 'react';
 import { initializeAuth } from '@/store/slices/adminSlice';
+import { initializeStation } from '@/store/slices/stationSlice';
 
-// Component to initialize auth on app mount
-function AuthInitializer({ children }) {
+// Component to initialize auth and station data on app mount
+function AppInitializer({ children }) {
     const dispatch = useDispatch();
 
     useEffect(() => {
         dispatch(initializeAuth());
+        dispatch(initializeStation());
     }, [dispatch]);
 
     return children;
@@ -20,13 +22,13 @@ function AuthInitializer({ children }) {
 export default function App({ Component, pageProps }) {
     return (
         <Provider store={store}>
-            <AuthInitializer>
+            <AppInitializer>
                 <ThemeProvider>
                     <WebSocketProvider>
                         <Component {...pageProps} />
                     </WebSocketProvider>
                 </ThemeProvider>
-            </AuthInitializer>
+            </AppInitializer>
         </Provider>
     );
 }

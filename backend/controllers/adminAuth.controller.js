@@ -30,6 +30,9 @@ export const loginAdmin = async (req, res) => {
       isSectionAdmin = false;
     }
 
+
+
+
     if (!admin) {
       return res.status(404).json({ msg: "Admin not found" });
     }
@@ -47,7 +50,6 @@ export const loginAdmin = async (req, res) => {
     // ------------------ 4) UPDATE LAST LOGIN ------------------
     admin.lastLogin = new Date();
     await admin.save();
-
     let responsePayload = {
       admin: {
         _id: admin._id,
@@ -61,8 +63,8 @@ export const loginAdmin = async (req, res) => {
     };
 
     // ------------------ 5) FETCH EXTRA DATA BASED ON ROLE ------------------
-
     // ====== SECTION ADMIN LOGIN ======
+
     if (isSectionAdmin) {
       const section = await Section.findById(admin.sectionId)
         .populate({
@@ -89,6 +91,8 @@ export const loginAdmin = async (req, res) => {
       });
     }
 
+
+
     // ====== STATION ADMIN LOGIN ======
     if (!isSectionAdmin) {
       const station = await Station.findOne({ stationId: admin.stationId })
@@ -99,7 +103,7 @@ export const loginAdmin = async (req, res) => {
             model: "Edge"
           }
         })
-        .populate("nodes");
+        .populate("nodes")
 
       if (!station) {
         return res.status(404).json({ msg: "Station data not found" });
@@ -129,6 +133,7 @@ export const loginAdmin = async (req, res) => {
     return res.status(500).json({ msg: "Server error" });
   }
 };
+
 
 // ------------------ REFRESH ACCESS TOKEN ------------------
 export const refreshAccessToken = async (req, res) => {
