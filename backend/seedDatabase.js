@@ -6,13 +6,12 @@ import Section from "./models/sectionSchema.js";
 import Station from "./models/stationSchema.js";
 import Node from "./models/nodeSchema.js";
 import Edge from "./models/edgeSchema.js";
-import Track from "./models/trackSchema.js";
 
 import dotenv from "dotenv";
 dotenv.config();
 
 /* ---------------------------------------------
-   🔧 Helpers: Normalizers to fix schema conflicts
+   🔧 Helpers: Normalizers
 --------------------------------------------- */
 
 function normalizeNodeType(type) {
@@ -41,35 +40,19 @@ function normalizeNodeType(type) {
 
 function normalizeStream(stream) {
     if (!stream) return "BIDIRECTIONAL";
-
     const s = stream.toLowerCase();
-
     if (s === "up") return "UP";
-    if (s === "down") return "DN";
-    if (s === "dn") return "DN";
-    if (s === "bidirectional") return "BIDIRECTIONAL";
-
-    return "BIDIRECTIONAL"; // DEFAULT, NEVER return ""
+    if (s === "down" || s === "dn") return "DN";
+    return "BIDIRECTIONAL";
 }
 
 function normalizeDirection(dir) {
     if (!dir) return "BIDIRECTIONAL";
-
     const d = dir.toLowerCase();
-
     if (d === "up") return "UP";
-    if (d === "down") return "DN";
-    if (d === "dn") return "DN";
-    if (d === "unidirectional") return "UP";
-    if (d === "bidirectional") return "BIDIRECTIONAL";
-
+    if (d === "down" || d === "dn") return "DN";
     return "BIDIRECTIONAL";
 }
-
-
-/* ---------------------------------------------
-   📌 JSON File Path
---------------------------------------------- */
 
 const JSON_PATH = "./database_schema.json";
 
@@ -82,14 +65,14 @@ async function seedDatabase() {
         await mongoose.connect(process.env.MongoUrl);
         console.log("✅ Connected to MongoDB");
 
-        // Wipe old data
+        // Clear old data
         await Promise.all([
             Section.deleteMany({}),
             Station.deleteMany({}),
             Node.deleteMany({}),
-            Edge.deleteMany({}),
-            Track.deleteMany({})
+            Edge.deleteMany({})
         ]);
+
         console.log("🗑️ Old data cleared");
 
         // Load JSON
@@ -123,20 +106,23 @@ async function seedDatabase() {
         }
 
         for (const e of allEdges) {
-            let station = e.station || "UNKNOWN";
+            const station = e.station || "UNKNOWN";
             if (!edgesByStation[station]) edgesByStation[station] = [];
             edgesByStation[station].push(e);
         }
 
         /* ---------------------------------------------
-           🏭 Create Stations, Nodes, Edges, Tracks
+           🏭 Create Stations + Save Nodes + Edges
         --------------------------------------------- */
         for (const stationName of Object.keys(nodesByStation)) {
             console.log(`\n🚉 Processing Station: ${stationName}`);
 
-            /* ------------------ NODES ------------------ */
-            const insertedNodes = await Node.insertMany(
-                nodesByStation[stationName].map(n => ({
+            const rawNodeList = nodesByStation[stationName];
+            const rawEdgeList = edgesByStation[stationName] || [];
+
+            /* ------------------ Save NODES ------------------ */
+            const savedNodes = await Node.insertMany(
+                rawNodeList.map(n => ({
                     nodeId: n.id,
                     nodeType: normalizeNodeType(n.type),
                     x: n.x || 0,
@@ -145,17 +131,15 @@ async function seedDatabase() {
                     line: n.line || "",
                     description: n.description || "",
                     status: n.status || "active",
-                    signalColor: n.color || "red",
+                    signalColor: n.color || "red"
                 }))
             );
 
-            console.log(`   ➤ Saved ${insertedNodes.length} nodes`);
+            console.log(`   ➤ Saved ${savedNodes.length} Nodes`);
 
-            /* ------------------ EDGES ------------------ */
-            const stationEdges = edgesByStation[stationName] || [];
-
-            const insertedEdges = await Edge.insertMany(
-                stationEdges.map(e => ({
+            /* ------------------ Save EDGES ------------------ */
+            const savedEdges = await Edge.insertMany(
+                rawEdgeList.map(e => ({
                     edgeId: e.id,
                     startNode: e.from,
                     endNode: e.to,
@@ -168,26 +152,20 @@ async function seedDatabase() {
                 }))
             );
 
-            console.log(`   ➤ Saved ${insertedEdges.length} edges`);
+            console.log(`   ➤ Saved ${savedEdges.length} Edges`);
 
-            /* ------------------ TRACK ------------------ */
-            const track = await Track.create({
-                sectionId: section._id,
-                nodes: insertedNodes.map(n => n._id),
-                edges: insertedEdges.map(e => e._id)
-            });
-
-            /* ------------------ STATION ------------------ */
+            /* ------------------ CREATE STATION ------------------ */
             const stationDoc = await Station.create({
                 stationId: stationName.toLowerCase().replace(/\s+/g, "_"),
                 stationName,
                 sectionId: section._id,
-                totalTracks: {},
-                nodes: insertedNodes.map(n => n._id)
+                totalTracks: {},   // 👈 IGNORE FOR NOW
+                nodes: savedNodes.map(n => n._id),
+                edges: savedEdges.map(e => e._id),
+                locoPilot: []
             });
 
-            /* ------------------ LINK TO SECTION ------------------ */
-            section.tracks.push(track._id);
+            /* ------------------ LINK STATION TO SECTION ------------------ */
             section.stations.push(stationDoc._id);
         }
 

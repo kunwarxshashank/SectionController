@@ -10,7 +10,8 @@ const EdgeSchema = new mongoose.Schema({
   direction: { type: String, enum: ["UP" , "DN" , "BIDIRECTIONAL"] },
   maxspeed: String,
   crossing: { type: Boolean, default: false },
-  restrictions: String
+  restrictions: String,
+  
 });
 
 const Edge = mongoose.model("Edge", EdgeSchema);
