@@ -1,26 +1,18 @@
-// seed/seedTrains.js
-
 import mongoose from "mongoose";
-import Train from "./models/trainSchema.js";
+import Train from "../backend/models/trainSchema.js";
+import { config as configDotenv } from "dotenv";
 
-// Updated name
-import { config as configDotenv } from "dotenv"
-configDotenv()
+configDotenv();
 
 const MONGO = process.env.MongoUrl;
 
-async function seedAdmins() {
+async function seedTrains() {
     try {
         await mongoose.connect(MONGO);
-        console.log("Connected to DB");
+        console.log("✅ Connected to DB");
 
-        // Find the large section that was created earlier
-        // -----------------------------------------
-        // DELETE OLD ADMINS
-        // -----------------------------------------
         await Train.deleteMany({});
         console.log("🗑️ Deleted all previous trains");
-
 
         // -----------------------------------------
         // CREATE NEW ADMINS
@@ -15777,20 +15769,18 @@ async function seedAdmins() {
                 }
             }
         ];
-
-        for (const adminData of trainsToCreate) {
-            const train = new Train(adminData);
-            await train.save(); // password hashing happens automatically
-            console.log("✔ Created trains:", train.trainName);
+        for (const trainData of trainsToCreate) {
+            const train = new Train(trainData);
+            await train.save();
+            console.log("✔ Created train:", train.trainName);
         }
 
         console.log("\n🎉 Trains seeding complete!");
         process.exit();
-
     } catch (err) {
         console.error("❌ ERROR:", err);
         process.exit(1);
     }
 }
 
-seedAdmins();
+seedTrains();

@@ -5,6 +5,7 @@ import Station from "../models/stationSchema.js";
 import Track from "../models/trackSchema.js";
 import Edge from "../models/edgeSchema.js";
 import Node from "../models/nodeSchema.js";
+import Train from "../models/trainSchema.js";
 
 
 // ------------------ LOGIN ADMIN ------------------
@@ -21,6 +22,7 @@ export const loginAdmin = async (req, res) => {
       return res.status(400).json({ msg: "ID and password are required" });
     }
 
+
     // ------------------ 1) FIND ADMIN ------------------
     let admin = await Admin.findOne({ sectionId: id });
     let isSectionAdmin = true;
@@ -30,12 +32,10 @@ export const loginAdmin = async (req, res) => {
       isSectionAdmin = false;
     }
 
-
-
-
     if (!admin) {
       return res.status(404).json({ msg: "Admin not found" });
     }
+
 
     // ------------------ 2) VERIFY PASSWORD ------------------
     const isCorrect = await admin.isPasswordCorrect(password);
@@ -43,9 +43,11 @@ export const loginAdmin = async (req, res) => {
       return res.status(401).json({ msg: "Invalid password" });
     }
 
+
     // ------------------ 3) GENERATE TOKENS ------------------
     const accessToken = admin.generateAccessToken();
     const refreshToken = admin.generateRefreshToken();
+
 
     // ------------------ 4) UPDATE LAST LOGIN ------------------
     admin.lastLogin = new Date();
@@ -63,22 +65,34 @@ export const loginAdmin = async (req, res) => {
     };
 
     // ------------------ 5) FETCH EXTRA DATA BASED ON ROLE ------------------
+
+
     // ====== SECTION ADMIN LOGIN ======
 
     if (isSectionAdmin) {
-      const section = await Section.findById(admin.sectionId)
-        .populate({
+      console.log(admin.sectionId)
+
+      let section;
+      try {
+        section = await Section.find().populate({
           path: "stations",
           model: "Station",
-        })
-        .populate({
-          path: "tracks",
-          model: "Tracks",
           populate: [
-            { path: "edges", model: "Edge" },
-            { path: "nodes", model: "Node" }
+            {
+              path: "nodes",
+              model: "Node"
+            },
+            {
+              path: "edges",
+              model: "Edge"
+            }
           ]
-        });
+        })
+      } catch (error) {
+        console.log(error)
+      }
+
+
 
       if (!section) {
         return res.status(404).json({ msg: "Section information not found" });
@@ -104,6 +118,7 @@ export const loginAdmin = async (req, res) => {
           }
         })
         .populate("nodes")
+        .populate("edges");
 
       if (!station) {
         return res.status(404).json({ msg: "Station data not found" });
@@ -121,7 +136,9 @@ export const loginAdmin = async (req, res) => {
           id: s._id,
           stationName: s.stationName
         }));
-
+      const train = await Train.find();
+      responsePayload.trainData = train;
+      console.log(responsePayload)
       return res.status(200).json({
         msg: "Station Admin login successful",
         ...responsePayload

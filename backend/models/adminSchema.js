@@ -6,16 +6,15 @@ import jwt from "jsonwebtoken";
 
 const AdminSchema = new mongoose.Schema({
   sectionId: {
-    type:String ,
-    
-    
-  },
-  stationId:{
     type: String,
-    
-    
+
   },
-  isAdmin:{
+  stationId: {
+    type: String,
+
+
+  },
+  isAdmin: {
     type: Boolean,
     default: false
   },
@@ -24,6 +23,11 @@ const AdminSchema = new mongoose.Schema({
     type: String,
     required: true,
     unique: true
+  },
+
+  name: {
+    type: String,
+    required: true
   },
 
   password: {
@@ -72,6 +76,7 @@ AdminSchema.methods.generateRefreshToken = function () {
   return jwt.sign(
     {
       _id: this._id,
+      name: this.name,
       email: this.email
     },
     process.env.RTS,

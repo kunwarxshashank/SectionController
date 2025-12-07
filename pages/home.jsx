@@ -210,7 +210,6 @@ export default function HomePage() {
                 </div>
 
 
-
                 {/* Middle Right - AI Recommendations */}
                 {/* <div
                     className="animate-slide-in"
@@ -224,9 +223,9 @@ export default function HomePage() {
                     <AIRecommendations />
                 </div> */}
 
-
                 {/* Bottom - Incoming Trains (horizontal, 75% width) */}
-                {/* <div
+
+                <div
                     className="animate-slide-in"
                     style={{
                         gridRow: '3',
@@ -236,7 +235,7 @@ export default function HomePage() {
                     }}
                 >
                     <IncomingTrains />
-                </div> */}
+                </div>
             </div>
         </Layout>
     );

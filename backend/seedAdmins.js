@@ -23,7 +23,7 @@ async function seedAdmins() {
     // DELETE OLD ADMINS
     // -----------------------------------------
     await Admin.deleteMany({});
-    console.log("🗑️ Deleted all previous admins");
+    console.log("🗑️ Deleted all previous admins from db");
 
 
     // -----------------------------------------
@@ -32,42 +32,49 @@ async function seedAdmins() {
     const adminsToCreate = [
       {
         email: "bplbina@section.com",
+        name: "BPL Bina",
         password: "123456",
         sectionId: "bplbina",
         twoFa: false
       },
       {
         email: "vidisha@section.com",
+        name: "Vidisha",
         password: "123456",
         stationId: "vidisha",
         twoFa: false
       },
       {
         email: "sorai@section.com",
+        name: "Sorai",
         password: "123456",
         stationId: "sorai",
         twoFa: false
       },
       {
         email: "sumer@section.com",
+        name: "Sumer",
         password: "123456",
         stationId: "sumer",
         twoFa: false
       },
       {
         email: "gulabganj@section.com",
+        name: "Gulabganj",
         password: "123456",
         stationId: "gulabganj",
         twoFa: false
       },
       {
         email: "pabai@section.com",
+        name: "Pabai",
         password: "123456",
         stationId: "pabai",
         twoFa: false
       },
       {
         email: "ganjbasoda@section.com",
+        name: "Ganj Basoda",
         password: "123456",
         stationId: "ganjbasoda",
         twoFa: false
