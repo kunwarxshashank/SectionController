@@ -11,8 +11,8 @@ NODE_PID=$!
 cd ..
 
 echo "Starting Python server..."
-cd pyserver
-uvicorn server:app --reload &
+cd decision_engine
+python3 app.py &
 PY_PID=$!
 cd ..
 

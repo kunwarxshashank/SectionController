@@ -1,26 +1,47 @@
 """
 Railway Decision Engine API Server v2.0
-Flask-based API for train scheduling optimization
+FastAPI-based API for train scheduling optimization
 """
 import os
-import json
-from flask import Flask, request, jsonify
-from flask_cors import CORS
+from typing import Optional, Dict, Any
+from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 from dotenv import load_dotenv
 
 from scheduler import run_optimization
+from data_converter import convert_data_format
 
 # Load environment variables
 load_dotenv()
 
-app = Flask(__name__)
-CORS(app)
+app = FastAPI(
+    title="Railway Decision Engine API",
+    description="FastAPI-based API for train scheduling optimization",
+    version="2.0.0"
+)
+
+# CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
-@app.route("/", methods=["GET"])
-def health_check():
+class HealthResponse(BaseModel):
+    status: str
+    service: str
+    version: str
+    features: list
+
+
+@app.get("/", response_model=HealthResponse)
+async def health_check():
     """Health check endpoint"""
-    return jsonify({
+    return {
         "status": "healthy",
         "service": "Railway Decision Engine v2.0",
         "version": "2.0.0",
@@ -31,11 +52,19 @@ def health_check():
             "Loop decision optimization",
             "Time-distance graph generation"
         ]
-    })
+    }
 
 
-@app.route("/api/optimize", methods=["POST"])
-def optimize():
+class OptimizeRequest(BaseModel):
+    sectionData: Optional[Dict[str, Any]] = None
+    section: Optional[Dict[str, Any]] = None
+    stations: Optional[list] = None
+    tracks: Optional[list] = None
+    trains: list
+
+
+@app.post("/api/optimize")
+async def optimize(request: OptimizeRequest):
     """
     Main optimization endpoint
     
@@ -48,26 +77,17 @@ def optimize():
     Returns optimized schedule with time-distance profiles
     """
     try:
-        data = request.get_json()
+        data = request.dict(exclude_none=True)
         
         if not data:
-            return jsonify({
-                "success": False,
-                "message": "No data provided"
-            }), 400
+            raise HTTPException(status_code=400, detail="No data provided")
         
         # Validate required fields
-        if "trains" not in data:
-            return jsonify({
-                "success": False,
-                "message": "Missing 'trains' in request"
-            }), 400
+        if "trains" not in data or not data["trains"]:
+            raise HTTPException(status_code=400, detail="Missing 'trains' in request")
         
         if "tracks" not in data and "sectionData" not in data:
-            return jsonify({
-                "success": False,
-                "message": "Missing 'tracks' or 'sectionData' in request"
-            }), 400
+            raise HTTPException(status_code=400, detail="Missing 'tracks' or 'sectionData' in request")
         
         # Support both formats
         if "sectionData" in data:
@@ -86,6 +106,9 @@ def optimize():
             # New format - use directly
             optimization_data = data
         
+        # Convert data format if needed (from edges/nodes to blocks)
+        optimization_data = convert_data_format(optimization_data)
+        
         section_name = optimization_data.get("section", {}).get("name", "Unknown")
         train_count = len(optimization_data.get("trains", []))
         
@@ -98,27 +121,37 @@ def optimize():
         # Run optimization
         result = run_optimization(optimization_data)
         
-        return jsonify(result)
+        return result
     
+    except HTTPException:
+        raise
     except Exception as e:
         import traceback
         print(f"Error during optimization: {str(e)}")
         traceback.print_exc()
         
-        return jsonify({
-            "success": False,
-            "message": f"Optimization error: {str(e)}"
-        }), 500
+        raise HTTPException(
+            status_code=500,
+            detail=f"Optimization error: {str(e)}"
+        )
 
 
-@app.route("/api/validate", methods=["POST"])
-def validate():
+class ValidateRequest(BaseModel):
+    sectionData: Optional[Dict[str, Any]] = None
+    section: Optional[Dict[str, Any]] = None
+    stations: Optional[list] = None
+    tracks: Optional[list] = None
+    trains: Optional[list] = None
+
+
+@app.post("/api/validate")
+async def validate(request: ValidateRequest):
     """Validate input data structure"""
     try:
-        data = request.get_json()
+        data = request.dict(exclude_none=True)
         
         if not data:
-            return jsonify({"valid": False, "message": "No data provided"}), 400
+            raise HTTPException(status_code=400, detail="No data provided")
         
         # Check for required fields
         issues = []
@@ -130,25 +163,33 @@ def validate():
             issues.append("Missing 'trains'")
         
         if issues:
-            return jsonify({
+            return {
                 "valid": False,
                 "message": "Validation failed",
                 "issues": issues
-            }), 400
+            }
         
         # Count elements
         tracks = data.get("tracks", [])
         trains = data.get("trains", [])
         stations = data.get("stations", [])
         
-        total_blocks = sum(len(t.get("blocks", [])) for t in tracks)
+        # Handle both edges and blocks format
+        if tracks and "edges" in tracks[0]:
+            # edges/nodes format
+            total_blocks = sum(len(t.get("edges", [])) for t in tracks)
+        else:
+            # blocks format
+            total_blocks = sum(len(t.get("blocks", [])) for t in tracks)
         
         passenger_trains = [t for t in trains if "freight" not in t.get("name", "").lower() 
-                           and not t.get("number", "").startswith("FRE")]
+                           and not t.get("number", "").startswith("FRE")
+                           and t.get("trainCategory", "").lower() != "freight"]
         freight_trains = [t for t in trains if "freight" in t.get("name", "").lower() 
-                          or t.get("number", "").startswith("FRE")]
+                          or t.get("number", "").startswith("FRE")
+                          or t.get("trainCategory", "").lower() == "freight"]
         
-        return jsonify({
+        return {
             "valid": True,
             "message": "Data validated successfully",
             "structure": {
@@ -156,29 +197,50 @@ def validate():
                 "totalTracks": len(tracks),
                 "totalBlocks": total_blocks,
                 "totalStations": len(stations),
-                "stationNames": [s.get("name", "") for s in stations],
+                "stationNames": [s.get("name", "") or s.get("stationName", "") for s in stations],
                 "totalTrains": len(trains),
                 "passengerTrains": len(passenger_trains),
                 "freightTrains": len(freight_trains)
             }
-        })
+        }
     
+    except HTTPException:
+        raise
     except Exception as e:
-        return jsonify({
-            "valid": False,
-            "message": f"Validation error: {str(e)}"
-        }), 500
+        raise HTTPException(
+            status_code=500,
+            detail=f"Validation error: {str(e)}"
+        )
 
 
-@app.route("/api/time-distance", methods=["POST"])
-def time_distance():
+@app.post("/api/time-distance")
+async def time_distance(request: OptimizeRequest):
     """Get time-distance profiles for visualization"""
     try:
-        data = request.get_json()
-        result = run_optimization(data)
+        data = request.dict(exclude_none=True)
+        
+        # Support both formats
+        if "sectionData" in data:
+            section_data = data["sectionData"]
+            optimization_data = {
+                "section": {
+                    "id": section_data.get("_id", ""),
+                    "name": section_data.get("name", "")
+                },
+                "stations": section_data.get("stations", []),
+                "tracks": section_data.get("tracks", []),
+                "trains": data.get("trains", [])
+            }
+        else:
+            optimization_data = data
+        
+        # Convert data format if needed
+        optimization_data = convert_data_format(optimization_data)
+        
+        result = run_optimization(optimization_data)
         
         if not result.get("success"):
-            return jsonify(result), 500
+            raise HTTPException(status_code=500, detail=result.get("message", "Optimization failed"))
         
         # Extract just time-distance profiles
         profiles = []
@@ -193,37 +255,43 @@ def time_distance():
                 "profile": train_schedule.get("timeDistanceProfile", [])
             })
         
-        return jsonify({
+        return {
             "success": True,
             "profiles": profiles,
             "summary": result.get("summary", {})
-        })
+        }
     
+    except HTTPException:
+        raise
     except Exception as e:
-        return jsonify({
-            "success": False,
-            "message": f"Error: {str(e)}"
-        }), 500
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error: {str(e)}"
+        )
 
 
-@app.route("/api/conflicts", methods=["POST"])
-def analyze_conflicts():
+class ConflictsRequest(BaseModel):
+    trains: list
+
+
+@app.post("/api/conflicts")
+async def analyze_conflicts(request: ConflictsRequest):
     """Analyze potential conflicts without full optimization"""
     try:
-        data = request.get_json()
-        trains = data.get("trains", [])
+        trains = request.trains
         
-        # Group trains by current block
+        # Group trains by current block/edge
         block_occupancy = {}
         for train in trains:
-            block = train.get("current_block", "")
+            # Handle both formats: current_block or currentEdge
+            block = train.get("current_block") or train.get("currentEdge", "")
             if block:
                 if block not in block_occupancy:
                     block_occupancy[block] = []
                 block_occupancy[block].append({
-                    "trainId": train.get("id"),
-                    "trainName": train.get("name"),
-                    "trainNumber": train.get("number"),
+                    "trainId": train.get("id") or train.get("trainId"),
+                    "trainName": train.get("name") or train.get("trainName"),
+                    "trainNumber": train.get("number") or train.get("trainId"),
                     "direction": train.get("direction")
                 })
         
@@ -238,20 +306,21 @@ def analyze_conflicts():
                     "severity": "HIGH" if len(trains_in_block) > 2 else "MEDIUM"
                 })
         
-        return jsonify({
+        return {
             "success": True,
             "totalConflicts": len(conflicts),
             "conflicts": conflicts
-        })
+        }
     
     except Exception as e:
-        return jsonify({
-            "success": False,
-            "message": f"Error: {str(e)}"
-        }), 500
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error: {str(e)}"
+        )
 
 
 if __name__ == "__main__":
+    import uvicorn
     port = int(os.environ.get("PORT", 5000))
     debug = os.environ.get("DEBUG", "true").lower() == "true"
     
@@ -269,4 +338,4 @@ if __name__ == "__main__":
     print("  POST /api/conflicts     - Analyze potential conflicts")
     print("=" * 60)
     
-    app.run(host="0.0.0.0", port=port, debug=debug)
+    uvicorn.run(app, host="0.0.0.0", port=port, log_level="debug" if debug else "info")
