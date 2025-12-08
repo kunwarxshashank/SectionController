@@ -1,12 +1,18 @@
 """
-Railway Traffic Scheduler v2.0 - Complete Rewrite
+Railway Traffic Scheduler v2.0 - Using data.json format
 Using OR-Tools CP-SAT with:
-- Optional intervals for conditional routing
+- Optional intervals for conditional routing (loops)
 - Loop decision variables with proper path expansion  
 - Hard passenger schedule constraints
-- Proper headway for automatic signaling
+- Freight precedence constraints
 - Binary completion variables for freight throughput
 - Correct loop timing with decel/accel penalties
+
+Input format: data.json from adminAuth.controller.js
+- sectionData.tracks[].edges[] with edgeId, edgeType, direction, stationCode, loopGroup, loopNumber
+- sectionData.tracks[].nodes[]
+- sectionData.stations[]
+- trains[] with trainId, trainCategory, schedule, currentEdge
 """
 import math
 from typing import Dict, List, Tuple, Optional, Set, Any
@@ -24,167 +30,199 @@ LOOP_DECEL_PENALTY = 5      # Deceleration time for entering loop (minutes)
 LOOP_ACCEL_PENALTY = 7      # Acceleration time for exiting loop (minutes)
 LOOP1_SPEED_KMH = 30        # Speed for first loop (km/h)
 LOOP2_SPEED_KMH = 15        # Speed for second+ loops (km/h)
-DEFAULT_SPEED_KMH = 110     # Default speed
+DEFAULT_SPEED_KMH = 120     # Default speed
 
 # Objective weights
 WEIGHT_FREIGHT_COMPLETED = 10000    # High priority for completing freight
-WEIGHT_PASSENGER_DELAY = 1000       # Penalty per minute passenger delay (should be 0)
-WEIGHT_FREIGHT_DELAY = 1            # Penalty per minute freight delay
+WEIGHT_PASSENGER_DELAY = 1000       # Penalty per minute passenger delay
+WEIGHT_FREIGHT_DELAY = 1            # Penalty per minute freight delay  
 WEIGHT_LOOP_USAGE = 100             # Penalty per loop usage
 WEIGHT_DEEP_LOOP = 200              # Additional penalty for loop2, loop3, etc.
+
+
+# ============================================================
+# HELPER FUNCTIONS
+# ============================================================
+def time_to_minutes(time_str: str) -> int:
+    """Convert HH:MM string to minutes from midnight"""
+    if not time_str or time_str == "":
+        return 0
+    try:
+        parts = time_str.split(":")
+        return int(parts[0]) * 60 + int(parts[1])
+    except (ValueError, IndexError):
+        return 0
+
+
+def minutes_to_time(minutes: int) -> str:
+    """Convert minutes from midnight to HH:MM string"""
+    minutes = int(minutes) % (24 * 60)
+    h = minutes // 60
+    m = minutes % 60
+    return f"{h:02d}:{m:02d}"
 
 
 # ============================================================
 # DATA CLASSES
 # ============================================================
 @dataclass
-class Block:
-    """A block section (track segment)"""
-    id: str
-    block_id: str
-    index: int
-    length_m: float
-    max_speed_kmph: float
-    block_type: str  # MAIN, LOOP
-    loop_id: Optional[str]
-    track_direction: str  # UP, DOWN
-    headway_seconds: int
-    next_blocks: List[str]
-    prev_blocks: List[str]
+class Edge:
+    """A track section (edge in the graph)"""
+    edge_id: str        # e.g., "UP_E1", "UP_A_LOOP1", "UP_A_CROSS_IN_L1"
+    start_node: str
+    end_node: str
+    edge_type: str      # "block", "automatic", "loop", "crossing"
+    stream: str         # "up", "down", "both"
+    direction: str      # "UP", "DOWN", "BOTH"
+    length: float       # km
+    max_speed: float    # km/h
+    station_code: str   # "BPL", "VDA", "BINA" or ""
+    loop_group: str     # "A", "B", "C" (station loop group)
+    loop_number: int    # 1, 2, 3... (loop index at station)
+    is_occupied: bool
     
     @classmethod
-    def from_dict(cls, data: dict) -> "Block":
+    def from_dict(cls, data: dict) -> "Edge":
+        max_speed = data.get("maxspeed", "120")
+        if isinstance(max_speed, str):
+            max_speed = float(max_speed) if max_speed else DEFAULT_SPEED_KMH
+        
         return cls(
-            id=data.get("id", ""),
-            block_id=data.get("block_id", ""),
-            index=data.get("index", 0),
-            length_m=data.get("length_m", 1000),
-            max_speed_kmph=data.get("max_speed_kmph", DEFAULT_SPEED_KMH),
-            block_type=data.get("blockType", "MAIN"),
-            loop_id=data.get("loopId"),
-            track_direction=data.get("trackDirection", "UP"),
-            headway_seconds=data.get("headwaySeconds", 180),
-            next_blocks=data.get("nextBlocks", []),
-            prev_blocks=data.get("prevBlocks", [])
+            edge_id=data.get("edgeId", ""),
+            start_node=data.get("startNode", ""),
+            end_node=data.get("endNode", ""),
+            edge_type=data.get("edgeType", "block"),
+            stream=data.get("stream", "up"),
+            direction=data.get("direction", "UP"),
+            length=float(data.get("length", 1)),
+            max_speed=float(max_speed),
+            station_code=data.get("stationCode", ""),
+            loop_group=data.get("loopGroup", ""),
+            loop_number=int(data.get("loopNumber", 0)),
+            is_occupied=data.get("isOccupied", False)
         )
     
     @property
     def is_loop(self) -> bool:
-        return self.block_type == "LOOP" or self.loop_id is not None
+        return self.edge_type == "loop"
     
     @property
-    def loop_number(self) -> int:
-        """Extract loop number from loop_id (e.g., 'L01' -> 1)"""
-        if not self.loop_id:
-            return 0
-        try:
-            return int(self.loop_id.replace("L", "").replace("l", ""))
-        except:
-            return 1
+    def is_crossing(self) -> bool:
+        return self.edge_type == "crossing" or "CROSS" in self.edge_id
+    
+    @property
+    def is_main(self) -> bool:
+        return self.edge_type in ["block", "automatic"] and not self.is_loop and not self.is_crossing
 
 
-@dataclass 
+@dataclass
+class Node:
+    """A point in the railway network"""
+    node_id: str
+    node_type: str  # "main", "loop", "crossing"
+    x: float
+    y: float
+    line: str       # "UP", "DOWN", "MAIN", "UP_LOOP", etc.
+    block_boundary: bool
+    
+    @classmethod
+    def from_dict(cls, data: dict) -> "Node":
+        return cls(
+            node_id=data.get("nodeId", ""),
+            node_type=data.get("nodeType", "main"),
+            x=float(data.get("x", 0)),
+            y=float(data.get("y", 0)),
+            line=data.get("line", ""),
+            block_boundary=data.get("blockBoundary", False)
+        )
+
+
+@dataclass
 class Station:
-    """Railway station"""
-    id: str
-    name: str
-    position: Tuple[float, float]
+    """A railway station"""
+    station_id: str
+    station_name: str
+    station_code: str  # Short code like "BPL"
     
     @classmethod
     def from_dict(cls, data: dict) -> "Station":
-        pos = data.get("position", [0, 0])
+        sid = data.get("stationId", "")
         return cls(
-            id=data.get("id", ""),
-            name=data.get("name", ""),
-            position=(pos[0] if len(pos) > 0 else 0, pos[1] if len(pos) > 1 else 0)
+            station_id=sid,
+            station_name=data.get("stationName", sid),
+            station_code=sid.upper()[:4] if sid else ""
         )
 
 
 @dataclass
-class Track:
-    """A railway track containing blocks"""
-    id: str
-    track_id: str
-    name: str
-    track_type: str  # MAIN, LOOP
-    direction: str   # UP, DOWN
-    is_loop: bool
-    parent_track: Optional[str]
-    blocks: List[Block]
+class TrainSchedule:
+    """Station schedule for a train"""
+    station_id: str
+    scheduled_arrival: str
+    scheduled_departure: str
     
-    @classmethod
-    def from_dict(cls, data: dict) -> "Track":
-        blocks = [Block.from_dict(b) for b in data.get("blocks", [])]
-        return cls(
-            id=data.get("id", ""),
-            track_id=data.get("track_id", ""),
-            name=data.get("name", ""),
-            track_type=data.get("type", "MAIN"),
-            direction=data.get("direction", "UP"),
-            is_loop=data.get("isLoop", False),
-            parent_track=data.get("parentTrack"),
-            blocks=blocks
-        )
-
-
-@dataclass
-class TrainPerformance:
-    """Train performance characteristics"""
-    max_speed_kmph: float = 100
-    accel_mps2: float = 0.6
-    decel_mps2: float = 0.7
-    length_m: float = 200
+    def arrival_minutes(self) -> int:
+        return time_to_minutes(self.scheduled_arrival)
+    
+    def departure_minutes(self) -> int:
+        return time_to_minutes(self.scheduled_departure)
 
 
 @dataclass
 class Train:
-    """Train with current state and performance"""
-    id: str
-    name: str
-    number: str
-    train_type: str  # EXPRESS, FREIGHT, etc.
-    priority: int    # Lower = higher priority
-    delay_min: int
-    current_block: str
-    offset_m: float
-    speed_kmph: float
-    direction: str
-    status: str
-    perf: TrainPerformance
+    """A train with schedule and current position"""
+    train_id: str
+    train_name: str
+    train_type: str
+    train_category: str  # "Passenger" or "Freight"
+    base_priority: int
+    train_priority: int
+    max_speed: float
+    direction: str       # "UP" or "DOWN"
+    current_edge: str
+    is_emergency: bool
+    schedule: Dict[str, TrainSchedule]  # station_id -> schedule
     
     @classmethod
     def from_dict(cls, data: dict) -> "Train":
-        perf_data = data.get("perf", {})
-        perf = TrainPerformance(
-            max_speed_kmph=perf_data.get("maxSpeedKmph", 100),
-            accel_mps2=perf_data.get("accelMps2", 0.6),
-            decel_mps2=perf_data.get("decelMps2", 0.7),
-            length_m=perf_data.get("lengthM", 200)
-        )
+        schedule = {}
+        raw_schedule = data.get("schedule", {})
+        for station_id, sched in raw_schedule.items():
+            if isinstance(sched, dict):
+                schedule[station_id] = TrainSchedule(
+                    station_id=station_id,
+                    scheduled_arrival=sched.get("scheduledArrival", ""),
+                    scheduled_departure=sched.get("scheduledDeparture", "")
+                )
+        
         return cls(
-            id=data.get("id", ""),
-            name=data.get("name", ""),
-            number=data.get("number", ""),
-            train_type=data.get("type", "EXPRESS"),
-            priority=data.get("priority", 10),
-            delay_min=data.get("delay_min", 0),
-            current_block=data.get("current_block", ""),
-            offset_m=data.get("offset_m", 0),
-            speed_kmph=data.get("speed_kmph", 0),
+            train_id=data.get("trainId", ""),
+            train_name=data.get("trainName", ""),
+            train_type=data.get("trainType", ""),
+            train_category=data.get("trainCategory", "Freight"),
+            base_priority=int(data.get("basePriority", 10)),
+            train_priority=int(data.get("trainPriority", 10)),
+            max_speed=float(data.get("maxSpeed", 65)),
             direction=data.get("direction", "UP"),
-            status=data.get("status", "RUNNING"),
-            perf=perf
+            current_edge=data.get("currentEdge", ""),
+            is_emergency=data.get("isEmergency", False),
+            schedule=schedule
         )
-    
-    @property
-    def is_freight(self) -> bool:
-        """Check if this is a freight train based on name/number"""
-        name_lower = self.name.lower()
-        return "freight" in name_lower or "goods" in name_lower or self.number.startswith("FRE")
     
     @property
     def is_passenger(self) -> bool:
-        return not self.is_freight
+        return self.train_category == "Passenger"
+    
+    @property
+    def is_freight(self) -> bool:
+        return self.train_category == "Freight"
+    
+    def get_origin_departure(self) -> int:
+        """Get departure time from origin station in minutes"""
+        origin = "bhopal" if self.direction == "UP" else "bina"
+        if origin in self.schedule:
+            return self.schedule[origin].departure_minutes()
+        return 0
 
 
 # ============================================================
@@ -196,82 +234,161 @@ class NetworkGraph:
     section_id: str = ""
     section_name: str = ""
     stations: List[Station] = field(default_factory=list)
-    tracks: List[Track] = field(default_factory=list)
     
-    # Block lookup
-    blocks_by_id: Dict[str, Block] = field(default_factory=dict)
+    # Edge/Node lookup
+    edges: Dict[str, Edge] = field(default_factory=dict)       # edge_id -> Edge
+    nodes: Dict[str, Node] = field(default_factory=dict)       # node_id -> Node
     
-    # Adjacency (using MongoDB IDs)
-    next_blocks: Dict[str, List[str]] = field(default_factory=dict)  # block_id -> next block_ids
-    prev_blocks: Dict[str, List[str]] = field(default_factory=dict)  # block_id -> prev block_ids
+    # Main line edges ordered by position
+    up_main_edges: List[str] = field(default_factory=list)     # UP direction main edges
+    down_main_edges: List[str] = field(default_factory=list)   # DOWN direction main edges
+    main_edges: List[str] = field(default_factory=list)        # MAIN track edges
     
-    # Main line blocks in order
-    main_up_blocks: List[str] = field(default_factory=list)
-    main_down_blocks: List[str] = field(default_factory=list)
+    # Loop structures at each station
+    # station_code -> direction -> list of (cross_in, loop, cross_out) tuples
+    station_loops: Dict[str, Dict[str, List[Tuple[str, str, str]]]] = field(default_factory=dict)
     
-    # Loop blocks by station/track
-    loop_blocks: Dict[str, List[str]] = field(default_factory=dict)  # parent_block -> loop alternatives
+    # Map main edges to their loop alternatives
+    main_to_loops: Dict[str, List[Tuple[str, str, str]]] = field(default_factory=dict)
     
     def build(self, data: dict) -> None:
-        """Build network from JSON data"""
-        section = data.get("section", {})
-        self.section_id = section.get("id", "")
-        self.section_name = section.get("name", "")
+        """Build network from data.json structure"""
+        section_data = data.get("sectionData", {})
+        
+        self.section_id = section_data.get("section_id", "")
+        self.section_name = section_data.get("name", "")
         
         # Parse stations
-        self.stations = [Station.from_dict(s) for s in data.get("stations", [])]
+        for station_data in section_data.get("stations", []):
+            self.stations.append(Station.from_dict(station_data))
         
-        # Parse tracks and blocks
-        for track_data in data.get("tracks", []):
-            track = Track.from_dict(track_data)
-            self.tracks.append(track)
+        # Parse tracks -> edges and nodes
+        for track in section_data.get("tracks", []):
+            for edge_data in track.get("edges", []):
+                edge = Edge.from_dict(edge_data)
+                self.edges[edge.edge_id] = edge
             
-            for block in track.blocks:
-                self.blocks_by_id[block.id] = block
-                
-                # Store adjacency
-                self.next_blocks[block.id] = block.next_blocks
-                self.prev_blocks[block.id] = block.prev_blocks
-                
-                # Categorize blocks
-                if not block.is_loop:
-                    if track.direction == "UP":
-                        self.main_up_blocks.append(block.id)
-                    elif track.direction == "DOWN":
-                        self.main_down_blocks.append(block.id)
-                else:
-                    # Loop block - associate with parent main block
-                    if block.prev_blocks:
-                        parent = block.prev_blocks[0]
-                        if parent not in self.loop_blocks:
-                            self.loop_blocks[parent] = []
-                        self.loop_blocks[parent].append(block.id)
+            for node_data in track.get("nodes", []):
+                node = Node.from_dict(node_data)
+                self.nodes[node.node_id] = node
         
-        # Sort main blocks by index
-        self.main_up_blocks.sort(key=lambda bid: self.blocks_by_id[bid].index if bid in self.blocks_by_id else 0)
-        self.main_down_blocks.sort(key=lambda bid: self.blocks_by_id[bid].index if bid in self.blocks_by_id else 0, reverse=True)
+        # Categorize edges
+        self._categorize_edges()
+        
+        # Build loop structures
+        self._build_loop_structures()
+        
+        # Sort main edges by position
+        self._sort_edges()
+        
+        print(f"Network built: {len(self.edges)} edges, {len(self.nodes)} nodes")
+        print(f"  UP main edges: {len(self.up_main_edges)}")
+        print(f"  DOWN main edges: {len(self.down_main_edges)}")
+        print(f"  Stations with loops: {list(self.station_loops.keys())}")
+    
+    def _categorize_edges(self) -> None:
+        """Categorize edges into main/loop/crossing groups"""
+        for edge_id, edge in self.edges.items():
+            if edge.is_main:
+                if edge.direction == "UP":
+                    self.up_main_edges.append(edge_id)
+                elif edge.direction == "DOWN":
+                    self.down_main_edges.append(edge_id)
+                elif edge.direction == "BOTH":
+                    self.main_edges.append(edge_id)
+    
+    def _build_loop_structures(self) -> None:
+        """Build loop structures (cross_in -> loop -> cross_out) at each station"""
+        # Group loops by station code and loop group
+        loops_by_station: Dict[str, Dict[str, Dict[int, str]]] = {}  # station -> direction -> loopNum -> loopEdgeId
+        
+        for edge_id, edge in self.edges.items():
+            if edge.is_loop and edge.station_code and edge.loop_group:
+                station = edge.station_code
+                direction = edge.direction
+                
+                if station not in loops_by_station:
+                    loops_by_station[station] = {}
+                if direction not in loops_by_station[station]:
+                    loops_by_station[station][direction] = {}
+                
+                loops_by_station[station][direction][edge.loop_number] = edge_id
+        
+        # For each loop, find the corresponding cross_in and cross_out edges
+        for edge_id, edge in self.edges.items():
+            if edge.is_loop:
+                station = edge.station_code
+                direction = edge.direction
+                loop_num = edge.loop_number
+                group = edge.loop_group
+                
+                # Find cross_in: ends at loop's start_node
+                cross_in = None
+                cross_out = None
+                
+                for other_id, other in self.edges.items():
+                    if other.is_crossing and other.station_code == station:
+                        # Cross-in ends at loop start
+                        if other.end_node == edge.start_node:
+                            cross_in = other_id
+                        # Cross-out starts at loop end
+                        if other.start_node == edge.end_node:
+                            cross_out = other_id
+                
+                if cross_in and cross_out:
+                    if station not in self.station_loops:
+                        self.station_loops[station] = {}
+                    if direction not in self.station_loops[station]:
+                        self.station_loops[station][direction] = []
+                    
+                    self.station_loops[station][direction].append((cross_in, edge_id, cross_out))
+        
+        # Map main station edges to their loop alternatives
+        for edge_id, edge in self.edges.items():
+            if edge.is_main and edge.station_code:
+                station = edge.station_code
+                direction = edge.direction
+                
+                if station in self.station_loops and direction in self.station_loops[station]:
+                    self.main_to_loops[edge_id] = self.station_loops[station][direction]
+    
+    def _sort_edges(self) -> None:
+        """Sort main edges by their start node x-coordinate"""
+        def get_edge_x(edge_id: str) -> float:
+            edge = self.edges.get(edge_id)
+            if edge:
+                node = self.nodes.get(edge.start_node)
+                if node:
+                    return node.x
+            return 0
+        
+        self.up_main_edges.sort(key=get_edge_x)
+        self.down_main_edges.sort(key=get_edge_x, reverse=True)
+        self.main_edges.sort(key=get_edge_x)
     
     def get_main_path(self, direction: str) -> List[str]:
-        """Get ordered main line block IDs for a direction"""
+        """Get ordered main line edge IDs for a direction"""
         if direction == "UP":
-            return self.main_up_blocks.copy()
+            return self.up_main_edges.copy()
+        elif direction == "DOWN":
+            return self.down_main_edges.copy()
         else:
-            return self.main_down_blocks.copy()
+            return self.main_edges.copy()
     
-    def get_loop_alternatives(self, main_block_id: str) -> List[str]:
-        """Get loop block alternatives at a main block"""
-        return self.loop_blocks.get(main_block_id, [])
+    def get_loop_alternatives(self, main_edge_id: str) -> List[Tuple[str, str, str]]:
+        """Get loop alternatives (cross_in, loop, cross_out) for a main edge"""
+        return self.main_to_loops.get(main_edge_id, [])
 
 
 # ============================================================
-# SCHEDULER v2.0
+# CP-SAT SCHEDULER
 # ============================================================
 class RailwaySchedulerV2:
     """
     CP-SAT Railway Scheduler with:
-    - Optional intervals for conditional routing
-    - Hard passenger constraints
-    - Proper headway modeling
+    - Optional intervals for loop routing
+    - Hard passenger schedule constraints
+    - Proper freight precedence
     - Freight completion maximization
     """
     
@@ -281,20 +398,19 @@ class RailwaySchedulerV2:
         self.model: Optional[cp_model.CpModel] = None
         
         # Decision variables
-        self.start_vars: Dict[Tuple[str, str], Any] = {}      # (train_id, block_id) -> IntVar
-        self.end_vars: Dict[Tuple[str, str], Any] = {}        # (train_id, block_id) -> IntVar
-        self.interval_vars: Dict[Tuple[str, str], Any] = {}   # (train_id, block_id) -> IntervalVar
-        self.use_block_vars: Dict[Tuple[str, str], Any] = {}  # (train_id, block_id) -> BoolVar (for optional)
+        self.start_vars: Dict[Tuple[str, str], Any] = {}      # (train_id, edge_id) -> IntVar
+        self.end_vars: Dict[Tuple[str, str], Any] = {}        # (train_id, edge_id) -> IntVar
+        self.interval_vars: Dict[Tuple[str, str], Any] = {}   # (train_id, edge_id) -> IntervalVar
+        self.use_edge_vars: Dict[Tuple[str, str], Any] = {}   # (train_id, edge_id) -> BoolVar (for optional)
+        self.durations: Dict[Tuple[str, str], int] = {}       # (train_id, edge_id) -> duration
         
-        # Route decision variables for freight at loop points
-        self.use_main_vars: Dict[Tuple[str, str], Any] = {}   # (train_id, main_block_id) -> BoolVar
-        self.use_loop_vars: Dict[Tuple[str, str, str], Any] = {}  # (train_id, main_block, loop_block) -> BoolVar
+        # Route decision variables
+        self.use_main_vars: Dict[Tuple[str, str], Any] = {}   # (train_id, main_edge) -> BoolVar
+        self.use_loop_vars: Dict[Tuple[str, str, int], Any] = {}  # (train_id, main_edge, loop_idx) -> BoolVar
         
-        # Completion variables
+        # Completion and arrival
         self.completed_vars: Dict[str, Any] = {}              # train_id -> BoolVar
-        
-        # Delay variables  
-        self.arrival_vars: Dict[str, Any] = {}                # train_id -> IntVar (final arrival time)
+        self.arrival_vars: Dict[str, Any] = {}                # train_id -> IntVar
     
     def load_data(self, data: dict) -> None:
         """Load section and train data"""
@@ -303,11 +419,9 @@ class RailwaySchedulerV2:
         
         self.trains = [Train.from_dict(t) for t in data.get("trains", [])]
         
-        print(f"Loaded {len(self.trains)} trains")
-        print(f"  - Passenger: {len([t for t in self.trains if t.is_passenger])}")
-        print(f"  - Freight: {len([t for t in self.trains if t.is_freight])}")
-        print(f"Network: {len(self.graph.blocks_by_id)} blocks")
-        print(f"Stations: {[s.name for s in self.graph.stations]}")
+        print(f"\nLoaded {len(self.trains)} trains:")
+        print(f"  Passenger: {len([t for t in self.trains if t.is_passenger])}")
+        print(f"  Freight: {len([t for t in self.trains if t.is_freight])}")
     
     def optimize(self) -> dict:
         """Run the CP-SAT optimization"""
@@ -323,13 +437,13 @@ class RailwaySchedulerV2:
         print("BUILDING CP-SAT MODEL")
         print("="*60)
         
-        # 1. Create variables
+        # 1. Create variables for all trains and edges
         self._create_variables()
         
         # 2. Add constraints
-        self._add_block_capacity_constraints()
+        self._add_edge_capacity_constraints()
         self._add_sequence_constraints()
-        self._add_passenger_hard_constraints(passenger_trains)
+        self._add_passenger_schedule_constraints(passenger_trains)
         self._add_freight_precedence_constraints(passenger_trains, freight_trains)
         self._add_route_choice_constraints(freight_trains)
         self._add_completion_constraints()
@@ -338,46 +452,40 @@ class RailwaySchedulerV2:
         self._set_objective(passenger_trains, freight_trains)
         
         # 4. Solve
-        print("\nSolving...")
+        print("\nSolving CP-SAT model...")
         solver = cp_model.CpSolver()
-        solver.parameters.max_time_in_seconds = 120
-        solver.parameters.num_search_workers = 8
+        solver.parameters.max_time_in_seconds = 60
+        solver.parameters.num_search_workers = 4
+        solver.parameters.log_search_progress = False
         
         status = solver.Solve(self.model)
         
         if status in [cp_model.OPTIMAL, cp_model.FEASIBLE]:
-            print(f"Solution status: {solver.StatusName(status)}")
+            status_name = "OPTIMAL" if status == cp_model.OPTIMAL else "FEASIBLE"
+            print(f"✓ Solution found: {status_name}")
             return self._extract_solution(solver, passenger_trains, freight_trains)
         else:
-            print(f"No solution found: {solver.StatusName(status)}")
+            print(f"✗ No solution found, using heuristic")
             return self._generate_heuristic_solution(passenger_trains, freight_trains)
     
-    def _compute_duration(self, train: Train, block: Block) -> int:
-        """
-        Compute travel time (minutes) for a train on a block
-        Includes loop penalties if applicable
-        """
-        # Effective speed = min(train max, block max)
-        speed = min(train.perf.max_speed_kmph, block.max_speed_kmph)
+    def _compute_duration(self, train: Train, edge: Edge) -> int:
+        """Compute travel time (minutes) for a train on an edge"""
+        speed = min(train.max_speed, edge.max_speed)
         
-        # For loops, apply reduced speed
-        if block.is_loop:
-            if block.loop_number <= 1:
+        if edge.is_loop:
+            if edge.loop_number <= 1:
                 speed = min(speed, LOOP1_SPEED_KMH)
             else:
                 speed = min(speed, LOOP2_SPEED_KMH)
         
         if speed <= 0:
-            speed = 10  # Minimum speed
+            speed = 10
         
-        # Distance in km
-        distance_km = block.length_m / 1000.0
-        
-        # Time in minutes
-        time_min = (distance_km / speed) * 60
+        # Edge length is in km, speed in km/h, result in minutes
+        time_min = (edge.length / speed) * 60
         
         # Add loop penalties
-        if block.is_loop:
+        if edge.is_loop:
             time_min += LOOP_DECEL_PENALTY + LOOP_ACCEL_PENALTY
         
         return max(1, math.ceil(time_min))
@@ -387,343 +495,259 @@ class RailwaySchedulerV2:
         print("Creating variables...")
         
         for train in self.trains:
-            # Get path blocks for this train
             main_path = self.graph.get_main_path(train.direction)
             
-            # Find starting block index based on train's current position
-            start_idx = 0
-            for i, block_id in enumerate(main_path):
-                if block_id == train.current_block:
-                    start_idx = i
-                    break
+            # All edges this train might use
+            possible_edges = set(main_path)
             
-            # Enumerate all possible blocks (main + loops)
-            all_possible_blocks = set()
-            for block_id in main_path[start_idx:]:
-                all_possible_blocks.add(block_id)
-                # Add loop alternatives
-                for loop_id in self.graph.get_loop_alternatives(block_id):
-                    all_possible_blocks.add(loop_id)
+            # Add loop alternatives for freight
+            if train.is_freight:
+                for main_edge in main_path:
+                    for cross_in, loop, cross_out in self.graph.get_loop_alternatives(main_edge):
+                        possible_edges.add(cross_in)
+                        possible_edges.add(loop)
+                        possible_edges.add(cross_out)
             
-            for block_id in all_possible_blocks:
-                block = self.graph.blocks_by_id.get(block_id)
-                if not block:
+            # Create interval variables for each edge
+            for edge_id in possible_edges:
+                edge = self.graph.edges.get(edge_id)
+                if not edge:
                     continue
                 
-                duration = self._compute_duration(train, block)
-                key = (train.id, block_id)
+                key = (train.train_id, edge_id)
+                duration = self._compute_duration(train, edge)
+                self.durations[key] = duration
                 
-                # For optional intervals (loop blocks), create use_block bool
-                if block.is_loop:
-                    use_block = self.model.NewBoolVar(f"use_{train.id}_{block_id}")
-                    self.use_block_vars[key] = use_block
+                start_var = self.model.NewIntVar(0, PLANNING_HORIZON, f"start_{train.train_id}_{edge_id}")
+                end_var = self.model.NewIntVar(0, PLANNING_HORIZON, f"end_{train.train_id}_{edge_id}")
+                
+                # Optional intervals for loops/crossings (freight only)
+                if (edge.is_loop or edge.is_crossing) and train.is_freight:
+                    use_edge = self.model.NewBoolVar(f"use_{train.train_id}_{edge_id}")
+                    self.use_edge_vars[key] = use_edge
                     
-                    start_var = self.model.NewIntVar(0, PLANNING_HORIZON, f"start_{train.id}_{block_id}")
-                    end_var = self.model.NewIntVar(0, PLANNING_HORIZON, f"end_{train.id}_{block_id}")
-                    
-                    # Optional interval - only active if use_block is true
                     interval = self.model.NewOptionalIntervalVar(
-                        start_var, duration, end_var, use_block,
-                        f"interval_{train.id}_{block_id}"
+                        start_var, duration, end_var, use_edge,
+                        f"interval_{train.train_id}_{edge_id}"
                     )
                 else:
-                    # Main blocks are mandatory
-                    start_var = self.model.NewIntVar(0, PLANNING_HORIZON, f"start_{train.id}_{block_id}")
-                    end_var = self.model.NewIntVar(0, PLANNING_HORIZON, f"end_{train.id}_{block_id}")
-                    
+                    # Mandatory intervals for main edges and all passenger edges
                     interval = self.model.NewIntervalVar(
                         start_var, duration, end_var,
-                        f"interval_{train.id}_{block_id}"
+                        f"interval_{train.train_id}_{edge_id}"
                     )
                 
                 self.start_vars[key] = start_var
                 self.end_vars[key] = end_var
                 self.interval_vars[key] = interval
             
-            # Create route choice variables for freight at loop points
+            # Route choice variables (freight at loop points)
             if train.is_freight:
-                for block_id in main_path[start_idx:]:
-                    loop_alts = self.graph.get_loop_alternatives(block_id)
+                for main_edge in main_path:
+                    loop_alts = self.graph.get_loop_alternatives(main_edge)
                     if loop_alts:
-                        # Binary: use main line at this point
-                        use_main = self.model.NewBoolVar(f"useMain_{train.id}_{block_id}")
-                        self.use_main_vars[(train.id, block_id)] = use_main
+                        use_main = self.model.NewBoolVar(f"useMain_{train.train_id}_{main_edge}")
+                        self.use_main_vars[(train.train_id, main_edge)] = use_main
                         
-                        # Binary for each loop option
-                        for loop_id in loop_alts:
-                            use_loop = self.model.NewBoolVar(f"useLoop_{train.id}_{block_id}_{loop_id}")
-                            self.use_loop_vars[(train.id, block_id, loop_id)] = use_loop
+                        for idx, (cross_in, loop, cross_out) in enumerate(loop_alts):
+                            use_loop = self.model.NewBoolVar(f"useLoop_{train.train_id}_{main_edge}_{idx}")
+                            self.use_loop_vars[(train.train_id, main_edge, idx)] = use_loop
             
-            # Completion variable
-            self.completed_vars[train.id] = self.model.NewBoolVar(f"completed_{train.id}")
-            
-            # Final arrival time
-            self.arrival_vars[train.id] = self.model.NewIntVar(0, PLANNING_HORIZON, f"arrival_{train.id}")
+            # Completion and arrival variables
+            self.completed_vars[train.train_id] = self.model.NewBoolVar(f"completed_{train.train_id}")
+            self.arrival_vars[train.train_id] = self.model.NewIntVar(0, PLANNING_HORIZON, f"arrival_{train.train_id}")
         
-        print(f"  Created {len(self.interval_vars)} interval variables")
-        print(f"  Created {len(self.use_block_vars)} optional block variables")
-        print(f"  Created {len(self.use_main_vars)} route choice variables")
+        print(f"  Intervals: {len(self.interval_vars)}")
+        print(f"  Optional edges: {len(self.use_edge_vars)}")
+        print(f"  Route choices: {len(self.use_main_vars)}")
     
-    def _add_block_capacity_constraints(self) -> None:
-        """
-        Add capacity constraints:
-        - Block sections: NoOverlap (exclusive)
-        - Automatic sections: Headway-based (allow multiple with spacing)
-        """
-        print("Adding block capacity constraints...")
+    def _add_edge_capacity_constraints(self) -> None:
+        """Add NoOverlap constraints for each edge"""
+        print("Adding edge capacity constraints...")
         
-        # Group intervals by block
-        block_intervals: Dict[str, List] = {}
+        edge_intervals: Dict[str, List] = {}
         
-        for (train_id, block_id), interval in self.interval_vars.items():
-            if block_id not in block_intervals:
-                block_intervals[block_id] = []
-            block_intervals[block_id].append(interval)
+        for (train_id, edge_id), interval in self.interval_vars.items():
+            if edge_id not in edge_intervals:
+                edge_intervals[edge_id] = []
+            edge_intervals[edge_id].append(interval)
         
-        # Add NoOverlap for each block (simplified - proper headway would need more complex modeling)
-        for block_id, intervals in block_intervals.items():
+        for edge_id, intervals in edge_intervals.items():
             if len(intervals) > 1:
-                block = self.graph.blocks_by_id.get(block_id)
-                
-                # For now, use NoOverlap for all blocks
-                # With optional intervals, this correctly handles when a train doesn't use this block
                 self.model.AddNoOverlap(intervals)
-                
-                # Add minimum headway between consecutive trains
-                # This is done in sequence constraints
         
-        print(f"  Added NoOverlap for {len(block_intervals)} blocks")
+        print(f"  NoOverlap on {len(edge_intervals)} edges")
     
     def _add_sequence_constraints(self) -> None:
-        """
-        Add sequence constraints:
-        - Trains must traverse blocks in order
-        - Must finish block N before starting block N+1
-        """
+        """Add constraints: train must traverse edges in sequence"""
         print("Adding sequence constraints...")
         
-        constraints_added = 0
-        
+        count = 0
         for train in self.trains:
             main_path = self.graph.get_main_path(train.direction)
             
-            # Find starting index
-            start_idx = 0
-            for i, block_id in enumerate(main_path):
-                if block_id == train.current_block:
-                    start_idx = i
-                    break
-            
-            # Add sequence constraints between consecutive blocks
-            for i in range(start_idx, len(main_path) - 1):
-                curr_block = main_path[i]
-                next_block = main_path[i + 1]
+            for i in range(len(main_path) - 1):
+                curr_edge = main_path[i]
+                next_edge = main_path[i + 1]
                 
-                curr_key = (train.id, curr_block)
-                next_key = (train.id, next_block)
+                curr_key = (train.train_id, curr_edge)
+                next_key = (train.train_id, next_edge)
                 
                 if curr_key in self.end_vars and next_key in self.start_vars:
-                    # End of current block <= Start of next block
+                    # Next edge starts after current edge ends
                     self.model.Add(self.start_vars[next_key] >= self.end_vars[curr_key])
-                    constraints_added += 1
-                    
-                    # Add headway if both trains use same blocks
-                    # (This is automatically handled by NoOverlap)
+                    count += 1
         
-        print(f"  Added {constraints_added} sequence constraints")
+        print(f"  Sequence constraints: {count}")
     
-    def _add_passenger_hard_constraints(self, passenger_trains: List[Train]) -> None:
-        """
-        Add HARD constraints for passenger trains:
-        - Their path through all blocks must be respected
-        - No external delays allowed
-        """
-        print(f"Adding hard constraints for {len(passenger_trains)} passenger trains...")
+    def _add_passenger_schedule_constraints(self, passenger_trains: List[Train]) -> None:
+        """Add HARD constraints for passenger schedules"""
+        print(f"Adding passenger schedule constraints for {len(passenger_trains)} trains...")
         
         for train in passenger_trains:
             main_path = self.graph.get_main_path(train.direction)
+            if not main_path:
+                continue
             
-            # Find current block
-            start_idx = 0
-            for i, block_id in enumerate(main_path):
-                if block_id == train.current_block:
-                    start_idx = i
-                    break
+            first_edge = main_path[0]
+            first_key = (train.train_id, first_edge)
             
-            if start_idx < len(main_path):
-                first_block = main_path[start_idx]
-                first_key = (train.id, first_block)
-                
-                if first_key in self.start_vars:
-                    # Passenger starts ASAP (at time 0 or current simulated time)
-                    # Use their priority to order them
-                    # Higher priority (lower number) starts earlier
-                    base_start = train.priority * 5  # Spread them out slightly
-                    self.model.Add(self.start_vars[first_key] >= base_start)
-        
-        print("  Passenger schedule constraints applied")
+            if first_key in self.start_vars:
+                # Set departure time from origin
+                dep_time = train.get_origin_departure()
+                if dep_time > 0:
+                    self.model.Add(self.start_vars[first_key] == dep_time)
+                else:
+                    # Default: priority-based ordering
+                    self.model.Add(self.start_vars[first_key] >= train.train_priority * 5)
     
-    def _add_freight_precedence_constraints(self, passenger_trains: List[Train], 
-                                            freight_trains: List[Train]) -> None:
-        """
-        Add constraints ensuring freight NEVER overtakes passenger:
-        - At every block, freight must wait for passenger to clear
-        - Freight arrival at destination >= passenger arrival
-        """
-        print("Adding freight precedence constraints...")
+    def _add_freight_precedence_constraints(self, passenger_trains: List[Train],
+                                             freight_trains: List[Train]) -> None:
+        """Add constraints: freight NEVER overtakes passenger in same direction"""
+        print(f"Adding freight precedence constraints...")
         
-        constraints_added = 0
-        
+        count = 0
         for passenger in passenger_trains:
             for freight in freight_trains:
-                # Only apply if same direction
                 if passenger.direction != freight.direction:
                     continue
                 
                 main_path = self.graph.get_main_path(passenger.direction)
                 
-                # For each block both trains traverse
-                for block_id in main_path:
-                    p_key = (passenger.id, block_id)
-                    f_key = (freight.id, block_id)
-                    
-                    # Skip if freight uses a loop at this point
-                    if f_key in self.use_block_vars:
-                        continue  # It's an optional loop block
+                # For each main edge, ensure freight waits for passenger
+                for edge_id in main_path:
+                    p_key = (passenger.train_id, edge_id)
+                    f_key = (freight.train_id, edge_id)
                     
                     if p_key in self.end_vars and f_key in self.start_vars:
-                        # Freight cannot start this block until passenger finishes + headway
-                        self.model.Add(
-                            self.start_vars[f_key] >= self.end_vars[p_key] + MIN_HEADWAY
-                        )
-                        constraints_added += 1
+                        # If passenger scheduled before freight, enforce ordering
+                        p_dep = passenger.get_origin_departure()
+                        f_dep = freight.get_origin_departure()
+                        
+                        if p_dep > 0 and f_dep > 0 and p_dep <= f_dep:
+                            # Freight must wait for passenger + headway
+                            self.model.Add(self.start_vars[f_key] >= self.end_vars[p_key] + MIN_HEADWAY)
+                            count += 1
         
-        print(f"  Added {constraints_added} freight precedence constraints")
+        print(f"  Precedence constraints: {count}")
     
     def _add_route_choice_constraints(self, freight_trains: List[Train]) -> None:
-        """
-        Add constraints for freight route choices:
-        - At each point with loops, freight must choose: main OR one loop
-        - Exactly one choice must be made
-        - Link use_loop to use_block activation
-        """
-        print("Adding route choice constraints...")
+        """Add constraints for freight route choices at loop points"""
+        print(f"Adding route choice constraints...")
         
-        constraints_added = 0
-        
+        count = 0
         for train in freight_trains:
             main_path = self.graph.get_main_path(train.direction)
             
-            # Find starting index
-            start_idx = 0
-            for i, block_id in enumerate(main_path):
-                if block_id == train.current_block:
-                    start_idx = i
-                    break
-            
-            for block_id in main_path[start_idx:]:
-                loop_alts = self.graph.get_loop_alternatives(block_id)
+            for main_edge in main_path:
+                loop_alts = self.graph.get_loop_alternatives(main_edge)
                 if not loop_alts:
                     continue
                 
-                main_key = (train.id, block_id)
-                if main_key not in self.use_main_vars:
+                use_main_key = (train.train_id, main_edge)
+                if use_main_key not in self.use_main_vars:
                     continue
                 
-                use_main = self.use_main_vars[main_key]
+                use_main = self.use_main_vars[use_main_key]
                 loop_vars = []
                 
-                for loop_id in loop_alts:
-                    loop_key = (train.id, block_id, loop_id)
+                for idx, (cross_in, loop, cross_out) in enumerate(loop_alts):
+                    loop_key = (train.train_id, main_edge, idx)
                     if loop_key in self.use_loop_vars:
-                        loop_vars.append(self.use_loop_vars[loop_key])
+                        use_loop = self.use_loop_vars[loop_key]
+                        loop_vars.append(use_loop)
                         
-                        # Link use_loop to use_block
-                        block_use_key = (train.id, loop_id)
-                        if block_use_key in self.use_block_vars:
-                            self.model.Add(
-                                self.use_block_vars[block_use_key] == self.use_loop_vars[loop_key]
-                            )
-                            constraints_added += 1
+                        # Link use_loop to the optional edge variables
+                        for edge_id in [cross_in, loop, cross_out]:
+                            edge_key = (train.train_id, edge_id)
+                            if edge_key in self.use_edge_vars:
+                                self.model.Add(self.use_edge_vars[edge_key] == use_loop)
+                                count += 1
                 
                 if loop_vars:
-                    # Exactly one choice: use_main + sum(use_loops) == 1
+                    # Exactly one choice: main or one of the loops
                     self.model.Add(use_main + sum(loop_vars) == 1)
-                    constraints_added += 1
+                    count += 1
         
-        print(f"  Added {constraints_added} route choice constraints")
+        print(f"  Route choice constraints: {count}")
     
     def _add_completion_constraints(self) -> None:
-        """
-        Add constraints to track train completion:
-        - completed[t] = 1 if train reaches final block
-        """
+        """Track train completion"""
         print("Adding completion constraints...")
         
         for train in self.trains:
             main_path = self.graph.get_main_path(train.direction)
-            
             if not main_path:
                 continue
             
-            last_block = main_path[-1]
-            last_key = (train.id, last_block)
+            last_edge = main_path[-1]
+            last_key = (train.train_id, last_edge)
             
             if last_key in self.end_vars:
-                # Train is completed if it finishes the last block within horizon
-                # completed = 1 if end_time[last_block] < PLANNING_HORIZON
-                finished = self.model.NewBoolVar(f"finished_{train.id}")
-                self.model.Add(self.end_vars[last_key] < PLANNING_HORIZON).OnlyEnforceIf(finished)
-                self.model.Add(self.end_vars[last_key] >= PLANNING_HORIZON).OnlyEnforceIf(finished.Not())
+                # Link arrival time to last edge end
+                self.model.Add(self.arrival_vars[train.train_id] == self.end_vars[last_key])
                 
-                # Link to arrival time
-                self.model.Add(self.arrival_vars[train.id] == self.end_vars[last_key])
-                
-                # For now, assume all trains complete (simplification)
-                self.model.Add(self.completed_vars[train.id] == 1)
+                # Mark as completed (simplified)
+                self.model.Add(self.completed_vars[train.train_id] == 1)
     
     def _set_objective(self, passenger_trains: List[Train], freight_trains: List[Train]) -> None:
-        """
-        Set the optimization objective:
-        1. Maximize freight completions (primary)
-        2. Minimize freight delays
-        3. Penalize loop usage
-        4. Penalize deep loops more
-        """
+        """Set optimization objective"""
         print("Setting objective...")
         
-        objective_terms = []
+        objective = []
         
-        # 1. Maximize freight completion count (negate for minimization)
+        # Maximize freight completion (negate for minimization)
         for train in freight_trains:
-            if train.id in self.completed_vars:
-                # Reward completion (negate because we minimize)
-                # completed * -WEIGHT means we maximize completions
-                objective_terms.append(-WEIGHT_FREIGHT_COMPLETED * self.completed_vars[train.id])
+            if train.train_id in self.completed_vars:
+                objective.append(-WEIGHT_FREIGHT_COMPLETED * self.completed_vars[train.train_id])
         
-        # 2. Minimize freight arrival times (proxy for delay)
+        # Minimize freight arrival times
         for train in freight_trains:
-            if train.id in self.arrival_vars:
-                objective_terms.append(WEIGHT_FREIGHT_DELAY * self.arrival_vars[train.id])
+            if train.train_id in self.arrival_vars:
+                objective.append(WEIGHT_FREIGHT_DELAY * self.arrival_vars[train.train_id])
         
-        # 3. Penalize loop usage
-        for (train_id, main_block, loop_block), use_loop in self.use_loop_vars.items():
-            block = self.graph.blocks_by_id.get(loop_block)
-            if block:
+        # Penalize loop usage
+        for (train_id, main_edge, idx), use_loop in self.use_loop_vars.items():
+            loop_alts = self.graph.get_loop_alternatives(main_edge)
+            if idx < len(loop_alts):
+                _, loop_edge_id, _ = loop_alts[idx]
+                loop_edge = self.graph.edges.get(loop_edge_id)
+                
                 penalty = WEIGHT_LOOP_USAGE
-                if block.loop_number >= 2:
+                if loop_edge and loop_edge.loop_number >= 2:
                     penalty += WEIGHT_DEEP_LOOP
-                objective_terms.append(penalty * use_loop)
+                
+                objective.append(penalty * use_loop)
         
-        if objective_terms:
-            self.model.Minimize(sum(objective_terms))
+        if objective:
+            self.model.Minimize(sum(objective))
         
-        print(f"  Objective has {len(objective_terms)} terms")
+        print(f"  Objective terms: {len(objective)}")
     
     def _extract_solution(self, solver: cp_model.CpSolver,
                           passenger_trains: List[Train],
                           freight_trains: List[Train]) -> dict:
-        """Extract and format the solution"""
+        """Extract solution from solver"""
         print("\nExtracting solution...")
         
         train_schedules = []
@@ -731,125 +755,156 @@ class RailwaySchedulerV2:
         for train in self.trains:
             main_path = self.graph.get_main_path(train.direction)
             
-            # Build edge schedule
             edge_schedule = []
-            for block_id in main_path:
-                key = (train.id, block_id)
-                if key in self.start_vars and key in self.end_vars:
+            for edge_id in main_path:
+                key = (train.train_id, edge_id)
+                if key in self.start_vars:
                     start = solver.Value(self.start_vars[key])
                     end = solver.Value(self.end_vars[key])
                     
-                    block = self.graph.blocks_by_id.get(block_id)
+                    edge = self.graph.edges.get(edge_id)
                     edge_schedule.append({
-                        "blockId": block_id,
-                        "blockName": block.block_id if block else "",
-                        "startTime": self._minutes_to_time(start),
-                        "endTime": self._minutes_to_time(end),
+                        "edgeId": edge_id,
+                        "edgeType": edge.edge_type if edge else "",
+                        "stationCode": edge.station_code if edge else "",
+                        "startTime": minutes_to_time(start),
+                        "endTime": minutes_to_time(end),
                         "startMinutes": start,
                         "endMinutes": end,
                         "duration": end - start
                     })
             
-            # Get loop decisions for freight
+            # Loop decisions
             loop_decisions = []
             if train.is_freight:
-                for (tid, main_block, loop_block), use_loop in self.use_loop_vars.items():
-                    if tid == train.id and solver.Value(use_loop) == 1:
-                        loop_decisions.append({
-                            "mainBlock": main_block,
-                            "loopBlock": loop_block,
-                            "reason": "Allowing higher priority train to pass"
-                        })
+                for (tid, main_edge, idx), use_loop in self.use_loop_vars.items():
+                    if tid == train.train_id and solver.Value(use_loop) == 1:
+                        loop_alts = self.graph.get_loop_alternatives(main_edge)
+                        if idx < len(loop_alts):
+                            cross_in, loop, cross_out = loop_alts[idx]
+                            loop_edge = self.graph.edges.get(loop)
+                            loop_decisions.append({
+                                "mainEdge": main_edge,
+                                "crossIn": cross_in,
+                                "loopEdge": loop,
+                                "crossOut": cross_out,
+                                "loopNumber": loop_edge.loop_number if loop_edge else 0,
+                                "stationCode": loop_edge.station_code if loop_edge else "",
+                                "reason": "Allowing higher priority train to pass"
+                            })
             
-            # Build time-distance profile
-            td_profile = self._build_time_distance_profile(train, edge_schedule, solver)
+            # Time-distance profile
+            td_profile = self._build_time_distance_profile(train, edge_schedule)
             
-            # Check if completed
-            completed = True
-            if train.id in self.completed_vars:
-                completed = solver.Value(self.completed_vars[train.id]) == 1
+            arrival = solver.Value(self.arrival_vars[train.train_id]) if train.train_id in self.arrival_vars else 0
             
             train_schedules.append({
-                "trainId": train.id,
-                "trainNumber": train.number,
-                "trainName": train.name,
+                "trainId": train.train_id,
+                "trainName": train.train_name,
                 "trainType": train.train_type,
+                "trainCategory": train.train_category,
+                "direction": train.direction,
+                "priority": train.train_priority,
+                "maxSpeed": train.max_speed,
                 "isPassenger": train.is_passenger,
                 "isFreight": train.is_freight,
-                "direction": train.direction,
-                "priority": train.priority,
                 "timeDistanceProfile": td_profile,
                 "edgeSchedule": edge_schedule,
                 "loopDecisions": loop_decisions,
-                "completed": completed,
-                "arrivalTime": self._minutes_to_time(solver.Value(self.arrival_vars[train.id])) if train.id in self.arrival_vars else ""
+                "completed": True,
+                "arrivalTime": minutes_to_time(arrival),
+                "arrivalMinutes": arrival
             })
         
-        # Count completions
-        freight_completed = sum(1 for s in train_schedules if s["isFreight"] and s["completed"])
-        passenger_count = sum(1 for s in train_schedules if s["isPassenger"])
+        freight_completed = len([s for s in train_schedules if s["isFreight"] and s["completed"]])
         
         return {
             "success": True,
-            "message": f"Optimization completed: {solver.StatusName(solver.StatusName())}",
+            "message": "Optimization completed successfully",
             "trainSchedules": train_schedules,
             "summary": {
                 "totalTrains": len(self.trains),
-                "passengerTrains": passenger_count,
+                "passengerTrains": len(passenger_trains),
                 "freightTrains": len(freight_trains),
                 "freightCompleted": freight_completed,
-                "solverStatus": solver.StatusName(solver.StatusName()),
+                "totalLoopUsages": sum(len(s["loopDecisions"]) for s in train_schedules),
+                "solverStatus": "OPTIMAL" if solver.StatusName() == "OPTIMAL" else "FEASIBLE",
                 "objectiveValue": solver.ObjectiveValue()
             },
-            "conflictsResolved": [],
-            "explanation": self._generate_explanation(train_schedules, solver)
+            "explanation": self._generate_explanation(train_schedules)
         }
     
-    def _build_time_distance_profile(self, train: Train, edge_schedule: List[dict],
-                                      solver: cp_model.CpSolver) -> List[dict]:
+    def _build_time_distance_profile(self, train: Train, edge_schedule: List[dict]) -> List[dict]:
         """Build time-distance profile for visualization"""
         profile = []
+        station_order = ["bhopal", "vidisha", "bina"] if train.direction == "UP" else ["bina", "vidisha", "bhopal"]
         
-        station_names = [s.name for s in self.graph.stations]
-        blocks_per_station = max(1, len(edge_schedule) // max(1, len(station_names) - 1))
+        station_code_map = {"BPL": "bhopal", "VDA": "vidisha", "BINA": "bina"}
         
-        for i, station in enumerate(self.graph.stations):
-            # Find edge that corresponds to this station (approximately)
-            edge_idx = min(i * blocks_per_station, len(edge_schedule) - 1)
+        # Collect times at each station
+        station_times: Dict[str, Dict[str, int]] = {}
+        
+        for entry in edge_schedule:
+            code = entry.get("stationCode", "")
+            if code:
+                station_id = station_code_map.get(code, code.lower())
+                if station_id not in station_times:
+                    station_times[station_id] = {"arrival": entry["startMinutes"], "departure": entry["endMinutes"]}
+                else:
+                    station_times[station_id]["departure"] = entry["endMinutes"]
+        
+        # Build profile in order
+        for idx, station_id in enumerate(station_order):
+            times = station_times.get(station_id)
             
-            if edge_idx < len(edge_schedule):
-                edge = edge_schedule[edge_idx]
+            # Use schedule if no edge data
+            if not times and station_id in train.schedule:
+                sched = train.schedule[station_id]
+                arr = sched.arrival_minutes()
+                dep = sched.departure_minutes()
+                times = {"arrival": arr if arr > 0 else dep, "departure": dep if dep > 0 else arr}
+            
+            if times:
                 profile.append({
-                    "stationId": station.id,
-                    "stationName": station.name,
-                    "arrival": edge["startTime"],
-                    "departure": edge["endTime"],
-                    "yIndex": i,
-                    "arrivalMinutes": edge["startMinutes"],
-                    "departureMinutes": edge["endMinutes"]
+                    "stationId": station_id,
+                    "stationName": station_id.title(),
+                    "arrival": minutes_to_time(times["arrival"]),
+                    "departure": minutes_to_time(times["departure"]),
+                    "arrivalMinutes": times["arrival"],
+                    "departureMinutes": times["departure"],
+                    "yIndex": idx
                 })
         
         return profile
     
-    def _generate_explanation(self, train_schedules: List[dict], solver: cp_model.CpSolver) -> str:
-        """Generate human-readable explanation of key decisions"""
-        lines = []
-        lines.append("=== OPTIMIZATION SUMMARY ===")
+    def _generate_explanation(self, train_schedules: List[dict]) -> str:
+        """Generate human-readable explanation"""
+        lines = ["=== OPTIMIZATION RESULTS ===", ""]
         
-        # Count loop usages
+        # Passenger summary
+        passenger = [s for s in train_schedules if s["isPassenger"]]
+        lines.append(f"PASSENGER TRAINS ({len(passenger)}):")
+        for s in passenger:
+            lines.append(f"  {s['trainName']} ({s['trainId']}): {s['arrivalTime']}")
+        
+        lines.append("")
+        
+        # Freight summary
+        freight = [s for s in train_schedules if s["isFreight"]]
+        lines.append(f"FREIGHT TRAINS ({len(freight)}):")
+        for s in freight:
+            loops = len(s["loopDecisions"])
+            loop_info = f" (used {loops} loop{'s' if loops != 1 else ''})" if loops > 0 else ""
+            lines.append(f"  {s['trainName']} ({s['trainId']}): {s['arrivalTime']}{loop_info}")
+        
+        # Loop summary
         total_loops = sum(len(s["loopDecisions"]) for s in train_schedules)
-        lines.append(f"Total loop diversions: {total_loops}")
-        
-        # List freight with loops
-        for sched in train_schedules:
-            if sched["isFreight"] and sched["loopDecisions"]:
-                lines.append(f"  {sched['trainName']} ({sched['trainNumber']}) used {len(sched['loopDecisions'])} loop(s)")
-        
-        # List passenger trains
-        lines.append("\nPassenger trains (hard-scheduled):")
-        for sched in train_schedules:
-            if sched["isPassenger"]:
-                lines.append(f"  {sched['trainName']}: {sched['edgeSchedule'][0]['startTime'] if sched['edgeSchedule'] else 'N/A'} → {sched['arrivalTime']}")
+        if total_loops > 0:
+            lines.append("")
+            lines.append(f"LOOP DIVERSIONS ({total_loops}):")
+            for s in train_schedules:
+                for ld in s["loopDecisions"]:
+                    lines.append(f"  {s['trainName']} → Loop {ld['loopNumber']} at {ld['stationCode']}")
         
         return "\n".join(lines)
     
@@ -858,94 +913,83 @@ class RailwaySchedulerV2:
         """Generate heuristic solution when CP-SAT fails"""
         print("Generating heuristic solution...")
         
-        all_trains = sorted(self.trains, key=lambda t: (0 if t.is_passenger else 1, t.priority))
+        # Sort: passengers first by priority, then freight
+        all_trains = sorted(self.trains, key=lambda t: (0 if t.is_passenger else 1, t.train_priority))
         
-        block_free_time: Dict[str, int] = {}
+        edge_free_time: Dict[str, int] = {}
         train_schedules = []
         
         for train in all_trains:
             main_path = self.graph.get_main_path(train.direction)
             
-            current_time = train.priority * 5
+            # Start time
+            current_time = train.get_origin_departure()
+            if current_time == 0:
+                current_time = train.train_priority * 5
+            
             edge_schedule = []
             
-            for block_id in main_path:
-                block = self.graph.blocks_by_id.get(block_id)
-                if not block:
+            for edge_id in main_path:
+                edge = self.graph.edges.get(edge_id)
+                if not edge:
                     continue
                 
-                duration = self._compute_duration(train, block)
+                duration = self._compute_duration(train, edge)
                 
-                # Wait for block to be free
-                if block_id in block_free_time:
-                    current_time = max(current_time, block_free_time[block_id] + MIN_HEADWAY)
+                # Wait for edge to be free
+                if edge_id in edge_free_time:
+                    current_time = max(current_time, edge_free_time[edge_id] + MIN_HEADWAY)
                 
                 end_time = current_time + duration
                 
                 edge_schedule.append({
-                    "blockId": block_id,
-                    "blockName": block.block_id,
-                    "startTime": self._minutes_to_time(current_time),
-                    "endTime": self._minutes_to_time(end_time),
+                    "edgeId": edge_id,
+                    "edgeType": edge.edge_type,
+                    "stationCode": edge.station_code,
+                    "startTime": minutes_to_time(current_time),
+                    "endTime": minutes_to_time(end_time),
                     "startMinutes": current_time,
                     "endMinutes": end_time,
                     "duration": duration
                 })
                 
-                block_free_time[block_id] = end_time
+                edge_free_time[edge_id] = end_time
                 current_time = end_time
             
-            td_profile = []
-            for i, station in enumerate(self.graph.stations):
-                edge_idx = min(i * max(1, len(edge_schedule) // max(1, len(self.graph.stations) - 1)), len(edge_schedule) - 1)
-                if edge_idx < len(edge_schedule):
-                    edge = edge_schedule[edge_idx]
-                    td_profile.append({
-                        "stationId": station.id,
-                        "stationName": station.name,
-                        "arrival": edge["startTime"],
-                        "departure": edge["endTime"],
-                        "yIndex": i
-                    })
+            td_profile = self._build_time_distance_profile(train, edge_schedule)
             
             train_schedules.append({
-                "trainId": train.id,
-                "trainNumber": train.number,
-                "trainName": train.name,
+                "trainId": train.train_id,
+                "trainName": train.train_name,
                 "trainType": train.train_type,
+                "trainCategory": train.train_category,
+                "direction": train.direction,
+                "priority": train.train_priority,
+                "maxSpeed": train.max_speed,
                 "isPassenger": train.is_passenger,
                 "isFreight": train.is_freight,
-                "direction": train.direction,
-                "priority": train.priority,
                 "timeDistanceProfile": td_profile,
                 "edgeSchedule": edge_schedule,
                 "loopDecisions": [],
                 "completed": True,
-                "arrivalTime": edge_schedule[-1]["endTime"] if edge_schedule else ""
+                "arrivalTime": edge_schedule[-1]["endTime"] if edge_schedule else "",
+                "arrivalMinutes": edge_schedule[-1]["endMinutes"] if edge_schedule else 0
             })
         
         return {
             "success": True,
-            "message": "Heuristic solution generated",
+            "message": "Heuristic solution (CP-SAT timeout)",
             "trainSchedules": train_schedules,
             "summary": {
                 "totalTrains": len(self.trains),
                 "passengerTrains": len(passenger_trains),
                 "freightTrains": len(freight_trains),
                 "freightCompleted": len(freight_trains),
+                "totalLoopUsages": 0,
                 "solverStatus": "HEURISTIC"
             },
-            "conflictsResolved": [],
-            "explanation": "Heuristic solution: Trains scheduled in priority order with basic conflict avoidance."
+            "explanation": "Heuristic: Trains scheduled by priority with basic conflict avoidance."
         }
-    
-    @staticmethod
-    def _minutes_to_time(minutes: int) -> str:
-        """Convert minutes from midnight to HH:MM string"""
-        minutes = int(minutes) % (24 * 60)
-        h = minutes // 60
-        m = minutes % 60
-        return f"{h:02d}:{m:02d}"
 
 
 # ============================================================
@@ -959,10 +1003,11 @@ def run_optimization(data: dict) -> dict:
 
 
 if __name__ == "__main__":
-    # Test with sample data
     import sys
     if len(sys.argv) > 1:
         with open(sys.argv[1], 'r') as f:
             data = json.load(f)
         result = run_optimization(data)
         print(json.dumps(result, indent=2))
+    else:
+        print("Usage: python scheduler.py <data.json>")
