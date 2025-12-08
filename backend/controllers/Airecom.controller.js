@@ -1,4 +1,4 @@
-/*xport async function createRecommendation(recommendationData) {
+/* export async function createRecommendation(recommendationData) {
   const client = await clientPromise
   const db = client.db("train-tracking")
 
