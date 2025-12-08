@@ -1,0 +1,189 @@
+{
+  "timestamp": "2025-12-07T20:44:56.748564",
+  "section_info": {
+    "stations": [
+      "vidisha",
+      "sorai",
+      "sumer",
+      "gulabganj",
+      "pabai",
+      "ganjbasoda"
+    ],
+    "total_nodes": 189,
+    "total_edges": 133,
+    "total_trains": 250
+  },
+  "throughput": {
+    "metrics": {
+      "total_trains": 250,
+      "forward_trains": 112,
+      "backward_trains": 138,
+      "theoretical_max_per_hour": 31.8,
+      "section_capacities": {
+        "vidisha-sorai": {
+          "main_tracks": 3,
+          "loop_tracks": 0,
+          "avg_travel_time_min": 2.67,
+          "capacity_per_hour": 31.8,
+          "bottleneck_score": 0.09
+        },
+        "sorai-sumer": {
+          "main_tracks": 3,
+          "loop_tracks": 0,
+          "avg_travel_time_min": 2.22,
+          "capacity_per_hour": 34.5,
+          "bottleneck_score": 0.09
+        },
+        "sumer-gulabganj": {
+          "main_tracks": 3,
+          "loop_tracks": 0,
+          "avg_travel_time_min": 2.0,
+          "capacity_per_hour": 36.0,
+          "bottleneck_score": 0.08
+        },
+        "gulabganj-pabai": {
+          "main_tracks": 3,
+          "loop_tracks": 0,
+          "avg_travel_time_min": 1.33,
+          "capacity_per_hour": 41.5,
+          "bottleneck_score": 0.07
+        },
+        "pabai-ganjbasoda": {
+          "main_tracks": 3,
+          "loop_tracks": 0,
+          "avg_travel_time_min": 2.0,
+          "capacity_per_hour": 36.0,
+          "bottleneck_score": 0.08
+        }
+      },
+      "utilization_percent": 32.8
+    },
+    "bottlenecks": [
+      {
+        "station": "sorai",
+        "time_window": "10:15-10:30",
+        "train_count": 13,
+        "capacity": 10,
+        "severity": "MEDIUM"
+      },
+      {
+        "station": "pabai",
+        "time_window": "05:45-06:00",
+        "train_count": 13,
+        "capacity": 12,
+        "severity": "MEDIUM"
+      }
+    ]
+  },
+  "holding_recommendations": [
+    {
+      "station": "vidisha",
+      "action": "HOLD",
+      "hold_train": "TRN_10002",
+      "hold_train_name": "Dadar Express",
+      "proceed_train": "TRN_10001",
+      "proceed_train_name": "Pushpak Express",
+      "hold_duration": 10,
+      "reason": "Headway conflict at vidisha"
+    },
+    {
+      "station": "vidisha",
+      "action": "HOLD",
+      "hold_train": "TRN_10001",
+      "hold_train_name": "Pushpak Express",
+      "proceed_train": "TRN_10003",
+      "proceed_train_name": "Jammu Duronto Express",
+      "hold_duration": 10,
+      "reason": "Headway conflict at vidisha"
+    },
+    {
+      "station": "vidisha",
+      "action": "HOLD",
+      "hold_train": "TRN_10005",
+      "hold_train_name": "Pamba Express",
+      "proceed_train": "TRN_10001",
+      "proceed_train_name": "Pushpak Express",
+      "hold_duration": 10,
+      "reason": "Headway conflict at vidisha"
+    },
+    {
+      "station": "vidisha",
+      "action": "HOLD",
+      "hold_train": "TRN_10009",
+      "hold_train_name": "District Passenger",
+      "proceed_train": "TRN_10001",
+      "proceed_train_name": "Pushpak Express",
+      "hold_duration": 10,
+      "reason": "Headway conflict at vidisha"
+    },
+    {
+      "station": "vidisha",
+      "action": "HOLD",
+      "hold_train": "TRN_10001",
+      "hold_train_name": "Pushpak Express",
+      "proceed_train": "TRN_10014",
+      "proceed_train_name": "Bhopal Rajdhani Express",
+      "hold_duration": 10,
+      "reason": "Headway conflict at vidisha"
+    },
+    {
+      "station": "vidisha",
+      "action": "HOLD",
+      "hold_train": "TRN_10015",
+      "hold_train_name": "Kota Intercity",
+      "proceed_train": "TRN_10001",
+      "proceed_train_name": "Pushpak Express",
+      "hold_duration": 10,
+      "reason": "Headway conflict at vidisha"
+    },
+    {
+      "station": "vidisha",
+      "action": "HOLD",
+      "hold_train": "TRN_10017",
+      "hold_train_name": "Rajkot Mail",
+      "proceed_train": "TRN_10001",
+      "proceed_train_name": "Pushpak Express",
+      "hold_duration": 10,
+      "reason": "Headway conflict at vidisha"
+    },
+    {
+      "station": "vidisha",
+      "action": "HOLD",
+      "hold_train": "TRN_10019",
+      "hold_train_name": "Sagar Passenger",
+      "proceed_train": "TRN_10001",
+      "proceed_train_name": "Pushpak Express",
+      "hold_duration": 10,
+      "reason": "Headway conflict at vidisha"
+    },
+    {
+      "station": "vidisha",
+      "action": "HOLD",
+      "hold_train": "TRN_10020",
+      "hold_train_name": "Bangalore Mail",
+      "proceed_train": "TRN_10001",
+      "proceed_train_name": "Pushpak Express",
+      "hold_duration": 10,
+      "reason": "Headway conflict at vidisha"
+    },
+    {
+      "station": "vidisha",
+      "action": "HOLD",
+      "hold_train": "TRN_10021",
+      "hold_train_name": "Godavari Express",
+      "proceed_train": "TRN_10001",
+      "proceed_train_name": "Pushpak Express",
+      "hold_duration": 10,
+      "reason": "Headway conflict at vidisha"
+    }
+  ],
+  "schedule_optimization": {
+    "status": "INFEASIBLE",
+    "objective_value": null,
+    "statistics": {
+      "solve_time_ms": 1513.692704,
+      "branches": 0,
+      "conflicts": 0
+    }
+  }
+}

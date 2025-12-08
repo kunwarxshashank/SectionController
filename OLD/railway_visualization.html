@@ -648,10 +648,22 @@
             })
             .then(data => {
                 // Extract nodes and edges from the schema
-                railwayData = {
-                    nodes: data.nodes || [],
-                    edges: data.edges || []
-                };
+                // Map nodeId to id for compatibility
+                const nodes = (data.nodes || []).map(node => ({
+                    ...node,
+                    id: node.nodeId || node.id,
+                    type: node.nodeType || node.type
+                }));
+                
+                // Map startNode/endNode to from/to and edgeColor to color
+                const edges = (data.edges || []).map(edge => ({
+                    ...edge,
+                    from: edge.startNode || edge.from,
+                    to: edge.endNode || edge.to,
+                    color: edge.edgeColor || edge.color || edge.stream_type || 'red'
+                }));
+                
+                railwayData = { nodes, edges };
                 console.log(`Loaded ${railwayData.nodes.length} nodes and ${railwayData.edges.length} edges from database_schema.json`);
                 draw();
             })
