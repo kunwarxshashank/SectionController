@@ -1,10 +1,19 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { Train, AlertCircle, Loader2, Maximize2, Minimize2, ZoomIn, ZoomOut } from 'lucide-react';
-import { selectStationData, selectStationNodes, selectStationEdges, selectStationLoading } from '@/store/slices/stationSlice';
+import {
+    selectStationNodes,
+    selectStationEdges,
+    selectStationLoading,
+    selectHasData,
+    selectStationName,
+    selectStationId
+} from '@/store/slices/stationSlice';
 
 export default function TrackControl() {
-    const stationData = useSelector(selectStationData);
+    const hasData = useSelector(selectHasData);
+    const stationName = useSelector(selectStationName);
+    const stationId = useSelector(selectStationId);
     const nodes = useSelector(selectStationNodes);
     const dbEdges = useSelector(selectStationEdges);
     const stationLoading = useSelector(selectStationLoading);
@@ -513,7 +522,7 @@ export default function TrackControl() {
     }
 
     // No data state
-    if (!stationData || !nodes || nodes.length === 0) {
+    if (!hasData || !nodes || nodes.length === 0) {
         return (
             <div className="card h-full flex items-center justify-center" style={{ background: '#0a0a0f' }}>
                 <div className="text-center">
@@ -539,11 +548,11 @@ export default function TrackControl() {
                     <div className="flex items-center gap-2">
                         <div className="w-3 h-3 rounded-full bg-green-500 animate-pulse" />
                         <span className="font-bold text-lg uppercase tracking-wider" style={{ color: '#00ff00' }}>
-                            {stationData.stationName}
+                            {stationName}
                         </span>
                     </div>
                     <div className="text-xs px-2 py-0.5 rounded" style={{ background: '#1a1a2e', color: '#888' }}>
-                        ID: {stationData.stationId}
+                        ID: {stationId}
                     </div>
                 </div>
 

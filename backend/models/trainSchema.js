@@ -1,112 +1,47 @@
-// models/Train.js
 import mongoose from "mongoose";
 
-const TrainSchema = new mongoose.Schema({
-  train_id: String,
-  name: String,
+const stationScheduleSchema = new mongoose.Schema({
+  scheduledArrival: { type: String, default: "" },
+  scheduledDeparture: { type: String, default: "" },
+  actualArrival: { type: String, default: "" },
+  actualDeparture: { type: String, default: "" },
+  expectedDeparture: { type: String, default: "" }
+}, { _id: false });
 
-  priority: {
-    type: Number,
-    default: 0
-  },
-  type: {
-    type: String,
-    enum: ["local", "express", "special"],
-    default: "local"
-  },
-  averageSpeed: {
-    type: Number,
-    default: 0
-  },
-  maxSpeed: {
-    type: Number,
-    default: 0
-  },
+const scheduleSchema = new mongoose.Schema({
+  vidisha: { type: stationScheduleSchema, default: () => ({}) },
+  sorai: { type: stationScheduleSchema, default: () => ({}) },
+  sumer: { type: stationScheduleSchema, default: () => ({}) },
+  gulabganj: { type: stationScheduleSchema, default: () => ({}) },
+  pabai: { type: stationScheduleSchema, default: () => ({}) },
+  ganjbasoda: { type: stationScheduleSchema, default: () => ({}) }
+}, { _id: false });
 
-  scheduleTime: [
-    {
-      arrivalTime: { type: Date },
-      departureTime: { type: Date },
-      station: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Station"
-      }
-    }
-  ],
+const trainSchema = new mongoose.Schema({
+  trainId: { type: String, required: true, unique: true },
+  trainNumber: { type: String, required: true },
+  trainName: { type: String, required: true },
+  trainType: { type: String, required: true },
+  trainCategory: { type: String, required: true },
 
-  actualTime: [
-    {
-      arrivalTime: { type: Date },
-      departureTime: { type: Date },
-      station: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Station"
-      }
-    }
-  ],
-  expectedDeparture: [
-    {
-      arrivalTime: { type: Date },
-      departureTime: { type: Date },
-      station: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Station"
-      }
-    }
-  ],
+  basePriority: { type: Number, required: true },
+  trainPriority: { type: Number, required: true },
 
-  category: {
-    type: String,
-    default: "electric"
-  },
+  currentTrainPassenger: { type: Number, required: true },
+  maxTrainCapacity: { type: Number, required: true },
 
-  direction: {
-    type: String,
-    required: true
-  },
-  current_edge: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Edge",
-    default: null
-  },
+  currentEdge: { type: String, default: "" },
+  isEmergency: { type: Boolean, default: false },
 
-  Axels: {
-    type: Number,
-    default: 0
-  },
+  PAD: { type: [String], default: [] },
+  PDD: { type: [String], default: [] },
+  ACP: { type: [String], default: [] },
 
-  current_Speed: {
-    type: Number,
-    default: 0
-  },
+  numberOfAxle: { type: Number, required: true },
+  direction: { type: String, required: true },
+  maxSpeed: { type: Number, required: true },
 
-  current_stream: {
-    type: String,
-  },
+  schedule: { type: scheduleSchema, required: true }
+}, { timestamps: true });
 
-  isEmergency: {
-    type: Boolean,
-    default: false
-  },
-  PAD: {
-    type: Array,
-    default: 0
-  },
-  PDD: {
-    type: Array,
-    default: 0
-  },
-  locoPilot: {
-    type: Boolean,
-    default: false
-  },
-  speed_blocks_per_step: { type: Number, default: 0.2 },
-
-  station: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Station"
-  }
-});
-
-const Train  =  mongoose.model("Train", TrainSchema);
-export default Train
+export default mongoose.model("Train", trainSchema);

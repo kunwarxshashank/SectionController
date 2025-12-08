@@ -1,0 +1,1775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vidisha Railway Complex - Section 1/6</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e1e1e 0%, #2d2d2d 100%);
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(90deg, #0078d4 0%, #106ebe 100%);
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            margin: 0;
+            font-size: 28px;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .info {
+            text-align: center;
+            margin-top: 8px;
+            font-size: 14px;
+            color: #e0e0e0;
+            opacity: 0.9;
+        }
+        
+        .legend {
+            position: fixed;
+            top: 120px;
+            right: 20px;
+            background: linear-gradient(135deg, rgba(40, 40, 40, 0.98) 0%, rgba(30, 30, 30, 0.98) 100%);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            max-width: 280px;
+            z-index: 1000;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .legend h3 {
+            margin: 0 0 15px 0;
+            font-size: 18px;
+            border-bottom: 2px solid #0078d4;
+            padding-bottom: 8px;
+            color: #0078d4;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            font-size: 13px;
+            transition: transform 0.2s;
+        }
+        
+        .legend-item:hover {
+            transform: translateX(5px);
+        }
+        
+        .legend-color {
+            width: 35px;
+            height: 4px;
+            margin-right: 12px;
+            border-radius: 2px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
+        
+        .node-info {
+            position: fixed;
+            top: 120px;
+            left: 20px;
+            background: linear-gradient(135deg, rgba(40, 40, 40, 0.98) 0%, rgba(30, 30, 30, 0.98) 100%);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            max-width: 280px;
+            z-index: 1000;
+            border: 1px solid rgba(255,255,255,0.1);
+            display: none;
+        }
+        
+        .node-info.visible {
+            display: block;
+        }
+        
+        .node-info h3 {
+            margin: 0 0 15px 0;
+            font-size: 18px;
+            border-bottom: 2px solid #0078d4;
+            padding-bottom: 8px;
+            color: #0078d4;
+        }
+        
+        .node-detail {
+            margin: 8px 0;
+            font-size: 13px;
+        }
+        
+        .node-detail strong {
+            color: #0078d4;
+            display: inline-block;
+            width: 80px;
+        }
+        
+        .canvas-container {
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+            margin-top: 10px;
+        }
+        
+        canvas {
+            border: 2px solid #444;
+            background: radial-gradient(circle at center, #2d2d2d 0%, #1e1e1e 100%);
+            cursor: grab;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+            border-radius: 8px;
+        }
+        
+        canvas:active {
+            cursor: grabbing;
+        }
+        
+        .controls {
+            text-align: center;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(40, 40, 40, 0.5);
+            border-radius: 8px;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .control-group {
+            display: inline-block;
+            margin: 0 10px;
+        }
+        
+        .control-group label {
+            font-size: 12px;
+            color: #aaa;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        button {
+            padding: 12px 24px;
+            margin: 5px;
+            background: linear-gradient(135deg, #0078d4 0%, #106ebe 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 2px 8px rgba(0,120,212,0.3);
+        }
+        
+        button:hover {
+            background: linear-gradient(135deg, #106ebe 0%, #0078d4 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,120,212,0.5);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        button.secondary {
+            background: linear-gradient(135deg, #555 0%, #444 100%);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+        
+        button.secondary:hover {
+            background: linear-gradient(135deg, #666 0%, #555 100%);
+        }
+        
+        button.success {
+            background: linear-gradient(135deg, #28a745 0%, #218838 100%);
+            box-shadow: 0 2px 8px rgba(40,167,69,0.3);
+            font-size: 16px;
+            padding: 14px 28px;
+        }
+        
+        button.success:hover {
+            background: linear-gradient(135deg, #218838 0%, #28a745 100%);
+            box-shadow: 0 4px 12px rgba(40,167,69,0.5);
+        }
+        
+        button.danger {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            box-shadow: 0 2px 8px rgba(220,53,69,0.3);
+        }
+        
+        button.danger:hover {
+            background: linear-gradient(135deg, #c82333 0%, #dc3545 100%);
+        }
+        
+        button.edit-mode {
+            background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+            box-shadow: 0 2px 8px rgba(255,152,0,0.3);
+        }
+        
+        button.edit-mode:hover {
+            background: linear-gradient(135deg, #f57c00 0%, #ff9800 100%);
+        }
+        
+        .mode-indicator {
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 152, 0, 0.95);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: bold;
+            z-index: 2000;
+            display: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        
+        .mode-indicator.visible {
+            display: block;
+        }
+        
+        .edit-panel {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, rgba(40, 40, 40, 0.98) 0%, rgba(30, 30, 30, 0.98) 100%);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.7);
+            z-index: 3000;
+            display: none;
+            min-width: 400px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .edit-panel.visible {
+            display: block;
+        }
+        
+        .edit-panel h3 {
+            margin: 0 0 20px 0;
+            color: #0078d4;
+            border-bottom: 2px solid #0078d4;
+            padding-bottom: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #aaa;
+            font-size: 13px;
+        }
+        
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            background-color: #333;
+            color: white;
+            border: 1px solid #555;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #0078d4;
+        }
+        
+        .form-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 2500;
+            display: none;
+        }
+        
+        .overlay.visible {
+            display: block;
+        }
+        
+        .stats {
+            text-align: center;
+            margin: 20px 0;
+            padding: 15px;
+            font-size: 14px;
+            background: rgba(40, 40, 40, 0.5);
+            border-radius: 8px;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .stat-item {
+            display: inline-block;
+            margin: 0 15px;
+            padding: 5px 10px;
+        }
+        
+        .stat-item strong {
+            color: #0078d4;
+        }
+        
+        input[type="range"] {
+            width: 150px;
+            vertical-align: middle;
+        }
+        
+        select {
+            padding: 8px 12px;
+            background-color: #333;
+            color: white;
+            border: 1px solid #555;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        
+        .tooltip {
+            position: fixed;
+            background-color: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            pointer-events: none;
+            z-index: 2000;
+            display: none;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🚂 Vidisha Railway Complex - Section 1/6</h1>
+        <div class="info">Interactive Railway Network Topology Viewer</div>
+    </div>
+    
+    <div class="legend">
+        <h3>📍 Track Types</h3>
+        <div class="legend-item">
+            <div class="legend-color" style="background-color: red;"></div>
+            <span>Upstream Main (Red)</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background-color: blue;"></div>
+            <span>Downstream Main (Blue)</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background-color: yellow;"></div>
+            <span>Bidirectional (Yellow)</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background-color: purple;"></div>
+            <span>Upstream Loop (Purple)</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background-color: green;"></div>
+            <span>Downstream Loop (Green)</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background-color: orange;"></div>
+            <span>Turning/Crossover (Orange)</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background-color: black; border: 1px solid #666;"></div>
+            <span>Yard Tracks (Black)</span>
+        </div>
+    </div>
+    
+    <div class="node-info" id="nodeInfo">
+        <h3>📊 Node Details</h3>
+        <div id="nodeDetails">Hover over a node to see details</div>
+    </div>
+    
+    <div class="mode-indicator" id="modeIndicator">
+        🔧 EDIT MODE - Click nodes to edit | Click canvas to add node | Shift+Click nodes to connect | Ctrl+Click edge to edit
+    </div>
+    
+    <div class="controls">
+        <div class="control-group">
+            <label>Edit Mode</label>
+            <button onclick="toggleEditMode()" id="editModeBtn" class="edit-mode">✏️ Enable Edit</button>
+            <button onclick="saveToJSON()" class="success">💾 Save to JSON</button>
+        </div>
+        <div class="control-group">
+            <label>Zoom</label>
+            <button onclick="zoomIn()">➕ Zoom In</button>
+            <button onclick="zoomOut()">➖ Zoom Out</button>
+        </div>
+        <div class="control-group">
+            <label>View</label>
+            <button onclick="resetView()">🔄 Reset View</button>
+            <button onclick="fitToScreen()">📐 Fit Screen</button>
+        </div>
+        <div class="control-group">
+            <label>Display</label>
+            <button onclick="toggleLabels()" class="secondary">🏷️ Toggle Labels</button>
+            <button onclick="toggleGrid()" class="secondary">📏 Toggle Grid</button>
+        </div>
+        <div class="control-group">
+            <label>Filter</label>
+            <select id="trackFilter" onchange="filterTracks()">
+                <option value="all">All Tracks</option>
+                <option value="red">Upstream Only</option>
+                <option value="blue">Downstream Only</option>
+                <option value="yellow">Bidirectional Only</option>
+                <option value="purple">Upstream Loop</option>
+                <option value="green">Downstream Loop</option>
+                <option value="orange">Crossovers</option>
+            </select>
+        </div>
+    </div>
+    
+    <div class="canvas-container">
+        <canvas id="railwayCanvas"></canvas>
+    </div>
+    
+    <div class="stats" id="stats"></div>
+    <div class="tooltip" id="tooltip"></div>
+    
+    <div class="overlay" id="overlay" onclick="closeEditPanel()"></div>
+    
+    <div class="edit-panel" id="editPanel">
+        <h3 id="editPanelTitle">Edit Node</h3>
+        <form id="editForm">
+            <div class="form-group">
+                <label for="nodeId">Node ID *</label>
+                <input type="text" id="nodeId" required>
+            </div>
+            <div class="form-group">
+                <label for="nodeX">X Coordinate (meters) *</label>
+                <input type="number" id="nodeX" required>
+            </div>
+            <div class="form-group">
+                <label for="nodeY">Y Coordinate (meters) *</label>
+                <input type="number" id="nodeY" required>
+            </div>
+            <div class="form-group">
+                <label for="nodeType">Node Type *</label>
+                <select id="nodeType" required>
+                    <option value="section_start">Section Start</option>
+                    <option value="section_end">Section End</option>
+                    <option value="station_start">Station Start</option>
+                    <option value="station_end">Station End</option>
+                    <option value="signal_home">Signal - Home</option>
+                    <option value="signal_starter">Signal - Starter</option>
+                    <option value="signal_advanced">Signal - Advanced</option>
+                    <option value="signal_automatic">Signal - Automatic</option>
+                    <option value="loop_start">Loop Start</option>
+                    <option value="loop_end">Loop End</option>
+                    <option value="loop_corner">Loop Corner</option>
+                    <option value="turning">Turning Point</option>
+                    <option value="junction">Junction</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="nodeName">Node Name</label>
+                <input type="text" id="nodeName">
+            </div>
+            <div class="form-group">
+                <label for="nodeLine">Line</label>
+                <input type="text" id="nodeLine" placeholder="e.g., up_main, down_main">
+            </div>
+            <div class="form-group">
+                <label for="nodeStation">Station</label>
+                <input type="text" id="nodeStation" placeholder="e.g., Vidisha, Section_Entry">
+            </div>
+            <div class="form-group">
+                <label for="nodeDescription">Description/Notes</label>
+                <input type="text" id="nodeDescription" placeholder="Additional information about this node">
+            </div>
+            <div class="form-group">
+                <label for="nodeStatus">Status</label>
+                <select id="nodeStatus">
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                    <option value="maintenance">Under Maintenance</option>
+                    <option value="planned">Planned</option>
+                </select>
+            </div>
+            <div class="form-actions">
+                <button type="button" onclick="deleteNode()" class="danger" id="deleteBtn">🗑️ Delete</button>
+                <div>
+                    <button type="button" onclick="closeEditPanel()" class="secondary">Cancel</button>
+                    <button type="submit" class="success">💾 Save</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    
+    <div class="edit-panel" id="edgePanel">
+        <h3>Create Edge Connection</h3>
+        <form id="edgeForm">
+            <div class="form-group">
+                <label for="edgeFrom">From Node *</label>
+                <input type="text" id="edgeFrom" readonly required>
+            </div>
+            <div class="form-group">
+                <label for="edgeTo">To Node *</label>
+                <input type="text" id="edgeTo" readonly required>
+            </div>
+            <div class="form-group">
+                <label for="edgeColor">Track Type/Color *</label>
+                <select id="edgeColor" required>
+                    <option value="red">Upstream (Red)</option>
+                    <option value="blue">Downstream (Blue)</option>
+                    <option value="yellow">Bidirectional (Yellow)</option>
+                    <option value="purple">Upstream Loop (Purple)</option>
+                    <option value="green">Downstream Loop (Green)</option>
+                    <option value="orange">Turning/Crossover (Orange)</option>
+                    <option value="black">Yard (Black)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="edgeDirection">Direction *</label>
+                <select id="edgeDirection" required>
+                    <option value="unidirectional">Unidirectional</option>
+                    <option value="bidirectional">Bidirectional</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="edgeTrackType">Track Type *</label>
+                <select id="edgeTrackType" required>
+                    <option value="up_main">Upstream Main Line</option>
+                    <option value="down_main">Downstream Main Line</option>
+                    <option value="both_main">Bidirectional Main Line</option>
+                    <option value="up_loop">Upstream Loop Track</option>
+                    <option value="down_loop">Downstream Loop Track</option>
+                    <option value="crossover">Crossover</option>
+                    <option value="yard_line">Yard Line</option>
+                    <option value="up_travelling_line">Upstream Travelling Line</option>
+                    <option value="down_travelling_line">Downstream Travelling Line</option>
+                    <option value="both_travelling_line">Bidirectional Travelling Line</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="edgeStation">Station</label>
+                <input type="text" id="edgeStation" placeholder="e.g., Vidisha">
+            </div>
+            <div class="form-group">
+                <label for="edgeLength">Length (meters)</label>
+                <input type="number" id="edgeLength" readonly placeholder="Auto-calculated">
+            </div>
+            <div class="form-group">
+                <label for="edgeSpeed">Speed Limit (km/h)</label>
+                <input type="number" id="edgeSpeed" placeholder="e.g., 120">
+            </div>
+            <div class="form-group">
+                <label for="edgeStatus">Status</label>
+                <select id="edgeStatus">
+                    <option value="operational">Operational</option>
+                    <option value="restricted">Restricted</option>
+                    <option value="closed">Closed</option>
+                    <option value="under_construction">Under Construction</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="edgeDescription">Description/Notes</label>
+                <input type="text" id="edgeDescription" placeholder="Additional information about this track">
+            </div>
+            <div class="form-actions">
+                <button type="button" onclick="deleteEdge()" class="danger" id="deleteEdgeBtn">🗑️ Delete</button>
+                <div>
+                    <button type="button" onclick="closeEdgePanel()" class="secondary">Cancel</button>
+                    <button type="submit" class="success" id="edgeSaveBtn">💾 Create</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('railwayCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Set canvas size
+        canvas.width = 1600;
+        canvas.height = 900;
+        
+        // View parameters
+        let scale = 0.07;
+        let offsetX = 50;
+        let offsetY = 800;
+        let showLabels = true;
+        let showGrid = false;
+        let trackFilter = 'all';
+        let hoveredNode = null;
+        
+        // Pan variables
+        let isDragging = false;
+        let lastX, lastY;
+        
+        // Edit mode variables
+        let editMode = false;
+        let editingNode = null;
+        let selectedNodeForEdge = null;
+        let editingEdge = null;
+        let hasUnsavedChanges = false;
+        
+        // Load data from JSON file
+        let railwayData = null;
+        
+        // Fetch the JSON data
+        fetch('database_schema.json')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Extract nodes and edges from the schema
+                // Map nodeId to id for compatibility
+                const nodes = (data.nodes || []).map(node => ({
+                    ...node,
+                    id: node.nodeId || node.id,
+                    type: node.nodeType || node.type
+                }));
+                
+                // Map startNode/endNode to from/to and edgeColor to color
+                const edges = (data.edges || []).map(edge => ({
+                    ...edge,
+                    from: edge.startNode || edge.from,
+                    to: edge.endNode || edge.to,
+                    color: edge.edgeColor || edge.color || edge.stream_type || 'red'
+                }));
+                
+                railwayData = { nodes, edges };
+                console.log(`Loaded ${railwayData.nodes.length} nodes and ${railwayData.edges.length} edges from database_schema.json`);
+                draw();
+            })
+            .catch(error => {
+                console.error('Error loading database schema:', error);
+                alert('Failed to load database_schema.json. Please ensure the file exists in the same directory as this HTML file.\n\nError: ' + error.message);
+                // Initialize empty data
+                railwayData = {
+                    nodes: [],
+                    edges: []
+                };
+                draw();
+            });
+        
+        // Transform coordinates to canvas
+        function toCanvasX(x) {
+            return offsetX + x * scale;
+        }
+        
+        function toCanvasY(y) {
+            return offsetY - y * scale;
+        }
+        
+        // Calculate distance from point to line segment
+        function distanceToLineSegment(px, py, x1, y1, x2, y2) {
+            const dx = x2 - x1;
+            const dy = y2 - y1;
+            const lengthSquared = dx * dx + dy * dy;
+            
+            if (lengthSquared === 0) {
+                return Math.sqrt((px - x1) ** 2 + (py - y1) ** 2);
+            }
+            
+            let t = ((px - x1) * dx + (py - y1) * dy) / lengthSquared;
+            t = Math.max(0, Math.min(1, t));
+            
+            const closestX = x1 + t * dx;
+            const closestY = y1 + t * dy;
+            
+            return Math.sqrt((px - closestX) ** 2 + (py - closestY) ** 2);
+        }
+        
+        // Draw node shape based on type
+        function drawNodeShape(x, y, type, size, isShadow, isHovered) {
+            if (isShadow) {
+                ctx.fillStyle = 'rgba(0,0,0,0.4)';
+            }
+            
+            ctx.beginPath();
+            
+            switch(type) {
+                case 'section_start':
+                    // Square for section start
+                    if (!isShadow) {
+                        ctx.fillStyle = isHovered ? '#00e676' : '#00c853';
+                        ctx.strokeStyle = '#fff';
+                    }
+                    ctx.rect(x - size/2, y - size/2, size, size);
+                    ctx.fill();
+                    if (!isShadow) {
+                        ctx.lineWidth = 2;
+                        ctx.stroke();
+                    }
+                    break;
+                    
+                case 'section_end':
+                    // Square with X for section end
+                    if (!isShadow) {
+                        ctx.fillStyle = isHovered ? '#ff5252' : '#f44336';
+                        ctx.strokeStyle = '#fff';
+                    }
+                    ctx.rect(x - size/2, y - size/2, size, size);
+                    ctx.fill();
+                    if (!isShadow) {
+                        ctx.lineWidth = 2;
+                        ctx.stroke();
+                        // Draw X
+                        ctx.strokeStyle = '#fff';
+                        ctx.lineWidth = 2;
+                        ctx.beginPath();
+                        ctx.moveTo(x - size/3, y - size/3);
+                        ctx.lineTo(x + size/3, y + size/3);
+                        ctx.moveTo(x + size/3, y - size/3);
+                        ctx.lineTo(x - size/3, y + size/3);
+                        ctx.stroke();
+                    }
+                    break;
+                    
+                case 'station_start':
+                    // Pentagon for station start
+                    if (!isShadow) {
+                        ctx.fillStyle = isHovered ? '#448aff' : '#2196f3';
+                        ctx.strokeStyle = '#fff';
+                    }
+                    for (let i = 0; i < 5; i++) {
+                        const angle = (i * 2 * Math.PI / 5) - Math.PI / 2;
+                        const px = x + size * Math.cos(angle);
+                        const py = y + size * Math.sin(angle);
+                        if (i === 0) ctx.moveTo(px, py);
+                        else ctx.lineTo(px, py);
+                    }
+                    ctx.closePath();
+                    ctx.fill();
+                    if (!isShadow) {
+                        ctx.lineWidth = 2;
+                        ctx.stroke();
+                    }
+                    break;
+                    
+                case 'station_end':
+                    // Hexagon for station end
+                    if (!isShadow) {
+                        ctx.fillStyle = isHovered ? '#7c4dff' : '#673ab7';
+                        ctx.strokeStyle = '#fff';
+                    }
+                    for (let i = 0; i < 6; i++) {
+                        const angle = (i * 2 * Math.PI / 6) - Math.PI / 2;
+                        const px = x + size * Math.cos(angle);
+                        const py = y + size * Math.sin(angle);
+                        if (i === 0) ctx.moveTo(px, py);
+                        else ctx.lineTo(px, py);
+                    }
+                    ctx.closePath();
+                    ctx.fill();
+                    if (!isShadow) {
+                        ctx.lineWidth = 2;
+                        ctx.stroke();
+                    }
+                    break;
+                    
+                case 'signal_home':
+                    // Circle with H for home signal
+                    if (!isShadow) {
+                        ctx.fillStyle = isHovered ? '#ff6e40' : '#ff5722';
+                        ctx.strokeStyle = '#fff';
+                    }
+                    ctx.arc(x, y, size, 0, 2 * Math.PI);
+                    ctx.fill();
+                    if (!isShadow) {
+                        ctx.lineWidth = 2;
+                        ctx.stroke();
+                        ctx.fillStyle = '#fff';
+                        ctx.font = 'bold 8px Arial';
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+                        ctx.fillText('H', x, y);
+                    }
+                    break;
+                    
+                case 'signal_starter':
+                    // Circle with S for starter signal
+                    if (!isShadow) {
+                        ctx.fillStyle = isHovered ? '#ffca28' : '#ffc107';
+                        ctx.strokeStyle = '#fff';
+                    }
+                    ctx.arc(x, y, size, 0, 2 * Math.PI);
+                    ctx.fill();
+                    if (!isShadow) {
+                        ctx.lineWidth = 2;
+                        ctx.stroke();
+                        ctx.fillStyle = '#000';
+                        ctx.font = 'bold 8px Arial';
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+                        ctx.fillText('S', x, y);
+                    }
+                    break;
+                    
+                case 'signal_advanced':
+                    // Circle with A for advanced signal
+                    if (!isShadow) {
+                        ctx.fillStyle = isHovered ? '#26c6da' : '#00bcd4';
+                        ctx.strokeStyle = '#fff';
+                    }
+                    ctx.arc(x, y, size, 0, 2 * Math.PI);
+                    ctx.fill();
+                    if (!isShadow) {
+                        ctx.lineWidth = 2;
+                        ctx.stroke();
+                        ctx.fillStyle = '#fff';
+                        ctx.font = 'bold 8px Arial';
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+                        ctx.fillText('A', x, y);
+                    }
+                    break;
+                    
+                case 'signal_automatic':
+                    // Triangle for automatic signal
+                    if (!isShadow) {
+                        ctx.fillStyle = isHovered ? '#66bb6a' : '#4caf50';
+                        ctx.strokeStyle = '#fff';
+                    }
+                    ctx.moveTo(x, y - size);
+                    ctx.lineTo(x + size * 0.866, y + size * 0.5);
+                    ctx.lineTo(x - size * 0.866, y + size * 0.5);
+                    ctx.closePath();
+                    ctx.fill();
+                    if (!isShadow) {
+                        ctx.lineWidth = 2;
+                        ctx.stroke();
+                    }
+                    break;
+                    
+                case 'loop_start':
+                    // Diamond for loop start
+                    if (!isShadow) {
+                        ctx.fillStyle = isHovered ? '#ba68c8' : '#9c27b0';
+                        ctx.strokeStyle = '#fff';
+                    }
+                    ctx.moveTo(x, y - size);
+                    ctx.lineTo(x + size, y);
+                    ctx.lineTo(x, y + size);
+                    ctx.lineTo(x - size, y);
+                    ctx.closePath();
+                    ctx.fill();
+                    if (!isShadow) {
+                        ctx.lineWidth = 2;
+                        ctx.stroke();
+                    }
+                    break;
+                    
+                case 'loop_end':
+                    // Diamond with dot for loop end
+                    if (!isShadow) {
+                        ctx.fillStyle = isHovered ? '#ec407a' : '#e91e63';
+                        ctx.strokeStyle = '#fff';
+                    }
+                    ctx.moveTo(x, y - size);
+                    ctx.lineTo(x + size, y);
+                    ctx.lineTo(x, y + size);
+                    ctx.lineTo(x - size, y);
+                    ctx.closePath();
+                    ctx.fill();
+                    if (!isShadow) {
+                        ctx.lineWidth = 2;
+                        ctx.stroke();
+                        // Draw dot
+                        ctx.fillStyle = '#fff';
+                        ctx.beginPath();
+                        ctx.arc(x, y, size/3, 0, 2 * Math.PI);
+                        ctx.fill();
+                    }
+                    break;
+                    
+                case 'loop_corner':
+                    // Rounded square for loop corner
+                    if (!isShadow) {
+                        ctx.fillStyle = isHovered ? '#ab47bc' : '#8e24aa';
+                        ctx.strokeStyle = '#fff';
+                    }
+                    const radius = size * 0.3;
+                    ctx.moveTo(x - size/2 + radius, y - size/2);
+                    ctx.lineTo(x + size/2 - radius, y - size/2);
+                    ctx.arcTo(x + size/2, y - size/2, x + size/2, y - size/2 + radius, radius);
+                    ctx.lineTo(x + size/2, y + size/2 - radius);
+                    ctx.arcTo(x + size/2, y + size/2, x + size/2 - radius, y + size/2, radius);
+                    ctx.lineTo(x - size/2 + radius, y + size/2);
+                    ctx.arcTo(x - size/2, y + size/2, x - size/2, y + size/2 - radius, radius);
+                    ctx.lineTo(x - size/2, y - size/2 + radius);
+                    ctx.arcTo(x - size/2, y - size/2, x - size/2 + radius, y - size/2, radius);
+                    ctx.closePath();
+                    ctx.fill();
+                    if (!isShadow) {
+                        ctx.lineWidth = 2;
+                        ctx.stroke();
+                    }
+                    break;
+                    
+                case 'turning':
+                    // Star for turning point
+                    if (!isShadow) {
+                        ctx.fillStyle = isHovered ? '#ff7043' : '#ff5722';
+                        ctx.strokeStyle = '#fff';
+                    }
+                    for (let i = 0; i < 5; i++) {
+                        const angle = (i * 4 * Math.PI / 5) - Math.PI / 2;
+                        const radius = (i % 2 === 0) ? size : size * 0.4;
+                        const px = x + radius * Math.cos(angle);
+                        const py = y + radius * Math.sin(angle);
+                        if (i === 0) ctx.moveTo(px, py);
+                        else ctx.lineTo(px, py);
+                    }
+                    ctx.closePath();
+                    ctx.fill();
+                    if (!isShadow) {
+                        ctx.lineWidth = 2;
+                        ctx.stroke();
+                    }
+                    break;
+                    
+                case 'junction':
+                    // Octagon for junction
+                    if (!isShadow) {
+                        ctx.fillStyle = isHovered ? '#ffa726' : '#ff9800';
+                        ctx.strokeStyle = '#fff';
+                    }
+                    for (let i = 0; i < 8; i++) {
+                        const angle = (i * 2 * Math.PI / 8) - Math.PI / 2;
+                        const px = x + size * Math.cos(angle);
+                        const py = y + size * Math.sin(angle);
+                        if (i === 0) ctx.moveTo(px, py);
+                        else ctx.lineTo(px, py);
+                    }
+                    ctx.closePath();
+                    ctx.fill();
+                    if (!isShadow) {
+                        ctx.lineWidth = 2;
+                        ctx.stroke();
+                    }
+                    break;
+                    
+                default:
+                    // Default circle for unknown types
+                    if (!isShadow) {
+                        ctx.fillStyle = isHovered ? '#4fc3f7' : '#ffffff';
+                        ctx.strokeStyle = '#555';
+                    }
+                    ctx.arc(x, y, size * 0.6, 0, 2 * Math.PI);
+                    ctx.fill();
+                    if (!isShadow) {
+                        ctx.lineWidth = 1;
+                        ctx.stroke();
+                    }
+            }
+        }
+        
+        // Draw the railway network
+        function draw() {
+            if (!railwayData) return;
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw grid if enabled
+            if (showGrid) {
+                drawGrid();
+            }
+            
+            // Draw edges (tracks) with filtering
+            ctx.lineWidth = 3;
+            railwayData.edges.forEach(edge => {
+                const color = edge.color || edge.stream_type;
+                
+                // Apply filter
+                if (trackFilter !== 'all' && color !== trackFilter) {
+                    return;
+                }
+                
+                const fromNode = railwayData.nodes.find(n => n.id === edge.from);
+                const toNode = railwayData.nodes.find(n => n.id === edge.to);
+                
+                if (fromNode && toNode) {
+                    // Draw shadow for depth
+                    ctx.strokeStyle = 'rgba(0,0,0,0.3)';
+                    ctx.lineWidth = 4;
+                    ctx.beginPath();
+                    ctx.moveTo(toCanvasX(fromNode.x) + 1, toCanvasY(fromNode.y) + 1);
+                    ctx.lineTo(toCanvasX(toNode.x) + 1, toCanvasY(toNode.y) + 1);
+                    ctx.stroke();
+                    
+                    // Draw track
+                    ctx.strokeStyle = color;
+                    ctx.lineWidth = 3;
+                    ctx.beginPath();
+                    ctx.moveTo(toCanvasX(fromNode.x), toCanvasY(fromNode.y));
+                    ctx.lineTo(toCanvasX(toNode.x), toCanvasY(toNode.y));
+                    ctx.stroke();
+                    
+                    // Draw direction arrow for unidirectional tracks
+                    if (edge.direction === 'unidirectional') {
+                        drawArrow(fromNode, toNode, color);
+                    }
+                }
+            });
+            
+            // Draw nodes with different shapes based on type
+            railwayData.nodes.forEach(node => {
+                const x = toCanvasX(node.x);
+                const y = toCanvasY(node.y);
+                
+                const isHovered = hoveredNode && hoveredNode.id === node.id;
+                const nodeType = node.type || 'signal';
+                
+                // Draw node shadow
+                ctx.fillStyle = 'rgba(0,0,0,0.4)';
+                drawNodeShape(x + 1, y + 1, nodeType, 8, true);
+                
+                // Draw node based on type
+                drawNodeShape(x, y, nodeType, 7, false, isHovered);
+                
+                // Draw label
+                if (showLabels && scale > 0.04) {
+                    ctx.fillStyle = isHovered ? '#4fc3f7' : '#e0e0e0';
+                    ctx.font = `${isHovered ? 'bold ' : ''}10px Segoe UI`;
+                    ctx.shadowColor = 'rgba(0,0,0,0.8)';
+                    ctx.shadowBlur = 3;
+                    ctx.fillText(node.id || node.name, x + 10, y - 10);
+                    ctx.shadowBlur = 0;
+                }
+            });
+            
+            // Update stats
+            updateStats();
+        }
+        
+        function drawGrid() {
+            ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+            ctx.lineWidth = 1;
+            
+            const gridSpacing = 1000; // meters
+            const startX = Math.floor(-offsetX / scale / gridSpacing) * gridSpacing;
+            const endX = Math.floor((canvas.width - offsetX) / scale / gridSpacing) * gridSpacing;
+            const startY = Math.floor((offsetY) / scale / gridSpacing) * gridSpacing;
+            const endY = Math.floor((offsetY - canvas.height) / scale / gridSpacing) * gridSpacing;
+            
+            // Vertical lines
+            for (let x = startX; x <= endX; x += gridSpacing) {
+                ctx.beginPath();
+                ctx.moveTo(toCanvasX(x), 0);
+                ctx.lineTo(toCanvasX(x), canvas.height);
+                ctx.stroke();
+            }
+            
+            // Horizontal lines
+            for (let y = endY; y <= startY; y += gridSpacing) {
+                ctx.beginPath();
+                ctx.moveTo(0, toCanvasY(y));
+                ctx.lineTo(canvas.width, toCanvasY(y));
+                ctx.stroke();
+            }
+        }
+        
+        function drawArrow(fromNode, toNode, color) {
+            const x1 = toCanvasX(fromNode.x);
+            const y1 = toCanvasY(fromNode.y);
+            const x2 = toCanvasX(toNode.x);
+            const y2 = toCanvasY(toNode.y);
+            
+            const midX = (x1 + x2) / 2;
+            const midY = (y1 + y2) / 2;
+            
+            const angle = Math.atan2(y2 - y1, x2 - x1);
+            const arrowSize = 8;
+            
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.moveTo(midX, midY);
+            ctx.lineTo(
+                midX - arrowSize * Math.cos(angle - Math.PI / 6),
+                midY - arrowSize * Math.sin(angle - Math.PI / 6)
+            );
+            ctx.lineTo(
+                midX - arrowSize * Math.cos(angle + Math.PI / 6),
+                midY - arrowSize * Math.sin(angle + Math.PI / 6)
+            );
+            ctx.closePath();
+            ctx.fill();
+        }
+        
+        function updateStats() {
+            if (!railwayData) return;
+            
+            const nodeCount = railwayData.nodes.length;
+            const edgeCount = railwayData.edges.length;
+            const upstreamCount = railwayData.edges.filter(e => (e.color || e.stream_type) === 'red').length;
+            const downstreamCount = railwayData.edges.filter(e => (e.color || e.stream_type) === 'blue').length;
+            const bidirectionalCount = railwayData.edges.filter(e => (e.color || e.stream_type) === 'yellow').length;
+            const junctionCount = railwayData.nodes.filter(n => n.type === 'junction').length;
+            
+            let displayedEdges = edgeCount;
+            if (trackFilter !== 'all') {
+                displayedEdges = railwayData.edges.filter(e => (e.color || e.stream_type) === trackFilter).length;
+            }
+            
+            document.getElementById('stats').innerHTML = `
+                <span class="stat-item"><strong>Nodes:</strong> ${nodeCount}</span>
+                <span class="stat-item"><strong>Junctions:</strong> ${junctionCount}</span>
+                <span class="stat-item"><strong>Edges:</strong> ${displayedEdges}/${edgeCount}</span>
+                <span class="stat-item"><strong>🔴 Upstream:</strong> ${upstreamCount}</span>
+                <span class="stat-item"><strong>🔵 Downstream:</strong> ${downstreamCount}</span>
+                <span class="stat-item"><strong>🟡 Bidirectional:</strong> ${bidirectionalCount}</span>
+                <span class="stat-item"><strong>Zoom:</strong> ${(scale * 100).toFixed(0)}%</span>
+            `;
+        }
+        
+        function zoomIn() {
+            scale *= 1.3;
+            draw();
+        }
+        
+        function zoomOut() {
+            scale /= 1.3;
+            draw();
+        }
+        
+        function resetView() {
+            scale = 0.07;
+            offsetX = 50;
+            offsetY = 800;
+            trackFilter = 'all';
+            document.getElementById('trackFilter').value = 'all';
+            draw();
+        }
+        
+        function fitToScreen() {
+            if (!railwayData || railwayData.nodes.length === 0) return;
+            
+            const xs = railwayData.nodes.map(n => n.x);
+            const ys = railwayData.nodes.map(n => n.y);
+            const minX = Math.min(...xs);
+            const maxX = Math.max(...xs);
+            const minY = Math.min(...ys);
+            const maxY = Math.max(...ys);
+            
+            const width = maxX - minX;
+            const height = maxY - minY;
+            
+            const scaleX = (canvas.width - 100) / width;
+            const scaleY = (canvas.height - 100) / height;
+            scale = Math.min(scaleX, scaleY);
+            
+            offsetX = 50 - minX * scale;
+            offsetY = canvas.height - 50 + minY * scale;
+            
+            draw();
+        }
+        
+        function toggleLabels() {
+            showLabels = !showLabels;
+            draw();
+        }
+        
+        function toggleGrid() {
+            showGrid = !showGrid;
+            draw();
+        }
+        
+        function filterTracks() {
+            trackFilter = document.getElementById('trackFilter').value;
+            draw();
+        }
+        
+        // Mouse events for panning and editing
+        canvas.addEventListener('mousedown', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+            
+            if (editMode) {
+                // Check if clicking on a node
+                let clickedNode = null;
+                if (railwayData) {
+                    railwayData.nodes.forEach(node => {
+                        const x = toCanvasX(node.x);
+                        const y = toCanvasY(node.y);
+                        const distance = Math.sqrt((mouseX - x) ** 2 + (mouseY - y) ** 2);
+                        
+                        if (distance < 10) {
+                            clickedNode = node;
+                        }
+                    });
+                }
+                
+                // If no node clicked, check if clicking on an edge (Ctrl+Click)
+                let clickedEdge = null;
+                if (!clickedNode && e.ctrlKey && railwayData) {
+                    railwayData.edges.forEach(edge => {
+                        const fromNode = railwayData.nodes.find(n => n.id === edge.from);
+                        const toNode = railwayData.nodes.find(n => n.id === edge.to);
+                        
+                        if (fromNode && toNode) {
+                            const x1 = toCanvasX(fromNode.x);
+                            const y1 = toCanvasY(fromNode.y);
+                            const x2 = toCanvasX(toNode.x);
+                            const y2 = toCanvasY(toNode.y);
+                            
+                            // Calculate distance from point to line segment
+                            const dist = distanceToLineSegment(mouseX, mouseY, x1, y1, x2, y2);
+                            
+                            if (dist < 8) {
+                                clickedEdge = { edge, fromNode, toNode };
+                            }
+                        }
+                    });
+                }
+                
+                if (clickedEdge) {
+                    // Ctrl+Click on edge: Edit edge
+                    openEdgePanel(clickedEdge.fromNode, clickedEdge.toNode);
+                } else if (clickedNode) {
+                    if (e.shiftKey) {
+                        // Shift+Click: Select for edge creation
+                        if (!selectedNodeForEdge) {
+                            selectedNodeForEdge = clickedNode;
+                            draw(); // Redraw to show selection
+                        } else {
+                            // Create edge between nodes
+                            openEdgePanel(selectedNodeForEdge, clickedNode);
+                            selectedNodeForEdge = null;
+                        }
+                    } else {
+                        // Normal click: Edit node
+                        openEditPanel(clickedNode);
+                    }
+                } else if (!e.shiftKey && !e.ctrlKey) {
+                    // Click on empty space: Create new node
+                    const worldX = Math.round((mouseX - offsetX) / scale);
+                    const worldY = Math.round((offsetY - mouseY) / scale);
+                    createNewNode(worldX, worldY);
+                }
+            } else {
+                isDragging = true;
+                lastX = e.clientX;
+                lastY = e.clientY;
+            }
+        });
+        
+        canvas.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+            
+            if (isDragging) {
+                const dx = e.clientX - lastX;
+                const dy = e.clientY - lastY;
+                offsetX += dx;
+                offsetY += dy;
+                lastX = e.clientX;
+                lastY = e.clientY;
+                draw();
+            } else {
+                // Check for node hover
+                let foundNode = null;
+                if (railwayData) {
+                    railwayData.nodes.forEach(node => {
+                        const x = toCanvasX(node.x);
+                        const y = toCanvasY(node.y);
+                        const distance = Math.sqrt((mouseX - x) ** 2 + (mouseY - y) ** 2);
+                        
+                        if (distance < 10) {
+                            foundNode = node;
+                        }
+                    });
+                }
+                
+                if (foundNode !== hoveredNode) {
+                    hoveredNode = foundNode;
+                    draw();
+                    
+                    if (hoveredNode) {
+                        showNodeInfo(hoveredNode);
+                    } else {
+                        hideNodeInfo();
+                    }
+                }
+                
+                // Update cursor
+                if (editMode) {
+                    canvas.style.cursor = foundNode ? 'pointer' : 'crosshair';
+                } else {
+                    canvas.style.cursor = foundNode ? 'pointer' : 'grab';
+                }
+            }
+        });
+        
+        canvas.addEventListener('mouseup', () => {
+            isDragging = false;
+        });
+        
+        canvas.addEventListener('mouseleave', () => {
+            isDragging = false;
+            hoveredNode = null;
+            hideNodeInfo();
+            draw();
+        });
+        
+        // Wheel zoom
+        canvas.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            const zoomFactor = e.deltaY > 0 ? 0.85 : 1.15;
+            
+            // Zoom towards mouse position
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+            
+            const worldX = (mouseX - offsetX) / scale;
+            const worldY = (offsetY - mouseY) / scale;
+            
+            scale *= zoomFactor;
+            
+            offsetX = mouseX - worldX * scale;
+            offsetY = mouseY + worldY * scale;
+            
+            draw();
+        });
+        
+        function showNodeInfo(node) {
+            const nodeInfo = document.getElementById('nodeInfo');
+            const nodeDetails = document.getElementById('nodeDetails');
+            
+            // Find connected edges
+            const connectedEdges = railwayData.edges.filter(e => 
+                e.from === node.id || e.to === node.id
+            );
+            
+            const connections = connectedEdges.map(e => {
+                const isFrom = e.from === node.id;
+                const otherNode = isFrom ? e.to : e.from;
+                const direction = isFrom ? '→' : '←';
+                return `${direction} ${otherNode}`;
+            }).join('<br>');
+            
+            nodeDetails.innerHTML = `
+                <div class="node-detail"><strong>ID:</strong> ${node.id}</div>
+                <div class="node-detail"><strong>Name:</strong> ${node.name || node.id}</div>
+                <div class="node-detail"><strong>Type:</strong> ${node.type || 'signal'}</div>
+                <div class="node-detail"><strong>Line:</strong> ${node.line || 'N/A'}</div>
+                <div class="node-detail"><strong>Position:</strong> (${node.x}, ${node.y})</div>
+                ${node.status ? `<div class="node-detail"><strong>Status:</strong> ${node.status}</div>` : ''}
+                ${node.description ? `<div class="node-detail"><strong>Description:</strong> ${node.description}</div>` : ''}
+                <div class="node-detail"><strong>Connections:</strong> ${connectedEdges.length}</div>
+                ${connections ? `<div class="node-detail" style="margin-top:10px; font-size:11px;">${connections}</div>` : ''}
+            `;
+            
+            nodeInfo.classList.add('visible');
+        }
+        
+        function hideNodeInfo() {
+            const nodeInfo = document.getElementById('nodeInfo');
+            nodeInfo.classList.remove('visible');
+        }
+        
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            switch(e.key) {
+                case '+':
+                case '=':
+                    zoomIn();
+                    break;
+                case '-':
+                case '_':
+                    zoomOut();
+                    break;
+                case 'r':
+                case 'R':
+                    if (!e.ctrlKey) resetView();
+                    break;
+                case 'l':
+                case 'L':
+                    toggleLabels();
+                    break;
+                case 'g':
+                case 'G':
+                    toggleGrid();
+                    break;
+                case 'f':
+                case 'F':
+                    fitToScreen();
+                    break;
+                case 'e':
+                case 'E':
+                    toggleEditMode();
+                    break;
+                case 'Escape':
+                    if (editMode && selectedNodeForEdge) {
+                        selectedNodeForEdge = null;
+                        alert('Edge creation cancelled');
+                    }
+                    closeEditPanel();
+                    closeEdgePanel();
+                    break;
+            }
+        });
+        
+        // Edit mode functions
+        function toggleEditMode() {
+            editMode = !editMode;
+            const btn = document.getElementById('editModeBtn');
+            const indicator = document.getElementById('modeIndicator');
+            
+            if (editMode) {
+                btn.textContent = '🔒 Disable Edit';
+                btn.style.background = 'linear-gradient(135deg, #dc3545 0%, #c82333 100%)';
+                indicator.classList.add('visible');
+                canvas.style.cursor = 'crosshair';
+            } else {
+                btn.textContent = '✏️ Enable Edit';
+                btn.style.background = 'linear-gradient(135deg, #ff9800 0%, #f57c00 100%)';
+                indicator.classList.remove('visible');
+                canvas.style.cursor = 'grab';
+                selectedNodeForEdge = null;
+            }
+        }
+        
+        function createNewNode(x, y) {
+            // Generate a unique ID
+            const newId = `N${Date.now().toString().slice(-6)}`;
+            
+            editingNode = {
+                id: newId,
+                x: x,
+                y: y,
+                type: 'signal',
+                name: newId,
+                line: ''
+            };
+            
+            document.getElementById('editPanelTitle').textContent = 'Create New Node';
+            document.getElementById('nodeId').value = newId;
+            document.getElementById('nodeX').value = x;
+            document.getElementById('nodeY').value = y;
+            document.getElementById('nodeType').value = 'signal';
+            document.getElementById('nodeName').value = newId;
+            document.getElementById('nodeLine').value = '';
+            document.getElementById('nodeStation').value = 'Vidisha';
+            document.getElementById('nodeDescription').value = '';
+            document.getElementById('nodeStatus').value = 'active';
+            document.getElementById('deleteBtn').style.display = 'none';
+            
+            document.getElementById('overlay').classList.add('visible');
+            document.getElementById('editPanel').classList.add('visible');
+        }
+        
+        function openEditPanel(node) {
+            editingNode = node;
+            
+            document.getElementById('editPanelTitle').textContent = 'Edit Node';
+            document.getElementById('nodeId').value = node.id;
+            document.getElementById('nodeX').value = node.x;
+            document.getElementById('nodeY').value = node.y;
+            document.getElementById('nodeType').value = node.type || 'signal';
+            document.getElementById('nodeName').value = node.name || node.id;
+            document.getElementById('nodeLine').value = node.line || '';
+            document.getElementById('nodeStation').value = node.station || '';
+            document.getElementById('nodeDescription').value = node.description || '';
+            document.getElementById('nodeStatus').value = node.status || 'active';
+            document.getElementById('deleteBtn').style.display = 'block';
+            
+            document.getElementById('overlay').classList.add('visible');
+            document.getElementById('editPanel').classList.add('visible');
+        }
+        
+        function closeEditPanel() {
+            document.getElementById('overlay').classList.remove('visible');
+            document.getElementById('editPanel').classList.remove('visible');
+            editingNode = null;
+        }
+        
+        function openEdgePanel(fromNode, toNode) {
+            editingEdge = { from: fromNode.id, to: toNode.id, isNew: true };
+            
+            // Check if edge already exists
+            const existingEdge = railwayData.edges.find(e => 
+                (e.from === fromNode.id && e.to === toNode.id) ||
+                (e.from === toNode.id && e.to === fromNode.id)
+            );
+            
+            // Calculate length
+            const dx = toNode.x - fromNode.x;
+            const dy = toNode.y - fromNode.y;
+            const calculatedLength = Math.round(Math.sqrt(dx * dx + dy * dy));
+            
+            if (existingEdge) {
+                editingEdge = existingEdge;
+                editingEdge.isNew = false;
+                document.getElementById('deleteEdgeBtn').style.display = 'block';
+                document.getElementById('edgeSaveBtn').textContent = '💾 Update';
+            } else {
+                document.getElementById('deleteEdgeBtn').style.display = 'none';
+                document.getElementById('edgeSaveBtn').textContent = '💾 Create';
+            }
+            
+            document.getElementById('edgeFrom').value = fromNode.id;
+            document.getElementById('edgeTo').value = toNode.id;
+            document.getElementById('edgeColor').value = existingEdge ? (existingEdge.color || existingEdge.stream_type) : 'red';
+            document.getElementById('edgeDirection').value = existingEdge ? existingEdge.direction : 'unidirectional';
+            document.getElementById('edgeTrackType').value = existingEdge ? existingEdge.track_type : 'up_main';
+            document.getElementById('edgeStation').value = existingEdge ? (existingEdge.station || 'Vidisha') : 'Vidisha';
+            document.getElementById('edgeLength').value = existingEdge ? existingEdge.length_m : calculatedLength;
+            document.getElementById('edgeSpeed').value = existingEdge ? (existingEdge.speed_limit || '') : '';
+            document.getElementById('edgeStatus').value = existingEdge ? (existingEdge.status || 'operational') : 'operational';
+            document.getElementById('edgeDescription').value = existingEdge ? (existingEdge.description || '') : '';
+            
+            document.getElementById('overlay').classList.add('visible');
+            document.getElementById('edgePanel').classList.add('visible');
+        }
+        
+        function closeEdgePanel() {
+            document.getElementById('overlay').classList.remove('visible');
+            document.getElementById('edgePanel').classList.remove('visible');
+            editingEdge = null;
+        }
+        
+        function deleteNode() {
+            if (!editingNode || !confirm(`Delete node ${editingNode.id}? This will also delete all connected edges.`)) {
+                return;
+            }
+            
+            // Remove node
+            railwayData.nodes = railwayData.nodes.filter(n => n.id !== editingNode.id);
+            
+            // Remove connected edges
+            railwayData.edges = railwayData.edges.filter(e => 
+                e.from !== editingNode.id && e.to !== editingNode.id
+            );
+            
+            hasUnsavedChanges = true;
+            closeEditPanel();
+            draw();
+            alert(`Node ${editingNode.id} deleted successfully!`);
+        }
+        
+        function deleteEdge() {
+            if (!editingEdge || !confirm(`Delete edge from ${editingEdge.from} to ${editingEdge.to}?`)) {
+                return;
+            }
+            
+            railwayData.edges = railwayData.edges.filter(e => 
+                !(e.from === editingEdge.from && e.to === editingEdge.to)
+            );
+            
+            hasUnsavedChanges = true;
+            closeEdgePanel();
+            draw();
+            alert('Edge deleted successfully!');
+        }
+        
+        // Form submissions
+        document.getElementById('editForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const newData = {
+                id: document.getElementById('nodeId').value,
+                x: parseInt(document.getElementById('nodeX').value),
+                y: parseInt(document.getElementById('nodeY').value),
+                type: document.getElementById('nodeType').value,
+                name: document.getElementById('nodeName').value,
+                line: document.getElementById('nodeLine').value,
+                station: document.getElementById('nodeStation').value,
+                description: document.getElementById('nodeDescription').value,
+                status: document.getElementById('nodeStatus').value
+            };
+            
+            if (editingNode && railwayData.nodes.includes(editingNode)) {
+                // Update existing node
+                Object.assign(editingNode, newData);
+            } else {
+                // Add new node
+                railwayData.nodes.push(newData);
+            }
+            
+            hasUnsavedChanges = true;
+            closeEditPanel();
+            draw();
+            alert('Node saved successfully!');
+        });
+        
+        document.getElementById('edgeForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const fromNode = railwayData.nodes.find(n => n.id === document.getElementById('edgeFrom').value);
+            const toNode = railwayData.nodes.find(n => n.id === document.getElementById('edgeTo').value);
+            
+            if (!fromNode || !toNode) {
+                alert('Invalid nodes!');
+                return;
+            }
+            
+            const color = document.getElementById('edgeColor').value;
+            const direction = document.getElementById('edgeDirection').value;
+            const trackType = document.getElementById('edgeTrackType').value;
+            const station = document.getElementById('edgeStation').value;
+            const speedLimit = document.getElementById('edgeSpeed').value;
+            const status = document.getElementById('edgeStatus').value;
+            const description = document.getElementById('edgeDescription').value;
+            
+            // Calculate length
+            const dx = toNode.x - fromNode.x;
+            const dy = toNode.y - fromNode.y;
+            const length = Math.round(Math.sqrt(dx * dx + dy * dy));
+            
+            const newEdge = {
+                id: editingEdge && !editingEdge.isNew ? editingEdge.id : `E_${fromNode.id}_${toNode.id}`,
+                from: fromNode.id,
+                to: toNode.id,
+                stream_type: color,
+                color: color,
+                direction: direction,
+                track_type: trackType,
+                length_m: length
+            };
+            
+            // Add optional fields only if they have values
+            if (station) newEdge.station = station;
+            if (speedLimit) newEdge.speed_limit = parseInt(speedLimit);
+            if (status) newEdge.status = status;
+            if (description) newEdge.description = description;
+            
+            if (editingEdge && !editingEdge.isNew) {
+                // Update existing edge
+                const index = railwayData.edges.findIndex(e => 
+                    e.from === editingEdge.from && e.to === editingEdge.to
+                );
+                if (index !== -1) {
+                    railwayData.edges[index] = newEdge;
+                }
+            } else {
+                // Add new edge
+                railwayData.edges.push(newEdge);
+            }
+            
+            hasUnsavedChanges = true;
+            closeEdgePanel();
+            draw();
+            alert('Edge saved successfully!');
+        });
+        
+        // Save to JSON
+        function saveToJSON() {
+            if (!hasUnsavedChanges) {
+                alert('No changes to save!');
+                return;
+            }
+            
+            if (!confirm('Save all changes to database_schema.json?')) {
+                return;
+            }
+            
+            // Prepare the full schema
+            const schema = {
+                railway_section: {
+                    name: "Vidisha Railway Complex - Section 1/6",
+                    units: "meters",
+                    description: "Railway topology with nodes and directional edges"
+                },
+                nodes: railwayData.nodes,
+                edges: railwayData.edges,
+                track_classifications: {
+                    stream_types: {
+                        upstream: {
+                            description: "Red tracks - trains moving in upstream direction",
+                            color: "red",
+                            traffic_direction: "unidirectional"
+                        },
+                        downstream: {
+                            description: "Blue tracks - trains moving in downstream direction",
+                            color: "blue",
+                            traffic_direction: "unidirectional"
+                        },
+                        bidirectional: {
+                            description: "Yellow tracks - trains can move in both directions",
+                            color: "yellow",
+                            traffic_direction: "bidirectional"
+                        },
+                        turning: {
+                            description: "Orange tracks - crossover connections between streams",
+                            color: "orange",
+                            traffic_direction: "unidirectional"
+                        },
+                        yard: {
+                            description: "Black tracks - yard connections",
+                            color: "black",
+                            traffic_direction: "unidirectional"
+                        },
+                        upstream_loop: {
+                            description: "Purple tracks - upstream loop track",
+                            color: "purple",
+                            traffic_direction: "unidirectional"
+                        },
+                        downstream_loop: {
+                            description: "Green tracks - downstream loop track",
+                            color: "green",
+                            traffic_direction: "unidirectional"
+                        }
+                    },
+                    track_types: {
+                        main: "Primary running lines",
+                        loop: "Loop/bypass tracks",
+                        crossover: "Connection tracks between lines",
+                        yard: "Yard and siding tracks"
+                    }
+                }
+            };
+            
+            // Create download
+            const dataStr = JSON.stringify(schema, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'database_schema.json';
+            link.click();
+            URL.revokeObjectURL(url);
+            
+            hasUnsavedChanges = false;
+            alert('✅ Changes saved! The file has been downloaded. Replace your original database_schema.json with this file.');
+        }
+        
+        // Warn before leaving with unsaved changes
+        window.addEventListener('beforeunload', (e) => {
+            if (hasUnsavedChanges) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
+    </script>
+</body>
+</html>

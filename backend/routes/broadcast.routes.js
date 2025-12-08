@@ -8,7 +8,7 @@ const router = express.Router();
 router.get("/broadcast/admins", verifyJWT, async (req, res) => {
     try {
         const admins = await Admin.find()
-            .select("email sectionId lastLogin")
+            .select("email name sectionId lastLogin")
             .lean();
 
         res.json({

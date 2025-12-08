@@ -9,7 +9,7 @@ import {
     selectIsAuthenticated,
     selectAuthLoading
 } from '@/store/slices/adminSlice';
-import { setStationData } from '@/store/slices/stationSlice';
+import { setStationData, setSectionData } from '@/store/slices/stationSlice';
 
 export default function Login() {
     const [username, setUsername] = useState('');
@@ -42,13 +42,19 @@ export default function Login() {
 
         try {
             const response = await loginApi(username, password);
-            const { accessToken, refreshToken, admin, stationData, sectionId, otherStations } = response;
+            const { accessToken, refreshToken, admin, stationData, sectionData, sectionId, otherStations, trainData } = response;
 
             // Store auth in Redux (which also persists to localStorage)
             dispatch(setCredentials({ admin, accessToken, refreshToken }));
 
-            // Store station data in Redux
-            dispatch(setStationData({ stationData, otherStations, sectionId }));
+            // Check if section admin (has sectionData) or station admin (has stationData)
+            if (admin.isSectionAdmin && sectionData) {
+                // Section admin - store full section data with all stations
+                dispatch(setSectionData({ sectionData, sectionId: admin.sectionId, trainData }));
+            } else if (stationData) {
+                // Station admin - store single station data
+                dispatch(setStationData({ stationData, otherStations, sectionId, trainData }));
+            }
 
             router.push('/home');
         } catch (err) {

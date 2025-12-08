@@ -557,12 +557,12 @@ export default function BroadcastPage() {
                             ) : (
                                 <div className="grid grid-cols-2 gap-4">
                                     {admins.map((adminItem) => {
-                                        const isOnline = onlineUsers.some(u => u.email === adminItem.email);
+                                        const isOnline = onlineUsers.some(u => u.name === adminItem.name);
                                         return (
                                             <div key={adminItem._id} className="card-hover border border-white/10">
                                                 <div className="flex items-center justify-between mb-2">
                                                     <div>
-                                                        <h3 className="text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>{adminItem.email}</h3>
+                                                        <h3 className="text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>{adminItem.name}</h3>
                                                         <p className="text-sm text-gray-400">Section: {adminItem.sectionId}</p>
                                                     </div>
                                                     <span className={`badge ${isOnline ? 'badge-low' : 'badge-medium'}`}>
