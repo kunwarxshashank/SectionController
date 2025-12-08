@@ -31,41 +31,43 @@ async function seedAdmins() {
     // -----------------------------------------
     const adminsToCreate = [
       {
-        email: "bhs@section.com",
+        email: "bplbina@section.com",
         password: "123456",
         sectionId: "bplbina",
         twoFa: false
       },
       {
-        email: "bhs@section.com",
+        email: "vidisha@section.com",
         password: "123456",
         stationId: "vidisha",
         twoFa: false
       },
       {
-        email: "bhs@section.com",
+        email: "sorai@section.com",
         password: "123456",
         stationId: "sorai",
         twoFa: false
       },
       {
-        email: "bhs@section.com",
+        email: "sumer@section.com",
         password: "123456",
         stationId: "sumer",
         twoFa: false
-      },{
-        email: "bhs@section.com",
+      },
+      {
+        email: "gulabganj@section.com",
         password: "123456",
         stationId: "gulabganj",
         twoFa: false
-      },{
-        email: "bhs@section.com",
+      },
+      {
+        email: "pabai@section.com",
         password: "123456",
         stationId: "pabai",
         twoFa: false
       },
       {
-        email: "bhs@section.com",
+        email: "ganjbasoda@section.com",
         password: "123456",
         stationId: "ganjbasoda",
         twoFa: false

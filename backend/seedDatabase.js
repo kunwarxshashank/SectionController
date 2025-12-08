@@ -1,4 +1,3 @@
-// seedDatabase.js
 import fs from "fs";
 import mongoose from "mongoose";
 
@@ -49,10 +48,12 @@ function normalizeStream(stream) {
 function normalizeDirection(dir) {
     if (!dir) return "BIDIRECTIONAL";
     const d = dir.toLowerCase();
-    if (d === "up") return "UP";
-    if (d === "down" || d === "dn") return "DN";
-    return "BIDIRECTIONAL";
+    if (d === "unidirectional" || d === "uni") return "UNIDIRECTIONAL";
+    if (d === "bidirectional" || d === "bi") return "BIDIRECTIONAL";
+
+    return "BIDIRECTIONAL"; // fallback
 }
+
 
 const JSON_PATH = "./database_schema.json";
 
@@ -94,6 +95,7 @@ async function seedDatabase() {
 
         console.log(`📌 Section created: ${section.name}`);
 
+
         /* ---------------------------------------------
            📂 Group Nodes & Edges by Station
         --------------------------------------------- */
@@ -111,6 +113,7 @@ async function seedDatabase() {
             edgesByStation[station].push(e);
         }
 
+
         /* ---------------------------------------------
            🏭 Create Stations + Save Nodes + Edges
         --------------------------------------------- */
@@ -120,39 +123,51 @@ async function seedDatabase() {
             const rawNodeList = nodesByStation[stationName];
             const rawEdgeList = edgesByStation[stationName] || [];
 
+
+
             /* ------------------ Save NODES ------------------ */
             const savedNodes = await Node.insertMany(
                 rawNodeList.map(n => ({
-                    nodeId: n.id,
-                    nodeType: normalizeNodeType(n.type),
+                    nodeId: n.nodeId,
+                    nodeType: normalizeNodeType(n.nodeType),
                     x: n.x || 0,
                     y: n.y || 0,
                     name: n.name || "",
                     line: n.line || "",
                     description: n.description || "",
                     status: n.status || "active",
-                    signalColor: n.color || "red"
+                    station: n.station || "",
+                    signalColor: n.signalColor || "green"
                 }))
             );
 
             console.log(`   ➤ Saved ${savedNodes.length} Nodes`);
 
+
+
+
             /* ------------------ Save EDGES ------------------ */
             const savedEdges = await Edge.insertMany(
                 rawEdgeList.map(e => ({
                     edgeId: e.id,
-                    startNode: e.from,
-                    endNode: e.to,
-                    edgeType: e.track_type || "",
-                    stream: normalizeStream(e.stream_type),
-                    signal: e.color || "",
+                    startNode: e.startNode,
+                    endNode: e.endNode,
+                    stream: e.stream,
+                    edgeColor: e.edgeColor || "",
                     direction: normalizeDirection(e.direction),
-                    maxspeed: e.length_m || "",
+                    edgeType: e.edgeType || "",
+                    edgeLength: e.edgeLength,
+                    speed_limit: e.speed_limit || "",
+                    status: e.status,
+                    station: e.station,
                     restrictions: e.restrictions || ""
                 }))
             );
 
             console.log(`   ➤ Saved ${savedEdges.length} Edges`);
+
+
+
 
             /* ------------------ CREATE STATION ------------------ */
             const stationDoc = await Station.create({

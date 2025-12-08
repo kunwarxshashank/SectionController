@@ -109,6 +109,7 @@ const adminSlice = createSlice({
   }
 });
 
+
 export const {
   initializeAuth,
   setCredentials,
@@ -118,6 +119,7 @@ export const {
 } = adminSlice.actions;
 
 export default adminSlice.reducer;
+
 
 // Selectors
 export const selectAdmin = (state) => state.admin.admin;

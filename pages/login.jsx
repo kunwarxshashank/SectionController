@@ -9,6 +9,7 @@ import {
     selectIsAuthenticated,
     selectAuthLoading
 } from '@/store/slices/adminSlice';
+import { setStationData } from '@/store/slices/stationSlice';
 
 export default function Login() {
     const [username, setUsername] = useState('');
@@ -41,10 +42,13 @@ export default function Login() {
 
         try {
             const response = await loginApi(username, password);
-            const { accessToken, refreshToken, admin } = response;
+            const { accessToken, refreshToken, admin, stationData, sectionId, otherStations } = response;
 
-            // Store in Redux (which also persists to localStorage)
+            // Store auth in Redux (which also persists to localStorage)
             dispatch(setCredentials({ admin, accessToken, refreshToken }));
+
+            // Store station data in Redux
+            dispatch(setStationData({ stationData, otherStations, sectionId }));
 
             router.push('/home');
         } catch (err) {

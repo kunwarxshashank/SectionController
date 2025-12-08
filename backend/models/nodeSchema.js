@@ -11,6 +11,7 @@ const NodeSchema = new mongoose.Schema({
       "signalAutomatic",
       "track_node",
       "switch",
+      "yard",
       "platform",
       "sectionStart",
       "sectionEnd",
