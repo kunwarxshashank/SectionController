@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 import Admin from "../models/adminSchema.js";
 import Section from "../models/sectionSchema.js";
 import Station from "../models/stationSchema.js";
-import Track from "../models/trackSchema.js";
+import Tracks from "../models/trackSchema.js";
 import Edge from "../models/edgeSchema.js";
 import Node from "../models/nodeSchema.js";
 import Train from "../models/trainSchema.js";
@@ -16,7 +16,7 @@ export const loginAdmin = async (req, res) => {
     }
 
     const { id, password } = req.body;
-    console.log(id, password);
+    console.log("Login attempt for:", id);
 
     if (!id || !password) {
       return res.status(400).json({ msg: "ID and password are required" });
@@ -52,10 +52,13 @@ export const loginAdmin = async (req, res) => {
     // ------------------ 4) UPDATE LAST LOGIN ------------------
     admin.lastLogin = new Date();
     await admin.save();
+
     let responsePayload = {
       admin: {
         _id: admin._id,
         email: admin.email,
+        name: admin.name,
+        role: admin.role,
         isSectionAdmin,
         sectionId: admin.sectionId,
         stationId: admin.stationId
@@ -68,85 +71,189 @@ export const loginAdmin = async (req, res) => {
 
 
     // ====== SECTION ADMIN LOGIN ======
-
     if (isSectionAdmin) {
-      console.log(admin.sectionId)
+      console.log("Section Admin login - sectionId:", admin.sectionId);
 
-      let section;
       try {
-        section = await Section.find().populate({
-          path: "stations",
-          model: "Station",
-          populate: [
-            {
-              path: "nodes",
-              model: "Node"
-            },
-            {
-              path: "edges",
-              model: "Edge"
-            }
-          ]
-        })
+        // Step 1: Fetch section
+        // Step 2: Populate tracks
+        // Step 3: Populate nodes and edges inside each track
+        const section = await Section.findOne({ section_id: admin.sectionId })
+          .populate({
+            path: "tracks",
+            model: "Tracks",
+            populate: [
+              {
+                path: "nodes",
+                model: "Node"
+              },
+              {
+                path: "edges",
+                model: "Edge"
+              }
+            ]
+          })
+          .populate({
+            path: "stations",
+            model: "Station",
+            populate: [
+              {
+                path: "startNode",
+                model: "Node"
+              },
+              {
+                path: "endNode",
+                model: "Node"
+              }
+            ]
+          });
+
+        if (!section) {
+          return res.status(404).json({ msg: "Section information not found" });
+        }
+
+        // Fetch all trains
+        const trains = await Train.find();
+
+        responsePayload.sectionData = section;
+        responsePayload.trains = trains;
+
+        // Summary for debugging
+        console.log("Section loaded:", section.name);
+        console.log("Tracks count:", section.tracks?.length || 0);
+        console.log("Stations count:", section.stations?.length || 0);
+        console.log("Trains count:", trains?.length || 0);
+
+        return res.status(200).json({
+          msg: "Section Admin login successful",
+          ...responsePayload
+        });
+
       } catch (error) {
-        console.log(error)
+        console.error("Error fetching section data:", error);
+        return res.status(500).json({ msg: "Error fetching section data" });
       }
-
-
-
-      if (!section) {
-        return res.status(404).json({ msg: "Section information not found" });
-      }
-
-      responsePayload.sectionData = section;
-      return res.status(200).json({
-        msg: "Section Admin login successful",
-        ...responsePayload
-      });
     }
 
 
 
     // ====== STATION ADMIN LOGIN ======
     if (!isSectionAdmin) {
-      const station = await Station.findOne({ stationId: admin.stationId })
-        .populate({
-          path: "totalTracks",
-          populate: {
-            path: "",
-            model: "Edge"
-          }
-        })
-        .populate("nodes")
-        .populate("edges");
+      try {
+        const station = await Station.findOne({ stationId: admin.stationId })
+          .populate("startNode")
+          .populate("endNode");
 
-      if (!station) {
-        return res.status(404).json({ msg: "Station data not found" });
+        if (!station) {
+          return res.status(404).json({ msg: "Station data not found" });
+        }
+
+        // Fetch section info with tracks populated
+        const section = await Section.findById(station.sectionId)
+          .populate({
+            path: "tracks",
+            model: "Tracks",
+            populate: [
+              {
+                path: "nodes",
+                model: "Node"
+              },
+              {
+                path: "edges",
+                model: "Edge"
+              }
+            ]
+          })
+          .populate("stations");
+
+        // Get other stations (excluding current one)
+        const otherStations = section?.stations
+          ?.filter(s => s._id.toString() !== station._id.toString())
+          ?.map(s => ({
+            id: s._id,
+            stationId: s.stationId,
+            stationName: s.stationName
+          })) || [];
+
+        // Fetch all trains
+        const trains = await Train.find();
+
+        responsePayload.stationData = station;
+        responsePayload.sectionId = station.sectionId;
+        responsePayload.sectionData = section;
+        responsePayload.otherStations = otherStations;
+        responsePayload.trains = trains;
+
+        console.log("Station login:", station.stationName);
+
+        return res.status(200).json({
+          msg: "Station Admin login successful",
+          ...responsePayload
+        });
+
+      } catch (error) {
+        console.error("Error fetching station data:", error);
+        return res.status(500).json({ msg: "Error fetching station data" });
       }
-
-      // fetch section info to get OTHER stations (for redux)
-      const section = await Section.findById(station.sectionId)
-        .populate("stations");
-
-      responsePayload.stationData = station;
-      responsePayload.sectionId = station.sectionId;
-      responsePayload.otherStations = section.stations
-        .filter(s => s._id.toString() !== station._id.toString())
-        .map(s => ({
-          id: s._id,
-          stationName: s.stationName
-        }));
-      const train = await Train.find();
-      responsePayload.trainData = train;
-      console.log(responsePayload)
-      return res.status(200).json({
-        msg: "Station Admin login successful",
-        ...responsePayload
-      });
     }
 
   } catch (error) {
     console.error("Login Error:", error);
+    return res.status(500).json({ msg: "Server error" });
+  }
+};
+
+
+// ------------------ GET SECTION DATA (with full population) ------------------
+export const getSectionData = async (req, res) => {
+  try {
+    const { sectionId } = req.params;
+
+    // Fetch section → populate tracks → populate nodes + edges in tracks
+    const section = await Section.findOne({ section_id: sectionId })
+      .populate({
+        path: "tracks",
+        model: "Tracks",
+        populate: [
+          {
+            path: "nodes",
+            model: "Node"
+          },
+          {
+            path: "edges",
+            model: "Edge"
+          }
+        ]
+      })
+      .populate({
+        path: "stations",
+        model: "Station",
+        populate: [
+          {
+            path: "startNode",
+            model: "Node"
+          },
+          {
+            path: "endNode",
+            model: "Node"
+          }
+        ]
+      });
+
+    if (!section) {
+      return res.status(404).json({ msg: "Section not found" });
+    }
+
+    const trains = await Train.find();
+
+    return res.status(200).json({
+      msg: "Section data fetched successfully",
+      sectionData: section,
+      trains
+    });
+
+  } catch (error) {
+    console.error("Get Section Error:", error);
     return res.status(500).json({ msg: "Server error" });
   }
 };

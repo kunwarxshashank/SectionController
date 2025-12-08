@@ -10,7 +10,7 @@ const MONGO = process.env.MongoUrl;
 
 async function seedAdmins() {
   try {
-    await mongoose.connect(MONGO);
+    await mongoose.connect("mongodb://127.0.0.1:27017/railway_sim");
     console.log("Connected to DB");
 
     // Find the large section that was created earlier

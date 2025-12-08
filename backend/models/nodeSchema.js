@@ -2,55 +2,30 @@ import mongoose from "mongoose";
 
 const NodeSchema = new mongoose.Schema({
   nodeId: String,
-  nodeType: {
-    type: String,
-    enum: [
-      "signalHome",
-      "signalAdvance",
-      "signalStarter",
-      "signalAutomatic",
-      "track_node",
-      "switch",
-      "yard",
-      "platform",
-      "sectionStart",
-      "sectionEnd",
-      "stationStart",
-      "stationEnd",
-      "loopStart",
-      "loopEnd",
-      "loopCorner",
-      "turningPoint",
-      "junction",
-      "yard"
 
-    ]
-  },
+  nodeType: { type: String , enum: ["main" , "loop" , "crossing"   , ], default:"signal"}, // keep as-is
+
   x: Number,
   y: Number,
-  name: String,
-  line: String,
-  description: String,
-  status: {
-    type: String,
-    enum: ["active", "inactive"],
-    default: "active"
-  },
+ line: String,
+
   signalColor: {
     type: String,
-    enum: ["red", "yellow", "doubleYellow", "green"]
+    enum: ["red", "yellow", "doubleYellow", "green"],
+    default:"green",
   },
+
   signalType: {
     type: String,
-    enum: [
-      "signalHome",
-      "signalAdvance",
-      "signalStarter",
-      "signalAutomatic",
-      "manual",
-      "automatic"
-    ]
+    enum: ["home", "starter", "automatic", "advance"],
+    default:"home",
+  },
+
+  // NEW FIELD
+  blockBoundary: {
+    type: Boolean,
+    default: false
   }
 });
- const Node = mongoose.model("Node", NodeSchema);
- export default Node 
+
+export default mongoose.model("Node", NodeSchema);

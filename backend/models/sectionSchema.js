@@ -21,3 +21,4 @@ const SectionSchema = new mongoose.Schema({
 
 const Section =  mongoose.model("Section", SectionSchema);
 export default Section ;
+ 

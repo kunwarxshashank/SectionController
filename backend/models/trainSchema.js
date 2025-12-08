@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 
+// Schedule for each station in the section
 const stationScheduleSchema = new mongoose.Schema({
   scheduledArrival: { type: String, default: "" },
   scheduledDeparture: { type: String, default: "" },
@@ -8,39 +9,37 @@ const stationScheduleSchema = new mongoose.Schema({
   expectedDeparture: { type: String, default: "" }
 }, { _id: false });
 
+// Schedule contains all stations in our section (Bhopal, Vidisha, Bina)
 const scheduleSchema = new mongoose.Schema({
+  bhopal: { type: stationScheduleSchema, default: () => ({}) },
   vidisha: { type: stationScheduleSchema, default: () => ({}) },
-  sorai: { type: stationScheduleSchema, default: () => ({}) },
-  sumer: { type: stationScheduleSchema, default: () => ({}) },
-  gulabganj: { type: stationScheduleSchema, default: () => ({}) },
-  pabai: { type: stationScheduleSchema, default: () => ({}) },
-  ganjbasoda: { type: stationScheduleSchema, default: () => ({}) }
+  bina: { type: stationScheduleSchema, default: () => ({}) }
 }, { _id: false });
 
 const trainSchema = new mongoose.Schema({
   trainId: { type: String, required: true, unique: true },
-  trainNumber: { type: String, required: true },
   trainName: { type: String, required: true },
   trainType: { type: String, required: true },
-  trainCategory: { type: String, required: true },
+  trainCategory: { type: String, enum: ["Passenger", "Freight", "Special"], required: true },
 
+  // Priority (lower = higher priority)
   basePriority: { type: Number, required: true },
   trainPriority: { type: Number, required: true },
 
-  currentTrainPassenger: { type: Number, required: true },
+  // Train specifications
   maxTrainCapacity: { type: Number, required: true },
-
-  currentEdge: { type: String, default: "" },
-  isEmergency: { type: Boolean, default: false },
-
-  PAD: { type: [String], default: [] },
-  PDD: { type: [String], default: [] },
-  ACP: { type: [String], default: [] },
-
-  numberOfAxle: { type: Number, required: true },
-  direction: { type: String, required: true },
   maxSpeed: { type: Number, required: true },
 
+  // Current position on track
+  currentEdge: { type: String, default: "" },
+  
+  // Direction of travel
+  direction: { type: String, enum: ["UP", "DOWN"], required: true },
+  
+  // Emergency flag
+  isEmergency: { type: Boolean, default: false },
+
+  // Station-wise schedule
   schedule: { type: scheduleSchema, required: true }
 }, { timestamps: true });
 

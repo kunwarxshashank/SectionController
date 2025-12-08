@@ -9,43 +9,17 @@ const StationSchema = new mongoose.Schema({
     ref: "Section"
   },
 
-  totalTracks: {
-    type: Map,
-    of: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Edge"
-      }
-    ],
-    default: {}
+  startNode: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Node"
   },
 
-  nodes: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Node"
-    }
-  ],
-  edges: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Edge"
-    }
-  ],
+  endNode: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Node"
+  },
 
-  edges: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Edge"
-    }
-  ],
-
-  locoPilot: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "LocoPilot"
-    }
-  ]
+  
 });
 
 const Station = mongoose.model("Station", StationSchema);
