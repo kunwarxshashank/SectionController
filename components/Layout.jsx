@@ -16,7 +16,6 @@ export default function Layout({ children }) {
     const navigation = [
         { name: 'Home', href: '/home', icon: Home },
         { name: 'Reports', href: '/reports', icon: FileText },
-        { name: 'Logs', href: '/logs', icon: ScrollText },
         { name: 'Test Cases', href: '/testcase', icon: FlaskConical },
     ];
 
