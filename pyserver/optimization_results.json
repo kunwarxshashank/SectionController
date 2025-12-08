@@ -1,0 +1,90 @@
+{
+  "timestamp": "2025-12-08T12:38:23.747893",
+  "section_info": {
+    "stations": [
+      "vidisha",
+      "sorai",
+      "sumer",
+      "gulabganj",
+      "pabai",
+      "ganjbasoda"
+    ],
+    "total_nodes": 189,
+    "total_edges": 133,
+    "total_trains": 250
+  },
+  "throughput": {
+    "section_capacities": {
+      "vidisha-sorai": {
+        "num_tracks": 3,
+        "avg_travel_time_min": 2.67,
+        "capacity_per_hour": 31.8,
+        "bottleneck_score": 5.67
+      },
+      "sorai-sumer": {
+        "num_tracks": 3,
+        "avg_travel_time_min": 2.22,
+        "capacity_per_hour": 34.5,
+        "bottleneck_score": 5.22
+      },
+      "sumer-gulabganj": {
+        "num_tracks": 3,
+        "avg_travel_time_min": 2.0,
+        "capacity_per_hour": 36.0,
+        "bottleneck_score": 5.0
+      },
+      "gulabganj-pabai": {
+        "num_tracks": 3,
+        "avg_travel_time_min": 1.33,
+        "capacity_per_hour": 41.5,
+        "bottleneck_score": 4.33
+      },
+      "pabai-ganjbasoda": {
+        "num_tracks": 3,
+        "avg_travel_time_min": 2.0,
+        "capacity_per_hour": 36.0,
+        "bottleneck_score": 5.0
+      }
+    },
+    "bottlenecks": [
+      {
+        "station": "sorai",
+        "time_window": "10:15-10:30",
+        "event_count": 13,
+        "capacity": 10,
+        "severity": "MEDIUM",
+        "affected_trains": [
+          "TRN_10108",
+          "TRN_10094",
+          "TRN_10108",
+          "TRN_10096",
+          "TRN_10097",
+          "TRN_10100",
+          "TRN_10096",
+          "TRN_10109",
+          "TRN_10100",
+          "TRN_10097",
+          "TRN_10109",
+          "TRN_10099",
+          "TRN_10098"
+        ]
+      }
+    ],
+    "summary": {
+      "total_sections": 5,
+      "min_capacity_per_hour": 31.8,
+      "bottleneck_count": 1
+    }
+  },
+  "optimization": {
+    "status": "MODEL_INVALID",
+    "solve_time_s": 1.049696922302246,
+    "objective_value": null,
+    "schedule": {},
+    "statistics": {
+      "branches": 0,
+      "conflicts": 0,
+      "wall_time_ms": 0.21263500000000002
+    }
+  }
+}

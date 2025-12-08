@@ -218,6 +218,7 @@ export default function TrackControl() {
         const rail2Start = { x: source.x - px * railGap / 2, y: source.y - py * railGap / 2 };
         const rail2End = { x: target.x - px * railGap / 2, y: target.y - py * railGap / 2 };
 
+        
         // Calculate sleepers
         const sleepers = [];
         const numSleepers = Math.floor(length / sleeperSpacing);
@@ -687,66 +688,68 @@ export default function TrackControl() {
             </div>
 
             {/* Selected Node Info Panel */}
-            {selectedNode && (
-                <div
-                    className="absolute bottom-20 left-4 right-4 rounded-lg p-4"
-                    style={{
-                        background: 'rgba(10, 10, 15, 0.95)',
-                        border: '1px solid #00ff00',
-                        boxShadow: '0 0 20px rgba(0, 255, 0, 0.2)'
-                    }}
-                >
-                    <div className="flex items-center justify-between mb-3">
-                        <h3 className="text-sm font-bold" style={{ color: '#00ff00' }}>
-                            Node Details: {selectedNode.name || selectedNode.nodeId}
-                        </h3>
-                        <button
-                            onClick={() => setSelectedNode(null)}
-                            className="text-xs hover:underline text-gray-500"
-                        >
-                            ✕ Close
-                        </button>
-                    </div>
+            {
+                selectedNode && (
+                    <div
+                        className="absolute bottom-20 left-4 right-4 rounded-lg p-4"
+                        style={{
+                            background: 'rgba(10, 10, 15, 0.95)',
+                            border: '1px solid #00ff00',
+                            boxShadow: '0 0 20px rgba(0, 255, 0, 0.2)'
+                        }}
+                    >
+                        <div className="flex items-center justify-between mb-3">
+                            <h3 className="text-sm font-bold" style={{ color: '#00ff00' }}>
+                                Node Details: {selectedNode.name || selectedNode.nodeId}
+                            </h3>
+                            <button
+                                onClick={() => setSelectedNode(null)}
+                                className="text-xs hover:underline text-gray-500"
+                            >
+                                ✕ Close
+                            </button>
+                        </div>
 
-                    <div className="grid grid-cols-5 gap-4">
-                        <div>
-                            <div className="text-[10px] text-gray-500 uppercase">Node ID</div>
-                            <div className="font-mono text-sm text-white">{selectedNode.nodeId}</div>
-                        </div>
-                        <div>
-                            <div className="text-[10px] text-gray-500 uppercase">Type</div>
-                            <div className="text-sm font-semibold" style={{ color: getTrackColor(selectedNode.line) }}>
-                                {selectedNode.nodeType?.replace(/([A-Z])/g, ' $1').trim()}
+                        <div className="grid grid-cols-5 gap-4">
+                            <div>
+                                <div className="text-[10px] text-gray-500 uppercase">Node ID</div>
+                                <div className="font-mono text-sm text-white">{selectedNode.nodeId}</div>
                             </div>
-                        </div>
-                        <div>
-                            <div className="text-[10px] text-gray-500 uppercase">Line</div>
-                            <div className="text-sm font-semibold" style={{ color: getTrackColor(selectedNode.line) }}>
-                                {selectedNode.line?.replace('_', ' ').toUpperCase() || 'N/A'}
+                            <div>
+                                <div className="text-[10px] text-gray-500 uppercase">Type</div>
+                                <div className="text-sm font-semibold" style={{ color: getTrackColor(selectedNode.line) }}>
+                                    {selectedNode.nodeType?.replace(/([A-Z])/g, ' $1').trim()}
+                                </div>
                             </div>
-                        </div>
-                        <div>
-                            <div className="text-[10px] text-gray-500 uppercase">Position</div>
-                            <div className="text-sm font-mono text-white">
-                                X:{selectedNode.x} Y:{selectedNode.y}
+                            <div>
+                                <div className="text-[10px] text-gray-500 uppercase">Line</div>
+                                <div className="text-sm font-semibold" style={{ color: getTrackColor(selectedNode.line) }}>
+                                    {selectedNode.line?.replace('_', ' ').toUpperCase() || 'N/A'}
+                                </div>
                             </div>
-                        </div>
-                        <div>
-                            <div className="text-[10px] text-gray-500 uppercase">Signal</div>
-                            <div className="flex items-center gap-2">
-                                <div
-                                    className="w-4 h-4 rounded-full"
-                                    style={{
-                                        backgroundColor: getSignalColor(selectedNode.signalColor),
-                                        boxShadow: `0 0 10px ${getSignalColor(selectedNode.signalColor)}`
-                                    }}
-                                />
-                                <span className="text-sm text-white uppercase">{selectedNode.signalColor}</span>
+                            <div>
+                                <div className="text-[10px] text-gray-500 uppercase">Position</div>
+                                <div className="text-sm font-mono text-white">
+                                    X:{selectedNode.x} Y:{selectedNode.y}
+                                </div>
+                            </div>
+                            <div>
+                                <div className="text-[10px] text-gray-500 uppercase">Signal</div>
+                                <div className="flex items-center gap-2">
+                                    <div
+                                        className="w-4 h-4 rounded-full"
+                                        style={{
+                                            backgroundColor: getSignalColor(selectedNode.signalColor),
+                                            boxShadow: `0 0 10px ${getSignalColor(selectedNode.signalColor)}`
+                                        }}
+                                    />
+                                    <span className="text-sm text-white uppercase">{selectedNode.signalColor}</span>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            )}
+                )
+            }
 
             {/* Legend */}
             <div
@@ -791,6 +794,6 @@ export default function TrackControl() {
                     <span className="text-gray-500">YELLOW</span>
                 </div>
             </div>
-        </div>
+        </div >
     );
 }
