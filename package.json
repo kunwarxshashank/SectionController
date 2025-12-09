@@ -1,0 +1,36 @@
+{
+  "name": "sectioncontroller",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@reduxjs/toolkit": "^2.11.0",
+    "autoprefixer": "^10.4.22",
+    "axios": "^1.13.2",
+    "date-fns": "^4.1.0",
+    "framer-motion": "^12.23.24",
+    "jwt-decode": "^4.0.0",
+    "lucide-react": "^0.555.0",
+    "next": "^16.0.4",
+    "postcss": "^8.5.6",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "react-redux": "^9.2.0",
+    "react-speech-recognition": "^4.0.1",
+    "recharts": "^3.5.0",
+    "socket.io-client": "^4.8.1",
+    "tailwindcss": "^3.4.18",
+    "ws": "^8.18.3"
+  },
+  "devDependencies": {
+    "baseline-browser-mapping": "^2.8.32"
+  }
+}

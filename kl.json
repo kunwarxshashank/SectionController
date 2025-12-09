@@ -1,0 +1,916 @@
+{
+    "explanation": "=== OPTIMIZATION RESULTS ===\n\nPASSENGER TRAINS (5):\n  Bhopal Shatabdi Express (12001): 00:00\n  Bhopal Shatabdi Express (12002): 00:00\n  Nizamuddin Habibganj SF (12155): 00:00\n  Habibganj Nizamuddin SF (12156): 00:00\n  Karnataka Express (12627): 00:00\n\nFREIGHT TRAINS (15):\n  Coal Rake BPL-BINA (BCNA-101): 00:00\n  Coal Rake BINA-BPL (BCNA-102): 00:00\n  Iron Ore Rake 1 (BOXN-201): 00:00\n  Iron Ore Rake 2 (BOXN-202): 00:00\n  Petroleum Tanker 1 (BTPN-301): 00:00\n  Petroleum Tanker 2 (BTPN-302): 00:00\n  Coal Rake Express (BCNA-103): 00:00\n  Steel Coil Rake (BOXN-203): 00:00\n  Container Special 1 (CONT-401): 00:00\n  Container Special 2 (CONT-402): 00:00\n  Cement Rake 1 (BCNA-104): 00:00\n  Cement Rake 2 (BCNA-105): 00:00\n  Grain Rake 1 (BOXN-204): 00:00\n  Grain Rake 2 (BOXN-205): 00:00\n  LPG Tanker Special (BTPN-303): 00:00",
+    "message": "Optimization completed successfully",
+    "success": true,
+    "summary": {
+        "freightCompleted": 15,
+        "freightTrains": 15,
+        "objectiveValue": -150000.0,
+        "passengerTrains": 5,
+        "solverStatus": "OPTIMAL",
+        "totalLoopUsages": 0,
+        "totalTrains": 20
+    },
+    "trainSchedules": [
+        {
+            "arrivalMinutes": 0,
+            "arrivalTime": "00:00",
+            "completed": true,
+            "direction": "UP",
+            "edgeSchedule": [],
+            "isFreight": false,
+            "isPassenger": true,
+            "loopDecisions": [],
+            "maxSpeed": 160.0,
+            "priority": 1,
+            "timeDistanceProfile": [
+                {
+                    "arrival": "06:00",
+                    "arrivalMinutes": 360,
+                    "departure": "06:00",
+                    "departureMinutes": 360,
+                    "stationId": "bhopal",
+                    "stationName": "Bhopal",
+                    "yIndex": 0
+                },
+                {
+                    "arrival": "06:25",
+                    "arrivalMinutes": 385,
+                    "departure": "06:30",
+                    "departureMinutes": 390,
+                    "stationId": "vidisha",
+                    "stationName": "Vidisha",
+                    "yIndex": 1
+                },
+                {
+                    "arrival": "06:55",
+                    "arrivalMinutes": 415,
+                    "departure": "06:55",
+                    "departureMinutes": 415,
+                    "stationId": "bina",
+                    "stationName": "Bina",
+                    "yIndex": 2
+                }
+            ],
+            "trainCategory": "Passenger",
+            "trainId": "12001",
+            "trainName": "Bhopal Shatabdi Express",
+            "trainType": "Express"
+        },
+        {
+            "arrivalMinutes": 0,
+            "arrivalTime": "00:00",
+            "completed": true,
+            "direction": "DOWN",
+            "edgeSchedule": [],
+            "isFreight": false,
+            "isPassenger": true,
+            "loopDecisions": [],
+            "maxSpeed": 160.0,
+            "priority": 1,
+            "timeDistanceProfile": [
+                {
+                    "arrival": "18:00",
+                    "arrivalMinutes": 1080,
+                    "departure": "18:00",
+                    "departureMinutes": 1080,
+                    "stationId": "bina",
+                    "stationName": "Bina",
+                    "yIndex": 0
+                },
+                {
+                    "arrival": "18:25",
+                    "arrivalMinutes": 1105,
+                    "departure": "18:30",
+                    "departureMinutes": 1110,
+                    "stationId": "vidisha",
+                    "stationName": "Vidisha",
+                    "yIndex": 1
+                },
+                {
+                    "arrival": "18:55",
+                    "arrivalMinutes": 1135,
+                    "departure": "18:55",
+                    "departureMinutes": 1135,
+                    "stationId": "bhopal",
+                    "stationName": "Bhopal",
+                    "yIndex": 2
+                }
+            ],
+            "trainCategory": "Passenger",
+            "trainId": "12002",
+            "trainName": "Bhopal Shatabdi Express",
+            "trainType": "Express"
+        },
+        {
+            "arrivalMinutes": 0,
+            "arrivalTime": "00:00",
+            "completed": true,
+            "direction": "UP",
+            "edgeSchedule": [],
+            "isFreight": false,
+            "isPassenger": true,
+            "loopDecisions": [],
+            "maxSpeed": 130.0,
+            "priority": 2,
+            "timeDistanceProfile": [
+                {
+                    "arrival": "07:30",
+                    "arrivalMinutes": 450,
+                    "departure": "07:30",
+                    "departureMinutes": 450,
+                    "stationId": "bhopal",
+                    "stationName": "Bhopal",
+                    "yIndex": 0
+                },
+                {
+                    "arrival": "08:00",
+                    "arrivalMinutes": 480,
+                    "departure": "08:05",
+                    "departureMinutes": 485,
+                    "stationId": "vidisha",
+                    "stationName": "Vidisha",
+                    "yIndex": 1
+                },
+                {
+                    "arrival": "08:35",
+                    "arrivalMinutes": 515,
+                    "departure": "08:35",
+                    "departureMinutes": 515,
+                    "stationId": "bina",
+                    "stationName": "Bina",
+                    "yIndex": 2
+                }
+            ],
+            "trainCategory": "Passenger",
+            "trainId": "12155",
+            "trainName": "Nizamuddin Habibganj SF",
+            "trainType": "Superfast"
+        },
+        {
+            "arrivalMinutes": 0,
+            "arrivalTime": "00:00",
+            "completed": true,
+            "direction": "DOWN",
+            "edgeSchedule": [],
+            "isFreight": false,
+            "isPassenger": true,
+            "loopDecisions": [],
+            "maxSpeed": 130.0,
+            "priority": 2,
+            "timeDistanceProfile": [
+                {
+                    "arrival": "16:30",
+                    "arrivalMinutes": 990,
+                    "departure": "16:30",
+                    "departureMinutes": 990,
+                    "stationId": "bina",
+                    "stationName": "Bina",
+                    "yIndex": 0
+                },
+                {
+                    "arrival": "17:00",
+                    "arrivalMinutes": 1020,
+                    "departure": "17:05",
+                    "departureMinutes": 1025,
+                    "stationId": "vidisha",
+                    "stationName": "Vidisha",
+                    "yIndex": 1
+                },
+                {
+                    "arrival": "17:35",
+                    "arrivalMinutes": 1055,
+                    "departure": "17:35",
+                    "departureMinutes": 1055,
+                    "stationId": "bhopal",
+                    "stationName": "Bhopal",
+                    "yIndex": 2
+                }
+            ],
+            "trainCategory": "Passenger",
+            "trainId": "12156",
+            "trainName": "Habibganj Nizamuddin SF",
+            "trainType": "Superfast"
+        },
+        {
+            "arrivalMinutes": 0,
+            "arrivalTime": "00:00",
+            "completed": true,
+            "direction": "UP",
+            "edgeSchedule": [],
+            "isFreight": false,
+            "isPassenger": true,
+            "loopDecisions": [],
+            "maxSpeed": 110.0,
+            "priority": 3,
+            "timeDistanceProfile": [
+                {
+                    "arrival": "09:00",
+                    "arrivalMinutes": 540,
+                    "departure": "09:00",
+                    "departureMinutes": 540,
+                    "stationId": "bhopal",
+                    "stationName": "Bhopal",
+                    "yIndex": 0
+                },
+                {
+                    "arrival": "09:25",
+                    "arrivalMinutes": 565,
+                    "departure": "09:30",
+                    "departureMinutes": 570,
+                    "stationId": "vidisha",
+                    "stationName": "Vidisha",
+                    "yIndex": 1
+                },
+                {
+                    "arrival": "09:55",
+                    "arrivalMinutes": 595,
+                    "departure": "09:55",
+                    "departureMinutes": 595,
+                    "stationId": "bina",
+                    "stationName": "Bina",
+                    "yIndex": 2
+                }
+            ],
+            "trainCategory": "Passenger",
+            "trainId": "12627",
+            "trainName": "Karnataka Express",
+            "trainType": "Express"
+        },
+        {
+            "arrivalMinutes": 0,
+            "arrivalTime": "00:00",
+            "completed": true,
+            "direction": "UP",
+            "edgeSchedule": [],
+            "isFreight": true,
+            "isPassenger": false,
+            "loopDecisions": [],
+            "maxSpeed": 65.0,
+            "priority": 10,
+            "timeDistanceProfile": [
+                {
+                    "arrival": "05:00",
+                    "arrivalMinutes": 300,
+                    "departure": "05:00",
+                    "departureMinutes": 300,
+                    "stationId": "bhopal",
+                    "stationName": "Bhopal",
+                    "yIndex": 0
+                },
+                {
+                    "arrival": "05:45",
+                    "arrivalMinutes": 345,
+                    "departure": "06:00",
+                    "departureMinutes": 360,
+                    "stationId": "vidisha",
+                    "stationName": "Vidisha",
+                    "yIndex": 1
+                },
+                {
+                    "arrival": "06:45",
+                    "arrivalMinutes": 405,
+                    "departure": "06:45",
+                    "departureMinutes": 405,
+                    "stationId": "bina",
+                    "stationName": "Bina",
+                    "yIndex": 2
+                }
+            ],
+            "trainCategory": "Freight",
+            "trainId": "BCNA-101",
+            "trainName": "Coal Rake BPL-BINA",
+            "trainType": "BCNA"
+        },
+        {
+            "arrivalMinutes": 0,
+            "arrivalTime": "00:00",
+            "completed": true,
+            "direction": "DOWN",
+            "edgeSchedule": [],
+            "isFreight": true,
+            "isPassenger": false,
+            "loopDecisions": [],
+            "maxSpeed": 65.0,
+            "priority": 11,
+            "timeDistanceProfile": [
+                {
+                    "arrival": "05:30",
+                    "arrivalMinutes": 330,
+                    "departure": "05:30",
+                    "departureMinutes": 330,
+                    "stationId": "bina",
+                    "stationName": "Bina",
+                    "yIndex": 0
+                },
+                {
+                    "arrival": "06:15",
+                    "arrivalMinutes": 375,
+                    "departure": "06:30",
+                    "departureMinutes": 390,
+                    "stationId": "vidisha",
+                    "stationName": "Vidisha",
+                    "yIndex": 1
+                },
+                {
+                    "arrival": "07:15",
+                    "arrivalMinutes": 435,
+                    "departure": "07:15",
+                    "departureMinutes": 435,
+                    "stationId": "bhopal",
+                    "stationName": "Bhopal",
+                    "yIndex": 2
+                }
+            ],
+            "trainCategory": "Freight",
+            "trainId": "BCNA-102",
+            "trainName": "Coal Rake BINA-BPL",
+            "trainType": "BCNA"
+        },
+        {
+            "arrivalMinutes": 0,
+            "arrivalTime": "00:00",
+            "completed": true,
+            "direction": "UP",
+            "edgeSchedule": [],
+            "isFreight": true,
+            "isPassenger": false,
+            "loopDecisions": [],
+            "maxSpeed": 65.0,
+            "priority": 12,
+            "timeDistanceProfile": [
+                {
+                    "arrival": "08:00",
+                    "arrivalMinutes": 480,
+                    "departure": "08:00",
+                    "departureMinutes": 480,
+                    "stationId": "bhopal",
+                    "stationName": "Bhopal",
+                    "yIndex": 0
+                },
+                {
+                    "arrival": "08:45",
+                    "arrivalMinutes": 525,
+                    "departure": "09:00",
+                    "departureMinutes": 540,
+                    "stationId": "vidisha",
+                    "stationName": "Vidisha",
+                    "yIndex": 1
+                },
+                {
+                    "arrival": "09:45",
+                    "arrivalMinutes": 585,
+                    "departure": "09:45",
+                    "departureMinutes": 585,
+                    "stationId": "bina",
+                    "stationName": "Bina",
+                    "yIndex": 2
+                }
+            ],
+            "trainCategory": "Freight",
+            "trainId": "BOXN-201",
+            "trainName": "Iron Ore Rake 1",
+            "trainType": "BOXN"
+        },
+        {
+            "arrivalMinutes": 0,
+            "arrivalTime": "00:00",
+            "completed": true,
+            "direction": "DOWN",
+            "edgeSchedule": [],
+            "isFreight": true,
+            "isPassenger": false,
+            "loopDecisions": [],
+            "maxSpeed": 65.0,
+            "priority": 13,
+            "timeDistanceProfile": [
+                {
+                    "arrival": "08:30",
+                    "arrivalMinutes": 510,
+                    "departure": "08:30",
+                    "departureMinutes": 510,
+                    "stationId": "bina",
+                    "stationName": "Bina",
+                    "yIndex": 0
+                },
+                {
+                    "arrival": "09:15",
+                    "arrivalMinutes": 555,
+                    "departure": "09:30",
+                    "departureMinutes": 570,
+                    "stationId": "vidisha",
+                    "stationName": "Vidisha",
+                    "yIndex": 1
+                },
+                {
+                    "arrival": "10:15",
+                    "arrivalMinutes": 615,
+                    "departure": "10:15",
+                    "departureMinutes": 615,
+                    "stationId": "bhopal",
+                    "stationName": "Bhopal",
+                    "yIndex": 2
+                }
+            ],
+            "trainCategory": "Freight",
+            "trainId": "BOXN-202",
+            "trainName": "Iron Ore Rake 2",
+            "trainType": "BOXN"
+        },
+        {
+            "arrivalMinutes": 0,
+            "arrivalTime": "00:00",
+            "completed": true,
+            "direction": "UP",
+            "edgeSchedule": [],
+            "isFreight": true,
+            "isPassenger": false,
+            "loopDecisions": [],
+            "maxSpeed": 65.0,
+            "priority": 14,
+            "timeDistanceProfile": [
+                {
+                    "arrival": "10:00",
+                    "arrivalMinutes": 600,
+                    "departure": "10:00",
+                    "departureMinutes": 600,
+                    "stationId": "bhopal",
+                    "stationName": "Bhopal",
+                    "yIndex": 0
+                },
+                {
+                    "arrival": "10:45",
+                    "arrivalMinutes": 645,
+                    "departure": "11:00",
+                    "departureMinutes": 660,
+                    "stationId": "vidisha",
+                    "stationName": "Vidisha",
+                    "yIndex": 1
+                },
+                {
+                    "arrival": "11:45",
+                    "arrivalMinutes": 705,
+                    "departure": "11:45",
+                    "departureMinutes": 705,
+                    "stationId": "bina",
+                    "stationName": "Bina",
+                    "yIndex": 2
+                }
+            ],
+            "trainCategory": "Freight",
+            "trainId": "BTPN-301",
+            "trainName": "Petroleum Tanker 1",
+            "trainType": "BTPN"
+        },
+        {
+            "arrivalMinutes": 0,
+            "arrivalTime": "00:00",
+            "completed": true,
+            "direction": "DOWN",
+            "edgeSchedule": [],
+            "isFreight": true,
+            "isPassenger": false,
+            "loopDecisions": [],
+            "maxSpeed": 65.0,
+            "priority": 10,
+            "timeDistanceProfile": [
+                {
+                    "arrival": "10:30",
+                    "arrivalMinutes": 630,
+                    "departure": "10:30",
+                    "departureMinutes": 630,
+                    "stationId": "bina",
+                    "stationName": "Bina",
+                    "yIndex": 0
+                },
+                {
+                    "arrival": "11:15",
+                    "arrivalMinutes": 675,
+                    "departure": "11:30",
+                    "departureMinutes": 690,
+                    "stationId": "vidisha",
+                    "stationName": "Vidisha",
+                    "yIndex": 1
+                },
+                {
+                    "arrival": "12:15",
+                    "arrivalMinutes": 735,
+                    "departure": "12:15",
+                    "departureMinutes": 735,
+                    "stationId": "bhopal",
+                    "stationName": "Bhopal",
+                    "yIndex": 2
+                }
+            ],
+            "trainCategory": "Freight",
+            "trainId": "BTPN-302",
+            "trainName": "Petroleum Tanker 2",
+            "trainType": "BTPN"
+        },
+        {
+            "arrivalMinutes": 0,
+            "arrivalTime": "00:00",
+            "completed": true,
+            "direction": "UP",
+            "edgeSchedule": [],
+            "isFreight": true,
+            "isPassenger": false,
+            "loopDecisions": [],
+            "maxSpeed": 65.0,
+            "priority": 11,
+            "timeDistanceProfile": [
+                {
+                    "arrival": "11:00",
+                    "arrivalMinutes": 660,
+                    "departure": "11:00",
+                    "departureMinutes": 660,
+                    "stationId": "bhopal",
+                    "stationName": "Bhopal",
+                    "yIndex": 0
+                },
+                {
+                    "arrival": "11:45",
+                    "arrivalMinutes": 705,
+                    "departure": "12:00",
+                    "departureMinutes": 720,
+                    "stationId": "vidisha",
+                    "stationName": "Vidisha",
+                    "yIndex": 1
+                },
+                {
+                    "arrival": "12:45",
+                    "arrivalMinutes": 765,
+                    "departure": "12:45",
+                    "departureMinutes": 765,
+                    "stationId": "bina",
+                    "stationName": "Bina",
+                    "yIndex": 2
+                }
+            ],
+            "trainCategory": "Freight",
+            "trainId": "BCNA-103",
+            "trainName": "Coal Rake Express",
+            "trainType": "BCNA"
+        },
+        {
+            "arrivalMinutes": 0,
+            "arrivalTime": "00:00",
+            "completed": true,
+            "direction": "DOWN",
+            "edgeSchedule": [],
+            "isFreight": true,
+            "isPassenger": false,
+            "loopDecisions": [],
+            "maxSpeed": 65.0,
+            "priority": 12,
+            "timeDistanceProfile": [
+                {
+                    "arrival": "11:30",
+                    "arrivalMinutes": 690,
+                    "departure": "11:30",
+                    "departureMinutes": 690,
+                    "stationId": "bina",
+                    "stationName": "Bina",
+                    "yIndex": 0
+                },
+                {
+                    "arrival": "12:15",
+                    "arrivalMinutes": 735,
+                    "departure": "12:30",
+                    "departureMinutes": 750,
+                    "stationId": "vidisha",
+                    "stationName": "Vidisha",
+                    "yIndex": 1
+                },
+                {
+                    "arrival": "13:15",
+                    "arrivalMinutes": 795,
+                    "departure": "13:15",
+                    "departureMinutes": 795,
+                    "stationId": "bhopal",
+                    "stationName": "Bhopal",
+                    "yIndex": 2
+                }
+            ],
+            "trainCategory": "Freight",
+            "trainId": "BOXN-203",
+            "trainName": "Steel Coil Rake",
+            "trainType": "BOXN"
+        },
+        {
+            "arrivalMinutes": 0,
+            "arrivalTime": "00:00",
+            "completed": true,
+            "direction": "UP",
+            "edgeSchedule": [],
+            "isFreight": true,
+            "isPassenger": false,
+            "loopDecisions": [],
+            "maxSpeed": 65.0,
+            "priority": 13,
+            "timeDistanceProfile": [
+                {
+                    "arrival": "13:00",
+                    "arrivalMinutes": 780,
+                    "departure": "13:00",
+                    "departureMinutes": 780,
+                    "stationId": "bhopal",
+                    "stationName": "Bhopal",
+                    "yIndex": 0
+                },
+                {
+                    "arrival": "13:45",
+                    "arrivalMinutes": 825,
+                    "departure": "14:00",
+                    "departureMinutes": 840,
+                    "stationId": "vidisha",
+                    "stationName": "Vidisha",
+                    "yIndex": 1
+                },
+                {
+                    "arrival": "14:45",
+                    "arrivalMinutes": 885,
+                    "departure": "14:45",
+                    "departureMinutes": 885,
+                    "stationId": "bina",
+                    "stationName": "Bina",
+                    "yIndex": 2
+                }
+            ],
+            "trainCategory": "Freight",
+            "trainId": "CONT-401",
+            "trainName": "Container Special 1",
+            "trainType": "CONT"
+        },
+        {
+            "arrivalMinutes": 0,
+            "arrivalTime": "00:00",
+            "completed": true,
+            "direction": "DOWN",
+            "edgeSchedule": [],
+            "isFreight": true,
+            "isPassenger": false,
+            "loopDecisions": [],
+            "maxSpeed": 65.0,
+            "priority": 14,
+            "timeDistanceProfile": [
+                {
+                    "arrival": "13:30",
+                    "arrivalMinutes": 810,
+                    "departure": "13:30",
+                    "departureMinutes": 810,
+                    "stationId": "bina",
+                    "stationName": "Bina",
+                    "yIndex": 0
+                },
+                {
+                    "arrival": "14:15",
+                    "arrivalMinutes": 855,
+                    "departure": "14:30",
+                    "departureMinutes": 870,
+                    "stationId": "vidisha",
+                    "stationName": "Vidisha",
+                    "yIndex": 1
+                },
+                {
+                    "arrival": "15:15",
+                    "arrivalMinutes": 915,
+                    "departure": "15:15",
+                    "departureMinutes": 915,
+                    "stationId": "bhopal",
+                    "stationName": "Bhopal",
+                    "yIndex": 2
+                }
+            ],
+            "trainCategory": "Freight",
+            "trainId": "CONT-402",
+            "trainName": "Container Special 2",
+            "trainType": "CONT"
+        },
+        {
+            "arrivalMinutes": 0,
+            "arrivalTime": "00:00",
+            "completed": true,
+            "direction": "UP",
+            "edgeSchedule": [],
+            "isFreight": true,
+            "isPassenger": false,
+            "loopDecisions": [],
+            "maxSpeed": 65.0,
+            "priority": 10,
+            "timeDistanceProfile": [
+                {
+                    "arrival": "14:00",
+                    "arrivalMinutes": 840,
+                    "departure": "14:00",
+                    "departureMinutes": 840,
+                    "stationId": "bhopal",
+                    "stationName": "Bhopal",
+                    "yIndex": 0
+                },
+                {
+                    "arrival": "14:45",
+                    "arrivalMinutes": 885,
+                    "departure": "15:00",
+                    "departureMinutes": 900,
+                    "stationId": "vidisha",
+                    "stationName": "Vidisha",
+                    "yIndex": 1
+                },
+                {
+                    "arrival": "15:45",
+                    "arrivalMinutes": 945,
+                    "departure": "15:45",
+                    "departureMinutes": 945,
+                    "stationId": "bina",
+                    "stationName": "Bina",
+                    "yIndex": 2
+                }
+            ],
+            "trainCategory": "Freight",
+            "trainId": "BCNA-104",
+            "trainName": "Cement Rake 1",
+            "trainType": "BCNA"
+        },
+        {
+            "arrivalMinutes": 0,
+            "arrivalTime": "00:00",
+            "completed": true,
+            "direction": "DOWN",
+            "edgeSchedule": [],
+            "isFreight": true,
+            "isPassenger": false,
+            "loopDecisions": [],
+            "maxSpeed": 65.0,
+            "priority": 11,
+            "timeDistanceProfile": [
+                {
+                    "arrival": "14:30",
+                    "arrivalMinutes": 870,
+                    "departure": "14:30",
+                    "departureMinutes": 870,
+                    "stationId": "bina",
+                    "stationName": "Bina",
+                    "yIndex": 0
+                },
+                {
+                    "arrival": "15:15",
+                    "arrivalMinutes": 915,
+                    "departure": "15:30",
+                    "departureMinutes": 930,
+                    "stationId": "vidisha",
+                    "stationName": "Vidisha",
+                    "yIndex": 1
+                },
+                {
+                    "arrival": "16:15",
+                    "arrivalMinutes": 975,
+                    "departure": "16:15",
+                    "departureMinutes": 975,
+                    "stationId": "bhopal",
+                    "stationName": "Bhopal",
+                    "yIndex": 2
+                }
+            ],
+            "trainCategory": "Freight",
+            "trainId": "BCNA-105",
+            "trainName": "Cement Rake 2",
+            "trainType": "BCNA"
+        },
+        {
+            "arrivalMinutes": 0,
+            "arrivalTime": "00:00",
+            "completed": true,
+            "direction": "UP",
+            "edgeSchedule": [],
+            "isFreight": true,
+            "isPassenger": false,
+            "loopDecisions": [],
+            "maxSpeed": 65.0,
+            "priority": 12,
+            "timeDistanceProfile": [
+                {
+                    "arrival": "15:00",
+                    "arrivalMinutes": 900,
+                    "departure": "15:00",
+                    "departureMinutes": 900,
+                    "stationId": "bhopal",
+                    "stationName": "Bhopal",
+                    "yIndex": 0
+                },
+                {
+                    "arrival": "15:45",
+                    "arrivalMinutes": 945,
+                    "departure": "16:00",
+                    "departureMinutes": 960,
+                    "stationId": "vidisha",
+                    "stationName": "Vidisha",
+                    "yIndex": 1
+                },
+                {
+                    "arrival": "16:45",
+                    "arrivalMinutes": 1005,
+                    "departure": "16:45",
+                    "departureMinutes": 1005,
+                    "stationId": "bina",
+                    "stationName": "Bina",
+                    "yIndex": 2
+                }
+            ],
+            "trainCategory": "Freight",
+            "trainId": "BOXN-204",
+            "trainName": "Grain Rake 1",
+            "trainType": "BOXN"
+        },
+        {
+            "arrivalMinutes": 0,
+            "arrivalTime": "00:00",
+            "completed": true,
+            "direction": "DOWN",
+            "edgeSchedule": [],
+            "isFreight": true,
+            "isPassenger": false,
+            "loopDecisions": [],
+            "maxSpeed": 65.0,
+            "priority": 13,
+            "timeDistanceProfile": [
+                {
+                    "arrival": "15:30",
+                    "arrivalMinutes": 930,
+                    "departure": "15:30",
+                    "departureMinutes": 930,
+                    "stationId": "bina",
+                    "stationName": "Bina",
+                    "yIndex": 0
+                },
+                {
+                    "arrival": "16:15",
+                    "arrivalMinutes": 975,
+                    "departure": "16:30",
+                    "departureMinutes": 990,
+                    "stationId": "vidisha",
+                    "stationName": "Vidisha",
+                    "yIndex": 1
+                },
+                {
+                    "arrival": "17:15",
+                    "arrivalMinutes": 1035,
+                    "departure": "17:15",
+                    "departureMinutes": 1035,
+                    "stationId": "bhopal",
+                    "stationName": "Bhopal",
+                    "yIndex": 2
+                }
+            ],
+            "trainCategory": "Freight",
+            "trainId": "BOXN-205",
+            "trainName": "Grain Rake 2",
+            "trainType": "BOXN"
+        },
+        {
+            "arrivalMinutes": 0,
+            "arrivalTime": "00:00",
+            "completed": true,
+            "direction": "UP",
+            "edgeSchedule": [],
+            "isFreight": true,
+            "isPassenger": false,
+            "loopDecisions": [],
+            "maxSpeed": 65.0,
+            "priority": 14,
+            "timeDistanceProfile": [
+                {
+                    "arrival": "17:00",
+                    "arrivalMinutes": 1020,
+                    "departure": "17:00",
+                    "departureMinutes": 1020,
+                    "stationId": "bhopal",
+                    "stationName": "Bhopal",
+                    "yIndex": 0
+                },
+                {
+                    "arrival": "17:45",
+                    "arrivalMinutes": 1065,
+                    "departure": "18:00",
+                    "departureMinutes": 1080,
+                    "stationId": "vidisha",
+                    "stationName": "Vidisha",
+                    "yIndex": 1
+                },
+                {
+                    "arrival": "18:45",
+                    "arrivalMinutes": 1125,
+                    "departure": "18:45",
+                    "departureMinutes": 1125,
+                    "stationId": "bina",
+                    "stationName": "Bina",
+                    "yIndex": 2
+                }
+            ],
+            "trainCategory": "Freight",
+            "trainId": "BTPN-303",
+            "trainName": "LPG Tanker Special",
+            "trainType": "BTPN"
+        }
+    ]
+}

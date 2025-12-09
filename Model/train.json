@@ -1,0 +1,10 @@
+[
+  {
+    "instruction": "What is dwell time in railways?",
+    "output": "Dwell time is the time a train stays at a station for passenger exchange."
+  },
+  {
+    "instruction": "What is a block section?",
+    "output": "A block section is the track length between two block stations where only one train is allowed at a time."
+  }
+]
