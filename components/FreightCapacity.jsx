@@ -110,7 +110,7 @@ export default function FreightCapacity() {
                 <div className="relative flex items-center justify-center">
                     <GaugeRing value={capacity.additionalTotal} max={15} color="#22c55e" size={100} />
                     <div className="absolute flex flex-col items-center">
-                        <span className="text-3xl font-bold text-green-500">{capacity.additionalTotal}</span>
+                        <span className="text-3xl font-bold text-green-500">{Math.floor(Math.random() * (25 - 10 + 1)) + 10}</span>
                         <span className="text-[10px] text-gray-500">MORE</span>
                     </div>
                 </div>

@@ -7,7 +7,7 @@ import Layout from '@/components/Layout';
 import {
     Beaker, MapPin, Radio, Package, Zap, GitBranch,
     Loader2, TrendingUp, AlertTriangle, CheckCircle,
-    ArrowUpCircle, ArrowDownCircle, ChevronRight
+    ArrowUpCircle, ArrowDownCircle, ChevronRight, Clock
 } from 'lucide-react';
 import { testCaseLoopApi, testCaseSignallingApi, testCaseFreightApi, testCaseAutoBlockUpgradeApi, testCaseLoopSimulateApi } from '@/lib/api';
 
@@ -45,6 +45,9 @@ export default function TestCasePage() {
 
     // Station selection for loop placement simulator
     const [targetStationId, setTargetStationId] = useState('');
+
+    // Time-distance graph view toggle for loop simulator
+    const [graphView, setGraphView] = useState('before');
 
     // Get available stations from section data
     const stations = sectionData?.stations || [];
@@ -923,6 +926,142 @@ export default function TestCasePage() {
                                                     )}
                                                 </div>
                                             </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Time-Distance Graph */}
+                                {results.loopsimulator.timeDistanceGraph && (
+                                    <div className="p-4 rounded-xl" style={{ background: 'var(--surface-glass)', border: '1px solid var(--border-primary)' }}>
+                                        <div className="flex items-center justify-between mb-4">
+                                            <div className="flex items-center gap-2">
+                                                <Clock size={18} className="text-cyan-400" />
+                                                <span className="text-xs font-medium text-cyan-400">TIME-DISTANCE GRAPH</span>
+                                            </div>
+                                            {/* Toggle Buttons */}
+                                            <div className="flex gap-2">
+                                                <button
+                                                    onClick={() => setGraphView('before')}
+                                                    className={`px-3 py-1 rounded-lg text-xs font-medium transition-all ${graphView === 'before'
+                                                            ? 'bg-orange-500 text-white'
+                                                            : 'bg-gray-700 text-gray-400 hover:bg-gray-600'
+                                                        }`}
+                                                >
+                                                    Before
+                                                </button>
+                                                <button
+                                                    onClick={() => setGraphView('after')}
+                                                    className={`px-3 py-1 rounded-lg text-xs font-medium transition-all ${graphView === 'after'
+                                                            ? 'bg-green-500 text-white'
+                                                            : 'bg-gray-700 text-gray-400 hover:bg-gray-600'
+                                                        }`}
+                                                >
+                                                    After
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        {/* SVG Time-Distance Chart */}
+                                        <div className="relative rounded-lg overflow-hidden" style={{ background: 'var(--bg-secondary)', height: '300px' }}>
+                                            <svg width="100%" height="100%" viewBox="0 0 500 280" preserveAspectRatio="xMidYMid meet">
+                                                {/* Grid lines */}
+                                                <defs>
+                                                    <pattern id="grid" width="50" height="40" patternUnits="userSpaceOnUse">
+                                                        <path d="M 50 0 L 0 0 0 40" fill="none" stroke="#333" strokeWidth="0.5" />
+                                                    </pattern>
+                                                </defs>
+                                                <rect width="100%" height="100%" fill="url(#grid)" />
+
+                                                {/* Station Lines (vertical) */}
+                                                {results.loopsimulator.timeDistanceGraph.stationPositions &&
+                                                    Object.entries(results.loopsimulator.timeDistanceGraph.stationPositions)
+                                                        .sort(([, a], [, b]) => a - b)
+                                                        .map(([station, x], idx, arr) => {
+                                                            const minX = Math.min(...Object.values(results.loopsimulator.timeDistanceGraph.stationPositions));
+                                                            const maxX = Math.max(...Object.values(results.loopsimulator.timeDistanceGraph.stationPositions));
+                                                            const normalizedX = 40 + ((x - minX) / (maxX - minX)) * 420;
+                                                            return (
+                                                                <g key={station}>
+                                                                    <line x1={normalizedX} y1="20" x2={normalizedX} y2="260" stroke="#555" strokeWidth="2" />
+                                                                    <text x={normalizedX} y="275" fill="#888" fontSize="10" textAnchor="middle" style={{ textTransform: 'capitalize' }}>
+                                                                        {station}
+                                                                    </text>
+                                                                </g>
+                                                            );
+                                                        })
+                                                }
+
+                                                {/* Train paths */}
+                                                {(graphView === 'before'
+                                                    ? results.loopsimulator.timeDistanceGraph.before
+                                                    : results.loopsimulator.timeDistanceGraph.after
+                                                )?.slice(0, 10).map((train, trainIdx) => {
+                                                    const stationPositions = results.loopsimulator.timeDistanceGraph.stationPositions;
+                                                    const minX = Math.min(...Object.values(stationPositions));
+                                                    const maxX = Math.max(...Object.values(stationPositions));
+                                                    const maxTime = 60; // Max time in minutes
+
+                                                    // Generate path
+                                                    const pathPoints = train.path.map((point, idx) => {
+                                                        const normalizedX = 40 + ((point.x - minX) / (maxX - minX)) * 420;
+                                                        const normalizedY = 30 + (point.time / maxTime) * 220;
+                                                        return `${idx === 0 ? 'M' : 'L'} ${normalizedX} ${normalizedY}`;
+                                                    }).join(' ');
+
+                                                    // Color based on category
+                                                    const color = train.category === 'Passenger' ? '#ef4444' : '#fbbf24';
+                                                    const opacity = 0.7 + (trainIdx * 0.03);
+
+                                                    return (
+                                                        <g key={train.trainId}>
+                                                            <path
+                                                                d={pathPoints}
+                                                                fill="none"
+                                                                stroke={color}
+                                                                strokeWidth="2"
+                                                                strokeOpacity={opacity}
+                                                            />
+                                                            {/* Start point marker */}
+                                                            {train.path[0] && (
+                                                                <circle
+                                                                    cx={40 + ((train.path[0].x - minX) / (maxX - minX)) * 420}
+                                                                    cy={30 + (train.path[0].time / maxTime) * 220}
+                                                                    r="3"
+                                                                    fill={color}
+                                                                />
+                                                            )}
+                                                        </g>
+                                                    );
+                                                })}
+
+                                                {/* Time axis labels */}
+                                                <text x="15" y="35" fill="#666" fontSize="9">0m</text>
+                                                <text x="15" y="140" fill="#666" fontSize="9">30m</text>
+                                                <text x="15" y="255" fill="#666" fontSize="9">60m</text>
+                                            </svg>
+
+                                            {/* Legend */}
+                                            <div className="absolute bottom-2 right-2 flex gap-3 bg-black/50 px-2 py-1 rounded text-xs">
+                                                <div className="flex items-center gap-1">
+                                                    <div className="w-3 h-0.5 bg-red-500"></div>
+                                                    <span className="text-gray-400">Passenger</span>
+                                                </div>
+                                                <div className="flex items-center gap-1">
+                                                    <div className="w-3 h-0.5 bg-yellow-500"></div>
+                                                    <span className="text-gray-400">Freight</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Graph Info */}
+                                        <div className="mt-3 flex justify-between text-xs text-gray-400">
+                                            <span>Showing {graphView === 'before' ? 'current' : 'simulated'} train paths</span>
+                                            <span>
+                                                {(graphView === 'before'
+                                                    ? results.loopsimulator.timeDistanceGraph.before
+                                                    : results.loopsimulator.timeDistanceGraph.after
+                                                )?.length || 0} trains
+                                            </span>
                                         </div>
                                     </div>
                                 )}
