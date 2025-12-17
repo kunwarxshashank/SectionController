@@ -15,7 +15,7 @@ A multi-service setup consisting of a **Next.js frontend**, **Node.js backend**,
 SectionController
 ├── frontend (Next.js)
 ├── backend (Node.js)
-└── pyserver (FastAPI)
+└── decision_engine (FlaskApi Powered Python Decision Engine)
 
 ````
 
@@ -42,30 +42,6 @@ node index.js
 ```
 
 Backend runs at: **[http://localhost:5000](http://localhost:5000)**
-
----
-
-## 🐍 Start Python Server (FastAPI)
-
-### Install Python dependencies
-
-```bash
-cd SectionController/pyserver
-pip install -r requirements.txt
-```
-
-### Start the server
-
-```bash
-uvicorn server:app --reload
-```
-
-Python API runs at: **[http://127.0.0.1:8000](http://127.0.0.1:8000)**
-
-ORJSON data endpoint:
-👉 **[http://127.0.0.1:8000/api/orengine?sectionid=692ea55789d2e3506f170bb5e](http://127.0.0.1:8000/api/orengine?sectionid=692ea55789d2e3506f170bb5e)**
-
-Change the section sectionid as you want
 
 ---
 
